@@ -1,0 +1,215 @@
+package components
+
+templ Navigation(page_mode string) {
+<div class="border-b border-gray-800 py-2">
+  <div class="container mx-auto">
+    <div class="flex justify-between">
+      <div class="absolute flex left-10">
+        <!-- Logo -->
+      <div href="/" id="logo-wrapper" class="flex items-center justify-center h-12 w-12 transition-transform duration-300 ease-in-out hover:scale-110 hover:rotate-12">
+        <img src="/public/Nereus.png" alt="Nereus Logo" style="width: 100px; height: 100px; object-fit: contain;">
+        <a class="text-2xl font-bold text-red-400 mt-3 ml-0">ereus</a>
+      </div>
+
+        <a class="text-2xl font-bold text-red-400 mt-3 ml-10 ">Technology</a>
+        </div>
+				<!-- -->
+				<!-- Search Bar 
+				<div class="relative">
+					<div id="magnifier-icon" class="absolute left-3 top-1/2 -translate-y-1/2">
+						<svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+							<path
+								d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"
+								stroke="#6B7280"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							></path>
+							<path d="m21 21-4.35-4.35" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+						</svg>
+					</div>
+					<input
+						type="text"
+						class="pl-10 pr-2 py-2 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300 ease-in-out"
+						placeholder="Search HTMLBook"
+					/>
+				</div>
+				-->
+				<!-- Navigation Menu -->
+        @MainNavBar(page_mode)
+				<!-- -->
+    <!-- Extra Options Icons -->
+    <div class="flex justify-right">
+      <div class="space-x-2 flex text-red-400">
+        <div class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="More options">
+          <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <g fill="#000000">
+              <circle cx="5" cy="5" r="2"></circle>
+              <circle cx="12" cy="5" r="2"></circle>
+              <circle cx="19" cy="5" r="2"></circle>
+              <circle cx="5" cy="12" r="2"></circle>
+              <circle cx="12" cy="12" r="2"></circle>
+              <circle cx="19" cy="12" r="2"></circle>
+              <circle cx="5" cy="19" r="2"></circle>
+              <circle cx="12" cy="19" r="2"></circle>
+              <circle cx="19" cy="19" r="2"></circle>
+            </g>
+          </svg>
+        </div>
+        <div class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Notifications">
+          <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" fill="#000000"></path>
+          </svg>
+        </div>
+        <div class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="User profile">
+          <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="#000000"></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+    </div>
+		</div>
+	</div>
+}
+
+templ friendsSVG() {
+						<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<g fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round">
+								<!-- Left figure -->
+								<circle cx="8" cy="6" r="2"></circle>
+								<line x1="8" y1="8" x2="8" y2="16"></line>
+								<line x1="5" y1="12" x2="11" y2="12"></line>
+								<line x1="6" y1="20" x2="8" y2="16"></line>
+								<line x1="10" y1="20" x2="8" y2="16"></line>
+								<!-- Right figure -->
+								<circle cx="16" cy="6" r="2"></circle>
+								<line x1="16" y1="8" x2="16" y2="16"></line>
+								<line x1="13" y1="12" x2="19" y2="12"></line>
+								<line x1="14" y1="20" x2="16" y2="16"></line>
+								<line x1="18" y1="20" x2="16" y2="16"></line>
+							</g>
+						</svg>
+}
+
+templ homeSVG() {
+						<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="#000000"></path>
+						</svg>
+}
+
+templ gamesSVG() {
+						<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z" fill="#000000"></path>
+						</svg>
+}
+
+templ blogSVG() {
+						<svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+							<g fill="none" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+								<line x1="7" y1="9" x2="17" y2="9"></line>
+								<line x1="7" y1="13" x2="17" y2="13"></line>
+								<line x1="7" y1="17" x2="12" y2="17"></line>
+							</g>
+						</svg>
+}
+
+templ MainNavBar(page_mode string) {
+  <div id="nav_wrapper" hx-boost="true" class="mx-auto border-b border-gray-200">
+    <input type="hidden" id="page_mode_input" name="page_mode" value={page_mode} />
+    <div id="page_mode_menu" class="mx-auto flex justify-center space-x-4">
+      <a hx-get="/home" href="/home" hx-target="#content" hx-push-url="true" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md" data-tooltip="Home">
+        @homeSVG()
+        <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
+      </a>
+
+      <a hx-get="/friends" href="/friends" hx-target="#content" hx-push-url="true" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md" data-tooltip="Friends">
+        @friendsSVG()
+        <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
+      </a>
+
+      <a hx-get="/games" href="/games" hx-target="#content" hx-push-url="true" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md" data-tooltip="Games">
+        @gamesSVG()
+        <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
+      </a>
+
+      <a hx-get="/blog" href="/blog" hx-target="#content" hx-push-url="true" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md" data-tooltip="Blog">
+        @blogSVG()
+        <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
+      </a>
+    </div>
+  </div>
+  <script>
+  (function() {
+    function updateSelectedMode(path) {
+      const menuItems = document.querySelectorAll('.nav-item');
+      menuItems.forEach(item => {
+        const underline = item.querySelector('div:last-child');
+        if (item.getAttribute('hx-get') === path) {
+          underline.classList.remove('scale-x-0');
+          underline.classList.add('scale-x-100');
+          item.classList.add('text-blue-500');
+        } else {
+          underline.classList.remove('scale-x-100');
+          underline.classList.add('scale-x-0');
+          item.classList.remove('text-blue-500');
+        }
+      });
+    }
+
+    function initializeNavBar() {
+      const currentPath = window.location.pathname;
+      updateSelectedMode(currentPath);
+    }
+
+    // Initialize on page load
+    initializeNavBar();
+
+    // Update on HTMX after-settle event
+    document.body.addEventListener('htmx:afterSettle', function(event) {
+      const currentPath = window.location.pathname;
+      updateSelectedMode(currentPath);
+    });
+  })();
+  function initializeTooltips() {
+    const tooltipTriggerList = document.querySelectorAll('[data-tooltip]');
+    tooltipTriggerList.forEach(triggerEl => {
+      const tooltipText = triggerEl.getAttribute('data-tooltip');
+      const tooltipEl = document.createElement('div');
+      tooltipEl.textContent = tooltipText;
+      tooltipEl.className = 'absolute z-10 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm transition-opacity duration-300 tooltip dark:bg-gray-700 invisible opacity-0';
+      document.body.appendChild(tooltipEl);
+
+      function positionTooltip() {
+        const triggerRect = triggerEl.getBoundingClientRect();
+        const tooltipRect = tooltipEl.getBoundingClientRect();
+        
+        const top = triggerRect.bottom + window.scrollY + 10; // 10px below the button
+        const left = triggerRect.left + window.scrollX + (triggerRect.width / 2) - (tooltipRect.width / 2);
+
+        tooltipEl.style.top = `${top}px`;
+        tooltipEl.style.left = `${left}px`;
+      }
+
+      triggerEl.addEventListener('mouseenter', () => {
+        tooltipEl.classList.remove('invisible');
+        positionTooltip();
+        setTimeout(() => tooltipEl.classList.remove('opacity-0'), 10);
+      });
+
+      triggerEl.addEventListener('mouseleave', () => {
+        tooltipEl.classList.add('opacity-0');
+        setTimeout(() => tooltipEl.classList.add('invisible'), 300);
+      });
+
+      // Reposition tooltip on window resize
+      window.addEventListener('resize', positionTooltip);
+    });
+  }
+
+  // Call initializeTooltips on page load and after HTMX content updates
+  document.addEventListener('DOMContentLoaded', initializeTooltips);
+  document.body.addEventListener('htmx:afterSettle', initializeTooltips);
+  </script>
+}

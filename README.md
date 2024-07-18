@@ -1,2 +1,3 @@
-# nereus_main_site
-Main website for Nereus Technology
+make css
+air
+templ generate --watch --proxy=http://localhost:4000
