@@ -6,12 +6,13 @@ templ Navigation(page_mode string) {
     <div class="flex justify-between">
       <div class="absolute flex left-10">
         <!-- Logo -->
-      <div href="/" id="logo-wrapper" class="flex items-center justify-center h-12 w-12 transition-transform duration-300 ease-in-out hover:scale-110 hover:rotate-12">
-        <img src="/public/Nereus.png" alt="Nereus Logo" style="width: 100px; height: 100px; object-fit: contain;">
-        <a class="text-2xl font-bold text-red-400 mt-3 ml-0">ereus</a>
-      </div>
+        <div hx-get="/home" href="/home" hx-push-url="true" hx-swap="none" hx-target="#content" id="logo-wrapper" class="flex items-center justify-center group">
+          <div class="relative h-12 w-12 overflow-hidden">
+            <img src="/public/Nereus.png" alt="Nereus Logo" class="object-contain transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12">
+          </div>
+          <a class="text-2xl font-bold text-red-400 ml-0">ereus Technology</a>
+        </div>
 
-        <a class="text-2xl font-bold text-red-400 mt-3 ml-10 ">Technology</a>
         </div>
 				<!-- -->
 				<!-- Search Bar 
@@ -149,11 +150,11 @@ templ MainNavBar(page_mode string) {
         if (item.getAttribute('hx-get') === path) {
           underline.classList.remove('scale-x-0');
           underline.classList.add('scale-x-100');
-          item.classList.add('text-blue-500');
+          item.classList.add('text-red-400');
         } else {
           underline.classList.remove('scale-x-100');
           underline.classList.add('scale-x-0');
-          item.classList.remove('text-blue-500');
+          item.classList.remove('text-red-400');
         }
       });
     }
