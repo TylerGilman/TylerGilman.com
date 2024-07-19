@@ -17,15 +17,54 @@ templ Base(page_mode string) {
 		</head>
 		<body class="antialiased">
 			@components.Navigation(page_mode)
+    <div id="modal-container"></div>
 			{ children... }
-		</body>
+
+
     <script type="text/javascript">
+
 document.addEventListener('htmx:afterSettle', function(event) {
     if (window.initializeNavBar) {
         window.initializeNavBar();
     }
 });
+
+    document.body.addEventListener('htmx:afterSwap', function(event) {
+        if (event.detail.target.id === 'modal-container') {
+            requestAnimationFrame(() => {
+                const overlay = document.getElementById('modal-overlay');
+                if (overlay) {
+                    overlay.classList.add('show');
+                }
+            });
+        }
+    });
+    document.body.addEventListener('htmx:afterOnLoad', function(event) {
+        if (event.detail.elt.id === 'modal-container') {
+            document.body.classList.add('modal-open');
+            setTimeout(function() {
+                const overlay = document.getElementById('modal-overlay');
+                if (overlay) {
+                    overlay.classList.add('show');
+                }
+            }, 50);
+        }
+    });
+
+    document.body.addEventListener('htmx:beforeOnLoad', function(event) {
+        if (event.detail.requestConfig.target === '#modal-container') {
+            const overlay = document.getElementById('modal-overlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+                setTimeout(function() {
+                    document.body.classList.remove('modal-open');
+                }, 300);
+            }
+        }
+    });
     </script>
+
+		</body>
 	</html>
 
 }

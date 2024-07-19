@@ -44,9 +44,14 @@ func main() {
 	router.Mount("/admin", adminRouter)
 
 	// Public routes
+
+	// In your main function or router setup
+	router.Get("/modal/more-options", handlers.Make(handlers.HandleMoreOptionsModal))
+	router.Get("/modal/notifications", handlers.Make(handlers.HandleNotificationsModal))
+	router.Get("/modal/user-profile", handlers.Make(handlers.HandleUserProfileModal))
+	router.Get("/close-modal", handlers.Make(handlers.HandleCloseModal))
 	router.Get("/home", handlers.Make(handlers.HandleHome))
 	router.Get("/friends", handlers.Make(handlers.HandleFriends))
-	router.Get("/games", handlers.Make(handlers.HandleGames))
 	router.Get("/blog", handlers.Make(handlers.HandleBlog))
 	router.Get("/blog/search", handlers.Make(handlers.HandleSearch))
 	router.Get("/login", handlers.Make(handlers.HandleLoginIndex))
