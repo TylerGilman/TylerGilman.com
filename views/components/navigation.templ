@@ -53,7 +53,7 @@ templ Navigation(page_mode string) {
       <!-- Extra Options Icons -->
       <div hx-boost="true" class="flex justify-right">
         <div class="space-x-2 flex text-red-400">
-            <a hx-get="/modal/more-options" href="/modal/more-options" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="More options">
+            <a hx-get="/modal/more-options" href="/modal/more-options" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Options">
             <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <g fill="#000000">
                 <circle cx="5" cy="5" r="2"></circle>
@@ -68,12 +68,12 @@ templ Navigation(page_mode string) {
               </g>
             </svg>
           </a>
-            <a hx-get="/modal/notifications" href="/modal/notifications" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Notifications">
+            <a hx-get="/modal/notifications" href="/modal/notifications" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Newsletter">
             <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" fill="#000000"></path>
             </svg>
           </a>
-          <a hx-get="/modal/user-profile" href="/modal/notifications" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="User profile">
+          <a hx-get="/modal/user-profile" href="/modal/notifications" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Contact">
             <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="#000000"></path>
             </svg>
@@ -237,7 +237,7 @@ templ MainNavBar(pageMode string) {
         <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
       </a>
 
-      <a hx-get="/projects" href="/projects" hx-target="#content" hx-push-url="true" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md" data-tooltip="Friends">
+      <a hx-get="/projects" href="/projects" hx-target="#content" hx-push-url="true" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md" data-tooltip="Projects">
         @projectsSVG()
         <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
       </a>
