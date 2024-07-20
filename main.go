@@ -51,7 +51,7 @@ func main() {
 	router.Get("/modal/user-profile", handlers.Make(handlers.HandleUserProfileModal))
 	router.Get("/close-modal", handlers.Make(handlers.HandleCloseModal))
 	router.Get("/home", handlers.Make(handlers.HandleHome))
-	router.Get("/friends", handlers.Make(handlers.HandleFriends))
+	router.Get("/projects", handlers.Make(handlers.HandleFriends))
 	router.Get("/blog", handlers.Make(handlers.HandleBlog))
 	router.Get("/blog/search", handlers.Make(handlers.HandleSearch))
 	router.Get("/login", handlers.Make(handlers.HandleLoginIndex))

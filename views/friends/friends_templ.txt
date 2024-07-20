@@ -1,1 +1,0 @@
-<div id=\"content\" hx-swap-oob=\"true\" class=\"container mx-auto px-4 py-8 items-start justify-center h-full\"><div class=\"mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6\">Wtf is going here page</div></div>

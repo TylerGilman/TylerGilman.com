@@ -13,26 +13,44 @@ templ Index() {
 
 templ Partial() {
     <div id="content" hx-swap-oob="true" class="container mx-auto px-4 py-8 items-start justify-center h-full">
-        <div class="mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6">
+        <div class="mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full">
             <h1 class="text-4xl font-bold text-red-400 mb-4">Tyler @ Nereus Technology</h1>
-            <p class="text-xl mb-6">Young Tech Consultant with a Passion for Solving Problems</p>
+            <p class="text-xl mb-6">Young Tech Consultant with a Passion for Innovation</p>
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                <li> Based on the East Coast of the United States</li>
-                <div>
-                    <h2 class="text-2xl font-semibold mb-3">Experience</h2>
-                    <ul class="list-disc list-inside">
-                        <li>10 years of Python development</li>
-                        <li>1 year professional C and C++ experience</li>
-                        <li>6 months of Go (Golang) expertise</li>
+            <div class="flex mb-8">
+                <div class="w-1/2 pr-6">
+                    <h2 class="text-2xl font-semibold mb-3">Technologies</h2>
+                    <ul class="space-y-2">
+                        <li>
+                            <span class="font-medium">Python</span>
+                            <p class="text-sm text-gray-600 ml-4">10 years of development experience, specializing in data analysis and web backends</p>
+                        </li>
+                        <li>
+                            <span class="font-medium">C and C++</span>
+                            <p class="text-sm text-gray-600 ml-4">1 year of professional experience in system-level programming and optimization</p>
+                        </li>
+                        <li>
+                            <span class="font-medium">Go (Golang)</span>
+                            <p class="text-sm text-gray-600 ml-4">6 months of expertise, focusing on building efficient and scalable web services</p>
+                        </li>
                     </ul>
                 </div>
-                <div>
+                <div class="border-l border-gray-300 mx-4"></div>
+                <div class="w-1/2 pl-6">
                     <h2 class="text-2xl font-semibold mb-3">Services</h2>
-                    <ul class="list-disc list-inside">
-                        <li>Computer Science Tutoring</li>
-                        <li>Competitive pricing for Hypermedia websites</li>
-                        <li>React website development</li>
+                    <ul class="space-y-2">
+                        <li>
+                            <span class="font-medium">Computer Science Tutoring</span>
+                            <p class="text-sm text-gray-600 ml-4">Personalized instruction in algorithms, data structures, and programming concepts</p>
+                        </li>
+                        <li>
+                            <span class="font-medium">Hypermedia Websites</span>
+                            <p class="text-sm text-gray-600 ml-4">Competitive pricing for modern, interactive web applications using HTMX and Go</p>
+                        </li>
+                        <li>
+                            <span class="font-medium">React Development</span>
+                            <p class="text-sm text-gray-600 ml-4">Custom React applications with a focus on performance and user experience</p>
+                        </li>
                     </ul>
                 </div>
             </div>

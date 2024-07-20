@@ -26,7 +26,7 @@ func Navigation(page_mode string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"border-b border-gray-800 py-2\"><div class=\"container mx-auto\"><div class=\"flex justify-between\"><div class=\"absolute flex left-10\"><!-- Logo --><div hx-get=\"/home\" href=\"/home\" hx-push-url=\"true\" hx-swap=\"none\" hx-target=\"#content\" id=\"logo-wrapper\" class=\"flex items-center justify-center group\"><div class=\"relative h-12 w-12 overflow-hidden\"><img src=\"/public/Nereus.png\" alt=\"Nereus Logo\" class=\"object-contain transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12\"></div><a class=\"text-2xl font-bold text-red-400 ml-0\">ereus Technology</a></div></div><style>\n    .modal-open {\n        overflow: hidden;\n    }\n    #modal-overlay.show {\n        opacity: 1;\n    }\n    #modal-overlay.show #modal-content {\n        transform: translateY(0) scale(1);\n    }\n</style><!-- --><!-- Search Bar \n          <div class=\"relative\">\n            <div id=\"magnifier-icon\" class=\"absolute left-3 top-1/2 -translate-y-1/2\">\n              <svg class=\"w-6 h-6\" viewBox=\"0 0 24 24\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\n                <path\n                  d=\"M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z\"\n                  stroke=\"#6B7280\"\n                  stroke-width=\"2\"\n                  stroke-linecap=\"round\"\n                  stroke-linejoin=\"round\"\n                ></path>\n                <path d=\"m21 21-4.35-4.35\" stroke=\"#6B7280\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></path>\n              </svg>\n            </div>\n            <input\n              type=\"text\"\n              class=\"pl-10 pr-2 py-2 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300 ease-in-out\"\n              placeholder=\"Search HTMLBook\"\n            />\n          </div>\n          --><!-- Navigation Menu -->")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -34,7 +34,7 @@ func Navigation(page_mode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!-- --><!-- Extra Options Icons --><div hx-boost=\"true\" class=\"flex justify-right\"><div class=\"space-x-2 flex text-red-400\"><a hx-get=\"/modal/more-options\" href=\"/modal/more-options\" hx-target=\"#modal-container\" hx-swap=\"beforeend\" class=\"rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg\" data-tooltip=\"More options\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"#000000\"><circle cx=\"5\" cy=\"5\" r=\"2\"></circle> <circle cx=\"12\" cy=\"5\" r=\"2\"></circle> <circle cx=\"19\" cy=\"5\" r=\"2\"></circle> <circle cx=\"5\" cy=\"12\" r=\"2\"></circle> <circle cx=\"12\" cy=\"12\" r=\"2\"></circle> <circle cx=\"19\" cy=\"12\" r=\"2\"></circle> <circle cx=\"5\" cy=\"19\" r=\"2\"></circle> <circle cx=\"12\" cy=\"19\" r=\"2\"></circle> <circle cx=\"19\" cy=\"19\" r=\"2\"></circle></g></svg></a> <a hx-get=\"/modal/notifications\" href=\"/modal/notifications\" hx-target=\"#modal-container\" hx-swap=\"beforeend\" class=\"rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg\" data-tooltip=\"Notifications\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z\" fill=\"#000000\"></path></svg></a> <a hx-get=\"/modal/user-profile\" href=\"/modal/notifications\" hx-target=\"#modal-container\" hx-swap=\"beforeend\" class=\"rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg\" data-tooltip=\"User profile\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z\" fill=\"#000000\"></path></svg></a></div></div></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -60,7 +60,7 @@ func MoreOptionsModalContent() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-4\"><h2 class=\"text-xl font-bold mb-4\">More Options</h2><ul class=\"space-y-2\"><li><a href=\"#\" class=\"text-blue-600 hover:underline\">Settings</a></li><li><a href=\"#\" class=\"text-blue-600 hover:underline\">Help Center</a></li><li><a href=\"#\" class=\"text-blue-600 hover:underline\">Privacy Policy</a></li><li><a href=\"#\" class=\"text-blue-600 hover:underline\">Terms of Service</a></li></ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -86,7 +86,7 @@ func NotificationsModalContent() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-4\"><h2 class=\"text-xl font-bold mb-4\">Notifications</h2><ul class=\"space-y-4\"><li class=\"flex items-center\"><div class=\"bg-blue-100 rounded-full p-2 mr-3\"><svg class=\"w-6 h-6 text-blue-500\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z\"></path></svg></div><span>New message from John Doe</span></li><li class=\"flex items-center\"><div class=\"bg-green-100 rounded-full p-2 mr-3\"><svg class=\"w-6 h-6 text-green-500\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z\"></path></svg></div><span>Your post was approved</span></li></ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -112,7 +112,7 @@ func UserProfileModalContent() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-4\"><h2 class=\"text-xl font-bold mb-4\">User Profile</h2><div class=\"flex items-center mb-4\"><img src=\"https://via.placeholder.com/60\" alt=\"User Avatar\" class=\"rounded-full mr-4\"><div><h3 class=\"font-bold\">John Doe</h3><p class=\"text-gray-600\">john.doe@example.com</p></div></div><ul class=\"space-y-2\"><li><a href=\"#\" class=\"text-blue-600 hover:underline\">Edit Profile</a></li><li><a href=\"#\" class=\"text-blue-600 hover:underline\">Account Settings</a></li><li><a href=\"#\" class=\"text-blue-600 hover:underline\">Logout</a></li></ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -120,7 +120,7 @@ func UserProfileModalContent() templ.Component {
 	})
 }
 
-func friendsSVG() templ.Component {
+func projectsSVG() templ.Component {
 	return templruntime.GeneratedTemplate(func(templ_7745c5c3_Input templruntime.GeneratedComponentInput) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_W, ctx := templ_7745c5c3_Input.Writer, templ_7745c5c3_Input.Context
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templruntime.GetBuffer(templ_7745c5c3_W)
@@ -138,7 +138,7 @@ func friendsSVG() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" stroke=\"#000000\" stroke-width=\"2\" stroke-linecap=\"round\"><!-- Left figure --><circle cx=\"8\" cy=\"6\" r=\"2\"></circle> <line x1=\"8\" y1=\"8\" x2=\"8\" y2=\"16\"></line> <line x1=\"5\" y1=\"12\" x2=\"11\" y2=\"12\"></line> <line x1=\"6\" y1=\"20\" x2=\"8\" y2=\"16\"></line> <line x1=\"10\" y1=\"20\" x2=\"8\" y2=\"16\"></line><!-- Right figure --><circle cx=\"16\" cy=\"6\" r=\"2\"></circle> <line x1=\"16\" y1=\"8\" x2=\"16\" y2=\"16\"></line> <line x1=\"13\" y1=\"12\" x2=\"19\" y2=\"12\"></line> <line x1=\"14\" y1=\"20\" x2=\"16\" y2=\"16\"></line> <line x1=\"18\" y1=\"20\" x2=\"16\" y2=\"16\"></line></g></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -164,7 +164,7 @@ func homeSVG() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z\" fill=\"#000000\"></path></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -190,7 +190,7 @@ func blogSVG() templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" stroke=\"#000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z\"></path> <line x1=\"7\" y1=\"9\" x2=\"17\" y2=\"9\"></line> <line x1=\"7\" y1=\"13\" x2=\"17\" y2=\"13\"></line> <line x1=\"7\" y1=\"17\" x2=\"12\" y2=\"17\"></line></g></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -217,7 +217,7 @@ func Modal(content templ.Component, isFullPage bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if isFullPage {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html> <html lang=\"en\"><head><title>HTML BOOK</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"/public/styles.css\"><script src=\"https://code.jquery.com/jquery-3.7.1.min.js\" integrity=\"sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=\" crossorigin=\"anonymous\"></script><script src=\"https://unpkg.com/alpinejs\" defer></script><script src=\"https://unpkg.com/htmx.org@1.9.9\" defer></script><script src=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js\"></script></head><body class=\"antialiased\"><div class=\"bg-gray-100 min-h-screen flex items-center justify-center\"><div id=\"modal-content\" class=\"bg-white rounded-2xl w-full max-w-md p-6 shadow-lg\"><a href=\"/close-modal\" class=\"mb-4 px-4 py-2 bg-gray-300 hover:bg-gray-400 rounded-lg flex items-center inline-block\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 mr-2\" viewBox=\"0 0 20 20\" fill=\"currentColor\"><path fill-rule=\"evenodd\" d=\"M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z\" clip-rule=\"evenodd\"></path></svg> Back</a><div id=\"modal-body\" class=\"mt-8\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -225,12 +225,12 @@ func Modal(content templ.Component, isFullPage bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></body></html>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 11)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modal-container\"><div id=\"modal-overlay\" class=\"fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end sm:items-center justify-center opacity-0 transition-opacity duration-300 ease-in-out\" hx-get=\"/close-modal\" hx-target=\"#modal-container\" hx-swap=\"outerHTML\" hx-trigger=\"click\"><div id=\"modal-content\" class=\"bg-white rounded-t-2xl sm:rounded-2xl w-full sm:w-96 max-h-[80vh] sm:max-h-[90vh] p-6 shadow-lg overflow-y-auto transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-300 ease-in-out\"><a href=\"/close-modal\" hx-get=\"/close-modal\" hx-target=\"#modal-container\" hx-swap=\"outerHTML\" class=\"absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-2xl\">&times;</a><div id=\"modal-body\" class=\"mt-8\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -238,7 +238,7 @@ func Modal(content templ.Component, isFullPage bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 12)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div><script>\n            document.querySelector('#modal-content').addEventListener('click', function(event) {\n                event.stopPropagation();\n            }, false);\n        </script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -265,20 +265,20 @@ func MainNavBar(pageMode string) templ.Component {
 			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 13)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"nav_wrapper\" hx-boost=\"true\" class=\"mx-auto border-b border-gray-200\"><input type=\"hidden\" id=\"page_mode_input\" name=\"page_mode\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(pageMode)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/navigation.templ`, Line: 221, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/navigation.templ`, Line: 233, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 14)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div id=\"page_mode_menu\" class=\"mx-auto flex justify-center space-x-4\"><a hx-get=\"/home\" href=\"/home\" hx-target=\"#content\" hx-push-url=\"true\" class=\"nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md\" data-tooltip=\"Home\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -286,15 +286,15 @@ func MainNavBar(pageMode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 15)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out\"></div></a> <a hx-get=\"/projects\" href=\"/projects\" hx-target=\"#content\" hx-push-url=\"true\" class=\"nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md\" data-tooltip=\"Friends\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = friendsSVG().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = projectsSVG().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 16)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out\"></div></a> <a hx-get=\"/blog\" href=\"/blog\" hx-target=\"#content\" hx-push-url=\"true\" class=\"nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md\" data-tooltip=\"Blog\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -302,7 +302,7 @@ func MainNavBar(pageMode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 17)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out\"></div></a></div></div><script>\n\n  (function() {\n    function updateSelectedMode(path) {\n      const menuItems = document.querySelectorAll('.nav-item');\n      menuItems.forEach(item => {\n        const underline = item.querySelector('div:last-child');\n        if (item.getAttribute('hx-get') === path) {\n          underline.classList.remove('scale-x-0');\n          underline.classList.add('scale-x-100');\n          item.classList.add('text-red-400');\n        } else {\n          underline.classList.remove('scale-x-100');\n          underline.classList.add('scale-x-0');\n          item.classList.remove('text-red-400');\n        }\n      });\n    }\n\n    function initializeNavBar() {\n      const currentPath = window.location.pathname;\n      updateSelectedMode(currentPath);\n    }\n\n    // Initialize on page load\n    initializeNavBar();\n\n    // Update on HTMX after-settle event\n    document.body.addEventListener('htmx:afterSettle', function(event) {\n      const currentPath = window.location.pathname;\n      updateSelectedMode(currentPath);\n    });\n  })();\n  function initializeTooltips() {\n    const tooltipTriggerList = document.querySelectorAll('[data-tooltip]');\n    tooltipTriggerList.forEach(triggerEl => {\n      const tooltipText = triggerEl.getAttribute('data-tooltip');\n      const tooltipEl = document.createElement('div');\n      tooltipEl.textContent = tooltipText;\n      tooltipEl.className = 'absolute z-10 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm transition-opacity duration-300 tooltip dark:bg-gray-700 invisible opacity-0';\n      document.body.appendChild(tooltipEl);\n\n      function positionTooltip() {\n        const triggerRect = triggerEl.getBoundingClientRect();\n        const tooltipRect = tooltipEl.getBoundingClientRect();\n        \n        const top = triggerRect.bottom + window.scrollY + 10; // 10px below the button\n        const left = triggerRect.left + window.scrollX + (triggerRect.width / 2) - (tooltipRect.width / 2);\n\n        tooltipEl.style.top = `${top}px`;\n        tooltipEl.style.left = `${left}px`;\n      }\n\n      triggerEl.addEventListener('mouseenter', () => {\n        tooltipEl.classList.remove('invisible');\n        positionTooltip();\n        setTimeout(() => tooltipEl.classList.remove('opacity-0'), 10);\n      });\n\n      triggerEl.addEventListener('mouseleave', () => {\n        tooltipEl.classList.add('opacity-0');\n        setTimeout(() => tooltipEl.classList.add('invisible'), 300);\n      });\n\n      // Reposition tooltip on window resize\n      window.addEventListener('resize', positionTooltip);\n    });\n  }\n\n  // Call initializeTooltips on page load and after HTMX content updates\n  document.addEventListener('DOMContentLoaded', initializeTooltips);\n  document.body.addEventListener('htmx:afterSettle', initializeTooltips);\n  </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
