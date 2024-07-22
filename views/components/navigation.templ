@@ -7,11 +7,11 @@ templ Navigation(page_mode string) {
     <div class="flex justify-between">
       <div class="absolute flex left-10">
         <!-- Logo -->
-        <div hx-get="/home" href="/home" hx-push-url="true" hx-swap="none" hx-target="#content" id="logo-wrapper" class="flex items-center justify-center group">
-          <div class="relative h-12 w-12 overflow-hidden">
-            <img src="/public/Nereus.png" alt="Nereus Logo" class="object-contain transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12">
+        <div href="/home" hx-get="/home" hx-push-url="true" hx-swap="outerHTML" hx-target="#content" id="logo-wrapper" class="flex items-center group">
+          <div class="relative overflow-hidden">
+            <img src="/public/Nereus.png" alt="Nereus Logo" class="h-12 w-12 mb-4 object-contain transition-transform duration-300 ease-in-out group-hover:scale-210 group-hover:rotate-12">
           </div>
-          <a class="text-2xl font-bold text-red-400 ml-0">ereus Technology</a>
+          <a class="text-2xl font-bold text-red-400">ereus Technology</a>
         </div>
       </div>
 <style>

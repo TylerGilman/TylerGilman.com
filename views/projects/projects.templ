@@ -25,7 +25,7 @@ templ Partial(contributions []models.ContributionDay) {
 }
 
 templ contributionGraph(contributions []models.ContributionDay) {
-    <div id="github-contributions" class="contribution-graph">
+    <div id="github-contributions" class="contribution-graph border-8 m-4 border-orange-400">
         for _, column := range organizeContributions(contributions) {
             <div class="contribution-column">
                 for i := 0; i < 7; i++ {
@@ -34,6 +34,7 @@ templ contributionGraph(contributions []models.ContributionDay) {
             </div>
         }
     </div>
+    <h1 class="font-black text-orange-500"> My Last 3 Months of GitHub</h1>
     <style>
         .project-container {
             display: flex;
@@ -61,8 +62,8 @@ templ contributionGraph(contributions []models.ContributionDay) {
             gap: 2px;
         }
         .contribution-day {
-            width: 10px;
-            height: 10px;
+            width: 24px;
+            height: 24px;
             border-radius: 2px;
         }
         .contribution-level-0 { background-color: #ebedf0; }
