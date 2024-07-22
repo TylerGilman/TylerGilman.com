@@ -1,32 +1,37 @@
 package projects
 
 import (
+	"log"
 	"time"
 
 	"github.com/TylerGilman/nereus_main_site/views/models"
 )
 
 func organizeContributions(contributions []models.ContributionDay) [][]models.ContributionDay {
-	totalDays := 91
+	today := time.Now()
+	endDate := today
+	startDate := endDate.AddDate(0, -3, 0)                         // Go back 3 months
+	startDate = startDate.AddDate(0, 0, -int(startDate.Weekday())) // Adjust to start on a Sunday
+
+	totalDays := int(endDate.Sub(startDate).Hours()/24) + 1 // +1 to include today
 	columns := make([][]models.ContributionDay, (totalDays+6)/7)
 	for i := range columns {
 		columns[i] = make([]models.ContributionDay, 7)
 	}
 
-	today := time.Now()
 	contributionMap := make(map[string]int)
 	for _, c := range contributions {
 		contributionMap[c.Date] = c.Count
 	}
 
 	for i := 0; i < totalDays; i++ {
-		date := today.AddDate(0, 0, -i)
+		date := startDate.AddDate(0, 0, i)
 		dateStr := date.Format("2006-01-02")
-		weekIndex := (totalDays - 1 - i) / 7
-		dayIndex := 6 - int(date.Weekday())
+		weekIndex := i / 7
+		dayIndex := int(date.Weekday())
 
-		if weekIndex < 0 || weekIndex >= len(columns) || dayIndex < 0 || dayIndex >= 7 {
-			continue // Skip invalid indices
+		if weekIndex >= len(columns) {
+			break // We've filled all the columns
 		}
 
 		count, exists := contributionMap[dateStr]
@@ -38,7 +43,11 @@ func organizeContributions(contributions []models.ContributionDay) [][]models.Co
 			Date:  dateStr,
 			Count: count,
 		}
+
+		log.Printf("Day %d: Date=%s, WeekIndex=%d, DayIndex=%d, Count=%d",
+			i, dateStr, weekIndex, dayIndex, count)
 	}
 
+	log.Printf("Organized into %d columns", len(columns))
 	return columns
 }
