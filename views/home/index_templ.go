@@ -186,7 +186,7 @@ func previewArticle(article blog.Article) templ.Component {
 		var templ_7745c5c3_Var7 string
 		templ_7745c5c3_Var7, templ_7745c5c3_Err = templ.JoinStringErrs(article.Title)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home/index.templ`, Line: 100, Col: 69}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home/index.templ`, Line: 103, Col: 69}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var7))
 		if templ_7745c5c3_Err != nil {
@@ -199,7 +199,7 @@ func previewArticle(article blog.Article) templ.Component {
 		var templ_7745c5c3_Var8 string
 		templ_7745c5c3_Var8, templ_7745c5c3_Err = templ.JoinStringErrs(article.Category)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home/index.templ`, Line: 101, Col: 62}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home/index.templ`, Line: 104, Col: 62}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var8))
 		if templ_7745c5c3_Err != nil {
@@ -212,7 +212,7 @@ func previewArticle(article blog.Article) templ.Component {
 		var templ_7745c5c3_Var9 string
 		templ_7745c5c3_Var9, templ_7745c5c3_Err = templ.JoinStringErrs(article.Summary)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home/index.templ`, Line: 102, Col: 74}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home/index.templ`, Line: 105, Col: 74}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var9))
 		if templ_7745c5c3_Err != nil {
@@ -225,7 +225,7 @@ func previewArticle(article blog.Article) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(article.Date.Format("Jan 2, 2006"))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home/index.templ`, Line: 104, Col: 81}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/home/index.templ`, Line: 107, Col: 81}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {
