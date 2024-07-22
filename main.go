@@ -63,6 +63,8 @@ func main() {
 	router.Get("/projects", handlers.Make(handlers.HandleProjects))
 	router.Get("/blog", handlers.Make(handlers.HandleBlog))
 	router.Get("/blog/search", handlers.Make(handlers.HandleSearch))
+	router.Get("/blog/article/{id}", handlers.Make(handlers.HandleFullArticle))
+
 	router.Get("/login", handlers.Make(handlers.HandleLoginIndex))
 
 	// Start the server

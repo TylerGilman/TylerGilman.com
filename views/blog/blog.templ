@@ -2,6 +2,7 @@ package blog
 
 import (
     "github.com/TylerGilman/nereus_main_site/views/layouts"
+    "fmt"
 )
 
 templ Blog(mainArticles []Article, sidebarArticles []Article) {
@@ -72,17 +73,6 @@ templ MainArticles(articles []Article) {
     </div>
 }
 
-templ largeArticle(article Article) {
-    <article class="bg-white shadow-lg rounded-lg overflow-hidden">
-        <img src={article.ImageUrl} alt={article.Title} class="w-full h-64 object-cover"/>
-        <div class="p-6">
-            <h2 class="text-2xl font-bold mb-2">{article.Title}</h2>
-            <p class="text-gray-600 text-sm mb-4">By {article.Author} on {article.Date.Format("Jan 2, 2006")}</p>
-            <p class="text-gray-700 mb-4">{article.Summary}</p>
-            <a href="#" class="text-red-400 hover:underline">Read More</a>
-        </div>
-    </article>
-}
 
 templ smallArticle(article Article) {
     <article class="bg-white shadow-lg rounded-lg overflow-hidden">
@@ -93,3 +83,15 @@ templ smallArticle(article Article) {
         </div>
     </article>
 }
+
+templ largeArticle(article Article) {
+    <article class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <img src={article.ImageUrl} alt={article.Title} class="w-full h-64 object-cover"/>
+        <div class="p-6">
+            <h2 class="text-2xl font-bold mb-2">{article.Title}</h2>
+            <p class="text-gray-600 text-sm mb-4">By {article.Author} on {article.Date.Format("Jan 2, 2006")}</p>
+            <p class="text-gray-700 mb-4">{article.Summary}</p>
+            <a hx-get={string(templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID)))} class="text-red-400 hover:underline">Read More</a> </div>
+    </article>
+}
+

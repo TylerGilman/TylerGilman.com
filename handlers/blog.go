@@ -4,9 +4,11 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/TylerGilman/nereus_main_site/views/blog"
+	"github.com/go-chi/chi/v5"
 
 	"github.com/a-h/templ"
 )
@@ -33,6 +35,22 @@ func HandleBlog(w http.ResponseWriter, r *http.Request) error {
 	} else {
 		return Render(w, r, blog.Blog(mainArticles, sidebarArticles))
 	}
+}
+
+func HandleFullArticle(w http.ResponseWriter, r *http.Request) error {
+	idStr := chi.URLParam(r, "id")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "Invalid article ID", http.StatusBadRequest)
+		return err
+	}
+
+	article, _ := blog.GetArticleByID(id)
+	if err != nil {
+		http.Error(w, "Article not found", http.StatusNotFound)
+		return err
+	}
+	return Render(w, r, blog.FullArticle(article))
 }
 
 func HandleSearch(w http.ResponseWriter, r *http.Request) error {

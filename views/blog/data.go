@@ -128,3 +128,43 @@ func GetRandomArticles(n int) ([]Article, error) {
 	}
 	return articles, nil
 }
+
+func GetArticleByID(id int) (Article, error) {
+	var article Article
+	var dateStr string
+	err := db.QueryRow("SELECT * FROM articles WHERE id = ?", id).Scan(
+		&article.ID, &article.Title, &article.Author, &dateStr,
+		&article.Summary, &article.ImageUrl, &article.Category, &article.Content)
+	if err != nil {
+		return Article{}, err
+	}
+	article.Date, _ = time.Parse("2006-01-02 15:04:05", dateStr)
+	return article, nil
+}
+
+func GetRelatedArticles(currentID int, category string, limit int) ([]Article, error) {
+	query := `
+        SELECT * FROM articles 
+        WHERE id != ? AND category = ?
+        ORDER BY RANDOM()
+        LIMIT ?
+    `
+	rows, err := db.Query(query, currentID, category, limit)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var articles []Article
+	for rows.Next() {
+		var a Article
+		var dateStr string
+		err := rows.Scan(&a.ID, &a.Title, &a.Author, &dateStr, &a.Summary, &a.ImageUrl, &a.Category, &a.Content)
+		if err != nil {
+			return nil, err
+		}
+		a.Date, _ = time.Parse("2006-01-02 15:04:05", dateStr)
+		articles = append(articles, a)
+	}
+	return articles, nil
+}
