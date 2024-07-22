@@ -75,7 +75,7 @@ func Partial() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" hx-swap-oob=\"true\" class=\"container mx-auto px-4 py-8 items-start justify-center h-full\"><div class=\"mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full\"><h1 class=\"text-4xl font-bold text-red-400 mb-4\">Tyler @ Nereus Technology</h1><p class=\"text-xl mb-6\">Young Tech Enthusiast with a Passion for Innovation</p><div class=\"flex mb-8\"><div class=\"w-1/2 pr-6\"><h2 class=\"text-2xl font-semibold mb-3\">Technologies</h2><ul class=\"space-y-2\"><li><span class=\"font-medium\">Python</span><p class=\"text-sm text-gray-600 ml-4\">10 years of development experience, specializing in data analysis and web backends</p></li><li><span class=\"font-medium\">C and C++</span><p class=\"text-sm text-gray-600 ml-4\">1 year of professional experience in system-level programming and optimization</p></li><li><span class=\"font-medium\">Go (Golang)</span><p class=\"text-sm text-gray-600 ml-4\">6 months of expertise, focusing on building efficient and scalable web services</p></li></ul></div><div class=\"border-l border-gray-300 mx-4\"></div><div class=\"w-1/2 pl-6\"><h2 class=\"text-2xl font-semibold mb-3\">Services</h2><ul class=\"space-y-2\"><li><span class=\"font-medium\">Computer Science Tutoring</span><p class=\"text-sm text-gray-600 ml-4\">Personalized instruction in algorithms, data structures, and programming concepts</p></li><li><span class=\"font-medium\">Hypermedia Websites</span><p class=\"text-sm text-gray-600 ml-4\">Competitive pricing for modern, interactive web applications using HTMX and Go</p></li><li><span class=\"font-medium\">React Development</span><p class=\"text-sm text-gray-600 ml-4\">Custom React applications with a focus on performance and user experience</p></li></ul></div></div><li>Undergraduate CS Major (Concentration on Machine Learning)</li><li>Located on the East Coast of the United States</li><div class=\"flex justify-center space-x-4 mb-8\"><a href=\"/projects\" hx-get=\"/projects\" hx-target=\"#content\" hx-push-url=\"true\" class=\"bg-red-400 hover:bg-red-500 text-white font-bold py-2 px-4 rounded transition duration-300\">View My Projects</a> <a href=\"/contact\" hx-get=\"/contact\" hx-target=\"#content\" hx-push-url=\"true\" class=\"bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded transition duration-300\">Contact Me</a></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -83,7 +83,7 @@ func Partial() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"text-center mt-8\"><p class=\"text-lg\">Ready to bring your tech ideas to life? Let's collaborate!</p><p class=\"text-red-400 font-semibold\">Tyler @ Nereus Technology - Where Innovation Meets Expertise</p></div></div></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -135,12 +135,12 @@ func BlogPreviewContent(articles []blog.Article) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"bg-white shadow-lg rounded-lg overflow-hidden w-full\"><h2 class=\"text-2xl font-bold p-4 border-b\">Latest Blog Posts</h2><div class=\"flex flex-row w-full\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, article := range articles {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"flex-1 w-full\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -148,12 +148,12 @@ func BlogPreviewContent(articles []blog.Article) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"p-4 text-center\"><a href=\"/blog\" hx-get=\"/blog\" hx-target=\"#content\" hx-push-url=\"true\" class=\"text-red-400 hover:underline\">View All Posts</a></div></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -179,7 +179,7 @@ func previewArticle(article blog.Article) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<article class=\"border p-6 h-full flex flex-col justify-between hover:shadow-md transition-shadow duration-300\"><div class=\"space-y-4\"><h3 class=\"text-xl font-semibold truncate\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -192,7 +192,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3><p class=\"text-gray-600 text-sm\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -205,7 +205,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><p class=\"text-gray-700 text-sm line-clamp-3\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -218,7 +218,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div><p class=\"text-gray-500 text-xs mt-4\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -231,7 +231,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></article>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 11)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

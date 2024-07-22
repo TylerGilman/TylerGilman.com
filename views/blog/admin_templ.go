@@ -42,7 +42,7 @@ func AdminBlogPost(adminPass string) templ.Component {
 				}()
 			}
 			ctx = templ.InitializeContext(ctx)
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container mx-auto px-4 py-8\"><h1 class=\"text-2xl font-bold mb-4\">Create New Blog Post</h1><form hx-post=\"/admin/blog/create\" hx-target=\"#message\" class=\"space-y-4\"><input type=\"hidden\" name=\"admin_pass\" value=\"")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -55,7 +55,7 @@ func AdminBlogPost(adminPass string) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div><label for=\"title\" class=\"block mb-1\">Title</label> <input type=\"text\" id=\"title\" name=\"title\" required class=\"w-full p-2 border rounded\"></div><div><label for=\"author\" class=\"block mb-1\">Author</label> <input type=\"text\" id=\"author\" name=\"author\" required class=\"w-full p-2 border rounded\"></div><div><label for=\"category\" class=\"block mb-1\">Category</label> <select id=\"category\" name=\"category\" required class=\"w-full p-2 border rounded\"><option value=\"Life\">Life</option> <option value=\"Technology\">Technology</option> <option value=\"Philosophy\">Philosophy</option> <option value=\"Random\">Random</option></select></div><div><label for=\"summary\" class=\"block mb-1\">Summary</label> <textarea id=\"summary\" name=\"summary\" required class=\"w-full p-2 border rounded\" rows=\"3\"></textarea></div><div><label for=\"content\" class=\"block mb-1\">Content</label> <textarea id=\"content\" name=\"content\" required class=\"w-full p-2 border rounded\" rows=\"10\"></textarea></div><div><label for=\"imageUrl\" class=\"block mb-1\">Image URL</label> <input type=\"url\" id=\"imageUrl\" name=\"imageUrl\" class=\"w-full p-2 border rounded\"></div><div><button type=\"submit\" class=\"bg-red-400 text-white p-2 rounded hover:bg-red-500\">Create Post</button></div></form><div id=\"message\" class=\"mt-4\"></div></div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
