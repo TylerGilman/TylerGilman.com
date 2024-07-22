@@ -44,8 +44,8 @@ func organizeContributions(contributions []models.ContributionDay) [][]models.Co
 			Count: count,
 		}
 
-		log.Printf("Day %d: Date=%s, WeekIndex=%d, DayIndex=%d, Count=%d",
-			i, dateStr, weekIndex, dayIndex, count)
+		//		log.Printf("Day %d: Date=%s, WeekIndex=%d, DayIndex=%d, Count=%d",
+		//			i, dateStr, weekIndex, dayIndex, count)
 	}
 
 	log.Printf("Organized into %d columns", len(columns))

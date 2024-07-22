@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -8,27 +10,110 @@ import (
 	"net/http"
 	"sort"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/TylerGilman/nereus_main_site/views/models"
 	"github.com/TylerGilman/nereus_main_site/views/projects"
 )
 
-func HandleProjects(w http.ResponseWriter, r *http.Request) error {
-	username := "TylerGilman" // Replace with your GitHub username
-	contributions, err := getGitHubContributions(username)
+var (
+	cachedFullPage        []byte
+	cachedPartialPage     []byte
+	cacheMutex            sync.RWMutex
+	fullPageExpiration    time.Time
+	partialPageExpiration time.Time
+)
+
+func UpdateProjectsCache() {
+	log.Println("Updating projects cache...")
+	startTime := time.Now()
+
+	contributions, err := getGitHubContributions("TylerGilman")
 	if err != nil {
-		// Log the error
 		log.Printf("Error fetching GitHub contributions: %v", err)
-		// Return an empty slice instead of nil
-		contributions = []models.ContributionDay{}
+		return
 	}
 
+	var fullBuf, partialBuf bytes.Buffer
+	ctx := context.Background()
+
+	err = projects.Projects(contributions).Render(ctx, &fullBuf)
+	if err != nil {
+		log.Printf("Error rendering full projects page: %v", err)
+		return
+	}
+
+	err = projects.Partial(contributions).Render(ctx, &partialBuf)
+	if err != nil {
+		log.Printf("Error rendering partial projects page: %v", err)
+		return
+	}
+
+	cacheMutex.Lock()
+	defer cacheMutex.Unlock()
+
+	cachedFullPage = fullBuf.Bytes()
+	cachedPartialPage = partialBuf.Bytes()
+
+	expirationTime := time.Now().Add(1 * time.Hour)
+	fullPageExpiration = expirationTime
+	partialPageExpiration = expirationTime
+
+	log.Printf("Projects cache updated successfully. Took %v", time.Since(startTime))
+}
+
+func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 	isHtmxRequest := r.Header.Get("HX-Request") == "true"
+
+	cacheMutex.RLock()
+	fullCacheEmpty := len(cachedFullPage) == 0
+	partialCacheEmpty := len(cachedPartialPage) == 0
+	fullCacheExpired := time.Now().After(fullPageExpiration)
+	partialCacheExpired := time.Now().After(partialPageExpiration)
+	cacheMutex.RUnlock()
+
+	if fullCacheEmpty || partialCacheEmpty || fullCacheExpired || partialCacheExpired {
+		log.Println("Projects cache is empty or expired. Updating cache...")
+		UpdateProjectsCache()
+	}
+
 	if isHtmxRequest {
-		return projects.Partial(contributions).Render(r.Context(), w)
+		cacheMutex.RLock()
+		defer cacheMutex.RUnlock()
+
+		if len(cachedPartialPage) > 0 && !partialCacheExpired {
+			log.Println("Serving partial projects page from cache")
+			w.Header().Set("X-Served-From-Cache", "true")
+			_, err := w.Write(cachedPartialPage)
+			return err
+		} else {
+			log.Println("Partial cache is empty or expired. Rendering partial projects page on the fly")
+			contributions, err := getGitHubContributions("TylerGilman")
+			if err != nil {
+				log.Printf("Error fetching GitHub contributions: %v", err)
+				contributions = []models.ContributionDay{}
+			}
+			return projects.Partial(contributions).Render(r.Context(), w)
+		}
 	} else {
-		return projects.Projects(contributions).Render(r.Context(), w)
+		cacheMutex.RLock()
+		defer cacheMutex.RUnlock()
+
+		if len(cachedFullPage) > 0 && !fullCacheExpired {
+			log.Println("Serving full projects page from cache")
+			w.Header().Set("X-Served-From-Cache", "true")
+			_, err := w.Write(cachedFullPage)
+			return err
+		} else {
+			log.Println("Full cache is empty or expired. Rendering full projects page on the fly")
+			contributions, err := getGitHubContributions("TylerGilman")
+			if err != nil {
+				log.Printf("Error fetching GitHub contributions: %v", err)
+				contributions = []models.ContributionDay{}
+			}
+			return projects.Projects(contributions).Render(r.Context(), w)
+		}
 	}
 }
 

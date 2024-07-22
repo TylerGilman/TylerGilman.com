@@ -6,9 +6,10 @@ import (
 	"net/http"
 	"os"
 
+	"time"
+
 	"github.com/TylerGilman/nereus_main_site/handlers"
 	"github.com/TylerGilman/nereus_main_site/views/blog"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 )
@@ -27,7 +28,15 @@ func main() {
 
 	// Set up the router
 	router := chi.NewMux()
+	handlers.UpdateProjectsCache()
 
+	// Set up periodic cache update
+	go func() {
+		for {
+			time.Sleep(1 * time.Hour)
+			handlers.UpdateProjectsCache()
+		}
+	}()
 	// Static file handling
 	router.Handle("/*", public())
 	router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
