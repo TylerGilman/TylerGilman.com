@@ -1,7 +1,5 @@
-<div class=\"project-container\">
-</div>
-<div id=\"content\" class=\"project-container\">
-</div>
+<div id=\"content\" class=\"container mx-auto px-4 py-8 items-start justify-center h-full\"><div class=\"mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full\"><h1>Projects</h1><div class=\"project-container\">
+</div></div></div>
 <div id=\"github-contributions\" class=\"contribution-graph\">
 <div class=\"contribution-column\">
 </div>

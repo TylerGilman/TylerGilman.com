@@ -8,18 +8,20 @@ import (
 
 templ Projects(contributions []models.ContributionDay) {
     @layouts.Base("projects") {
-        <div class="project-container">
-            @contributionGraph(contributions)
-            @githubButton()
-        </div>
+      @Partial(contributions)
     }
 }
 
 templ Partial(contributions []models.ContributionDay) {
-    <div id="content" class="project-container">
-        @contributionGraph(contributions)
+  <div id="content" class="container mx-auto px-4 py-8 items-start justify-center h-full">
+    <div class="mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full">
+  <h1>Projects</h1>
+      <div class="project-container">
         @githubButton()
+        @contributionGraph(contributions)
+      </div>
     </div>
+  </div>
 }
 
 templ contributionGraph(contributions []models.ContributionDay) {
