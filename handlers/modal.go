@@ -6,10 +6,10 @@ import (
 	"github.com/TylerGilman/nereus_main_site/views/components"
 )
 
-func HandleMoreOptionsModal(w http.ResponseWriter, r *http.Request) error {
+func HandleOptionsModal(w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "text/html")
 	isHtmxRequest := r.Header.Get("HX-Request") == "true"
-	return Render(w, r, components.Modal(components.MoreOptionsModalContent(), !isHtmxRequest))
+	return Render(w, r, components.Modal(components.OptionsModalContent(), !isHtmxRequest))
 }
 
 func HandleNotificationsModal(w http.ResponseWriter, r *http.Request) error {

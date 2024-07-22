@@ -84,14 +84,11 @@ templ Navigation(page_mode string) {
     </div>
   }
 
-templ MoreOptionsModalContent() {
-    <div class="p-4">
-        <h2 class="text-xl font-bold mb-4">More Options</h2>
-        <ul class="space-y-2">
-            <li><a href="#" class="text-blue-600 hover:underline">Settings</a></li>
-            <li><a href="#" class="text-blue-600 hover:underline">Help Center</a></li>
-            <li><a href="#" class="text-blue-600 hover:underline">Privacy Policy</a></li>
-            <li><a href="#" class="text-blue-600 hover:underline">Terms of Service</a></li>
+templ OptionsModalContent() {
+    <div class="">
+        <h2 class="text-xl font-bold mb-2">Options</h2>
+        <ul>
+        Darkmode
         </ul>
     </div>
 }
@@ -100,34 +97,17 @@ templ NotificationsModalContent() {
     <div class="p-4">
         <h2 class="text-xl font-bold mb-4">Notifications</h2>
         <ul class="space-y-4">
-            <li class="flex items-center"> <div class="bg-blue-100 rounded-full p-2 mr-3"> <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
-                </div>
-                <span>New message from John Doe</span>
-            </li>
-            <li class="flex items-center">
-                <div class="bg-green-100 rounded-full p-2 mr-3">
-                    <svg class="w-6 h-6 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                </div>
-                <span>Your post was approved</span>
-            </li>
+        <li> Mail List Coming Soon.. </li>
         </ul>
     </div>
 }
 
 templ UserProfileModalContent() {
     <div class="p-4">
-        <h2 class="text-xl font-bold mb-4">User Profile</h2>
-        <div class="flex items-center mb-4">
-            <img src="https://via.placeholder.com/60" alt="User Avatar" class="rounded-full mr-4"/>
-            <div>
-                <h3 class="font-bold">John Doe</h3>
-                <p class="text-gray-600">john.doe@example.com</p>
-            </div>
-        </div>
+        <h2 class="text-xl font-bold mb-4">My Profiles</h2>
         <ul class="space-y-2">
-            <li><a href="#" class="text-blue-600 hover:underline">Edit Profile</a></li>
-            <li><a href="#" class="text-blue-600 hover:underline">Account Settings</a></li>
-            <li><a href="#" class="text-blue-600 hover:underline">Logout</a></li>
+            <li><a href="https://github.com/TylerGilman" class="text-blue-600 hover:underline">Github</a></li>
+            <li><a href="https://www.linkedin.com/in/tyler-gilman-991b84223/" class="text-blue-600 hover:underline">LinkedIn</a></li>
         </ul>
     </div>
 }

@@ -55,7 +55,7 @@ func main() {
 	// Public routes
 
 	// In your main function or router setup
-	router.Get("/modal/more-options", handlers.Make(handlers.HandleMoreOptionsModal))
+	router.Get("/modal/more-options", handlers.Make(handlers.HandleOptionsModal))
 	router.Get("/modal/notifications", handlers.Make(handlers.HandleNotificationsModal))
 	router.Get("/modal/user-profile", handlers.Make(handlers.HandleUserProfileModal))
 	router.Get("/close-modal", handlers.Make(handlers.HandleCloseModal))
