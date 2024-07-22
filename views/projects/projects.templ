@@ -26,8 +26,8 @@ templ contributionGraph(contributions []models.ContributionDay) {
     <div id="github-contributions" class="contribution-graph">
         for _, column := range organizeContributions(contributions) {
             <div class="contribution-column">
-                for _, day := range column {
-                    @contributionDay(day)
+                for i := 0; i < 7; i++ {
+                    @contributionDay(column[i])
                 }
             </div>
         }

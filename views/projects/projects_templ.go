@@ -135,8 +135,8 @@ func contributionGraph(contributions []models.ContributionDay) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			for _, day := range column {
-				templ_7745c5c3_Err = contributionDay(day).Render(ctx, templ_7745c5c3_Buffer)
+			for i := 0; i < 7; i++ {
+				templ_7745c5c3_Err = contributionDay(column[i]).Render(ctx, templ_7745c5c3_Buffer)
 				if templ_7745c5c3_Err != nil {
 					return templ_7745c5c3_Err
 				}
