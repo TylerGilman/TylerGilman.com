@@ -24,7 +24,6 @@ func HandleBlog(w http.ResponseWriter, r *http.Request) error {
 		return err
 	}
 
-	// For sidebar, you might want to implement a separate function to get a random subset
 	sidebarArticles := mainArticles
 	if len(sidebarArticles) > 7 {
 		sidebarArticles = sidebarArticles[:7]

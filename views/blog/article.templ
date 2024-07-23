@@ -5,18 +5,23 @@ import (
 )
 
 templ FullArticle(article Article) {
-    @layouts.Base("article") {
+    @layouts.Base("blog") {
         <div id="content" hx-swap-oob="true" class="container mx-auto px-4 py-8">
             <article class="bg-white shadow-lg rounded-lg overflow-hidden">
-                <img src={article.ImageUrl} alt={article.Title} class="w-full h-64 object-cover"/>
-                <div class="p-6">
+                if article.ImageUrl != "" {
+                    <img src={article.ImageUrl} alt={article.Title} class="w-full h-64 object-cover"/>
+                }
+                <div class="p-6 border-t-2 shadow">
                     <h1 class="text-3xl font-bold mb-2">{article.Title}</h1>
                     <p class="text-gray-600 text-sm mb-4">By {article.Author} on {article.Date.Format("Jan 2, 2006")} | Category: {article.Category}</p>
-                    <div class="prose max-w-none">
+                    <div class="prose max-w-none text-lg">
                         {article.Content}
                     </div>
                 </div>
             </article>
+            <div class="mt-8">
+                <a hx-get="/blog" href="/blog" hx-target="#content" hx-push-url="true" class="text-red-400 hover:underline">Back to Blog</a>
+            </div>
         </div>
     }
 }
