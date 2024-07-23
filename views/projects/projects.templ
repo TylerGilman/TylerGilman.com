@@ -16,7 +16,14 @@ templ Partial(contributions []models.ContributionDay) {
   <div id="content" class="container mx-auto px-4 py-8 items-start justify-center h-full">
     <div class="mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full">
   <h1>Projects</h1>
-      <div class="project-container">
+  <li> Safe Face </li>
+
+  <li> This Website </li>
+
+  <li> Sports Betting Arbitrage </li> 
+
+  
+      <div class="project-container mb-0">
         @githubButton()
         @contributionGraph(contributions)
       </div>
@@ -41,7 +48,7 @@ templ contributionGraph(contributions []models.ContributionDay) {
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
+            min-height: 1vh;
             padding: 20px;
             box-sizing: border-box;
         }
