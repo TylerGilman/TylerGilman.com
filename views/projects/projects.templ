@@ -22,11 +22,11 @@ templ Partial(contributions []models.ContributionDay) {
                 <li> Sports Betting Arbitrage </li> 
                 <li> Procedural Animation - js-animals (Work in progress only have a fish) </li> 
 
-                <div class="project-container mb-0">
+                <div class="project-container mb-8">
                     @contributionGraph(contributions)
-        <div id="fishtank-container" class="w-full md:w-1/2 h-120 md:h-auto">
-            <a class="mx-auto font-black text-orange-400">My Fish Tank</a>
-            <canvas id="fishtank" class="w-full m-5 h-full border-4 border-orange-400 rounded-lg"></canvas>
+        <div id="fishtank-container" class="m-5 w-full md:w-1/2 md:h-auto">
+            <h2 class="font-black text-orange-400 text-center justify-center mb-0">My Fish Tank</h2>
+            <canvas id="fishtank" class="w-full h-full border-4 border-orange-400 rounded-lg"></canvas>
         </div>
 
                     @githubButton()
@@ -369,9 +369,9 @@ templ Partial(contributions []models.ContributionDay) {
 }
 
 templ contributionGraph(contributions []models.ContributionDay) {
-    <div id="github-contributions" class="contribution-graph border-8 m-4 border-orange-400">
 
-    <h1 class="font-black text-orange-500"> My Last 3 Months of GitHub</h1>
+    <h1 class="font-black text-orange-500 mb-0"> My Last 3 Months of GitHub</h1>
+    <div id="github-contributions" class="contribution-graph border-8 border-orange-400">
         for _, column := range organizeContributions(contributions) {
             <div class="contribution-column">
                 for i := 0; i < 7; i++ {

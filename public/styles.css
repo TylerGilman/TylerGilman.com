@@ -728,6 +728,10 @@ video {
   margin-top: 2.5rem;
 }
 
+.mb-5 {
+  margin-bottom: 1.25rem;
+}
+
 .line-clamp-3 {
   overflow: hidden;
   display: -webkit-box;
@@ -789,6 +793,10 @@ video {
 
 .h-96 {
   height: 24rem;
+}
+
+.h-1\/2 {
+  height: 50%;
 }
 
 .max-h-\[80vh\] {
