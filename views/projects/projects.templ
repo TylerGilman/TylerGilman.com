@@ -23,13 +23,13 @@ templ Partial(contributions []models.ContributionDay) {
                 <li> Procedural Animation - js-animals (Work in progress only have a fish) </li> 
 
                 <div class="project-container mb-0">
-                    @githubButton()
                     @contributionGraph(contributions)
-          <hr>
         <div id="fishtank-container" class="w-full md:w-1/2 h-120 md:h-auto">
-            <a class="text-center font-black text-orange-400">My Fish Tank</a>
+            <a class="mx-auto font-black text-orange-400">My Fish Tank</a>
             <canvas id="fishtank" class="w-full m-5 h-full border-4 border-orange-400 rounded-lg"></canvas>
         </div>
+
+                    @githubButton()
                 </div>
 
             </div>
@@ -37,16 +37,19 @@ templ Partial(contributions []models.ContributionDay) {
         </div>
     </div>
 <script>
-    const canvas = document.getElementById('fishtank');
-    const ctx = canvas.getContext('2d');
+(function() {
+    let animationFrameId = null;
+    let canvas = null;
+    let ctx = null;
+    let fishes = [];
 
     function resizeCanvas() {
         const container = document.getElementById('fishtank-container');
-        canvas.width = container.offsetWidth;
-        canvas.height = container.offsetHeight;
+        if (container && canvas) {
+            canvas.width = container.offsetWidth;
+            canvas.height = container.offsetHeight;
+        }
     }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
 
     class ConstrainedPoint {
         constructor(x, y, constraintRadius, speed, isHead = false) {
@@ -284,19 +287,17 @@ templ Partial(contributions []models.ContributionDay) {
     }
 
     function initializeFishTank() {
-        const canvas = document.getElementById('fishtank');
-        const ctx = canvas.getContext('2d');
+        canvas = document.getElementById('fishtank');
+        if (!canvas) return; // Exit if canvas is not found
 
-        function resizeCanvas() {
-            const container = document.getElementById('fishtank-container');
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
-        }
+        ctx = canvas.getContext('2d');
+
+        window.removeEventListener('resize', resizeCanvas);
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
 
-        const numFish = 10; // Increased number of fish
-        const fishes = [];
+        const numFish = 10;
+        fishes = [];
         const minSpeed = 0.5;
         const maxSpeed = 2.5;
 
@@ -330,20 +331,40 @@ templ Partial(contributions []models.ContributionDay) {
                 fish.draw(ctx);
             }
 
-            requestAnimationFrame(draw);
+            animationFrameId = requestAnimationFrame(draw);
         }
 
+        // Cancel any existing animation frame before starting a new one
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
         draw();
+    }
+
+    // Clean up function to stop animation when leaving the page
+    function cleanUpFishTank() {
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+        }
+        window.removeEventListener('resize', resizeCanvas);
     }
 
     // Initialize fish tank on page load
     document.addEventListener('DOMContentLoaded', initializeFishTank);
 
-    // Initialize fish tank after HTMX content swap
+    // Initialize or reinitialize fish tank after HTMX content swap
     document.body.addEventListener('htmx:afterSwap', function(event) {
-        // Check if the swapped content includes the fish tank
-            initializeFishTank();
+        // Short delay to ensure DOM is updated
+        setTimeout(initializeFishTank, 0);
     });
+
+    // Clean up when navigating away (if using HTMX for navigation)
+    document.body.addEventListener('htmx:beforeCleanupElement', function(event) {
+        if (event.target.id === 'fishtank-container') {
+            cleanUpFishTank();
+        }
+    });
+})();
 </script>
 }
 
