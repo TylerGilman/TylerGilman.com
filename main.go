@@ -42,8 +42,6 @@ func main() {
 
 	// Static file handling
 	router.Handle("/*", public())
-	router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
-
 	// Redirect "/" to "/home"
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/home", http.StatusMovedPermanently)
