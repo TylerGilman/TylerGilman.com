@@ -5,7 +5,6 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -40,8 +39,6 @@ func main() {
 		}
 	}()
 
-	// Static file handling
-	router.Handle("/*", public())
 	// Redirect "/" to "/home"
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/home", http.StatusMovedPermanently)
@@ -66,7 +63,7 @@ func main() {
 	router.Get("/login", handlers.Make(handlers.HandleLoginIndex))
 
 	// Load the Cloudflare Origin certificate and key
-	cert, err := tls.LoadX509KeyPair("/etc/ssl/cloudflare/nereustechnology.net.pem", "/etc/ssh/cloudflare/nereustechnology.net.key")
+	cert, err := tls.LoadX509KeyPair("/home/tgilman/etc/ssl/cloudflare/nereustechnology.net.pem", "/home/tgilman/etc/ssl/cloudflare/nereustechnology.net.key")
 	if err != nil {
 		log.Fatalf("Error loading certificate and key: %v", err)
 	}
@@ -84,6 +81,10 @@ func main() {
 		TLSConfig: tlsConfig,
 	}
 
+
+	// Static file handling
+	router.Handle("/public/*", public())
+
 	// Start the HTTPS server
 	slog.Info("HTTPS server starting", "listenAddr", server.Addr)
 	if err := server.ListenAndServeTLS("", ""); err != nil {
@@ -91,6 +92,3 @@ func main() {
 	}
 }
 
-func public() http.Handler {
-	return http.FileServer(http.Dir("./public"))
-}
