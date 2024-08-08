@@ -1,17 +1,18 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"log/slog"
 	"net/http"
 	"os"
-
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/joho/godotenv"
 
 	"github.com/TylerGilman/nereus_main_site/handlers"
 	"github.com/TylerGilman/nereus_main_site/views/blog"
-	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -28,6 +29,7 @@ func main() {
 
 	// Set up the router
 	router := chi.NewMux()
+
 	handlers.UpdateProjectsCache()
 
 	// Set up periodic cache update
@@ -37,6 +39,7 @@ func main() {
 			handlers.UpdateProjectsCache()
 		}
 	}()
+
 	// Static file handling
 	router.Handle("/*", public())
 	router.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
@@ -53,8 +56,6 @@ func main() {
 	router.Mount("/admin", adminRouter)
 
 	// Public routes
-
-	// In your main function or router setup
 	router.Get("/modal/more-options", handlers.Make(handlers.HandleOptionsModal))
 	router.Get("/modal/notifications", handlers.Make(handlers.HandleNotificationsModal))
 	router.Get("/modal/user-profile", handlers.Make(handlers.HandleUserProfileModal))
@@ -64,13 +65,34 @@ func main() {
 	router.Get("/blog", handlers.Make(handlers.HandleBlog))
 	router.Get("/blog/search", handlers.Make(handlers.HandleSearch))
 	router.Get("/blog/article/{id}", handlers.Make(handlers.HandleFullArticle))
-
 	router.Get("/login", handlers.Make(handlers.HandleLoginIndex))
 
-	// Start the server
-	listenAddr := os.Getenv("LISTEN_ADDR")
-	slog.Info("HTTP server starting", "listenAddr", listenAddr)
-	if err := http.ListenAndServe(listenAddr, router); err != nil {
-		log.Fatal("Error starting server:", err)
+	// Load the Cloudflare Origin certificate and key
+	cert, err := tls.LoadX509KeyPair("/etc/ssl/cloudflare/nereustechnology.net.pem", "/etc/ssh/cloudflare/nereustechnology.net.key")
+	if err != nil {
+		log.Fatalf("Error loading certificate and key: %v", err)
 	}
+
+	// Configure the TLS
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+		MinVersion:   tls.VersionTLS12, // Ensure minimum TLS 1.2
+	}
+
+	// Create a server with the TLS config
+	server := &http.Server{
+		Addr:      ":443", // HTTPS port
+		Handler:   router,
+		TLSConfig: tlsConfig,
+	}
+
+	// Start the HTTPS server
+	slog.Info("HTTPS server starting", "listenAddr", server.Addr)
+	if err := server.ListenAndServeTLS("", ""); err != nil {
+		log.Fatal("Error starting HTTPS server:", err)
+	}
+}
+
+func public() http.Handler {
+	return http.FileServer(http.Dir("./public"))
 }
