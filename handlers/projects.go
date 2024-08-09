@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"log/slog"
 	"net/http"
 	"sort"
 	"strings"
@@ -26,12 +27,12 @@ var (
 )
 
 func UpdateProjectsCache() {
-	log.Println("Updating projects cache...")
+	slog.Info("Updating projects cache...")
 	startTime := time.Now()
 
 	contributions, err := getGitHubContributions("TylerGilman")
 	if err != nil {
-		log.Printf("Error fetching GitHub contributions: %v", err)
+		slog.Error("Error fetching GitHub contributions:", slog.String("Error", err.Error()))
 		return
 	}
 
@@ -40,13 +41,13 @@ func UpdateProjectsCache() {
 
 	err = projects.Projects(contributions).Render(ctx, &fullBuf)
 	if err != nil {
-		log.Printf("Error rendering full projects page: %v", err)
+		slog.Error("Error rendering full projects page: %v", slog.String("Error", err.Error()))
 		return
 	}
 
 	err = projects.Partial(contributions).Render(ctx, &partialBuf)
 	if err != nil {
-		log.Printf("Error rendering partial projects page: %v", err)
+		slog.Error("Error rendering partial projects page: %v", slog.String("Error", err.Error()))
 		return
 	}
 
@@ -60,7 +61,7 @@ func UpdateProjectsCache() {
 	fullPageExpiration = expirationTime
 	partialPageExpiration = expirationTime
 
-	log.Printf("Projects cache updated successfully. Took %v", time.Since(startTime))
+	slog.Info("Projects cache updated successfully.", slog.String("update time", time.Since(startTime).String()))
 }
 
 func HandleProjects(w http.ResponseWriter, r *http.Request) error {

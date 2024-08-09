@@ -1,7 +1,7 @@
 package projects
 
 import (
-	"log"
+	"log/slog"
 	"time"
 
 	"github.com/TylerGilman/nereus_main_site/views/models"
@@ -48,6 +48,6 @@ func organizeContributions(contributions []models.ContributionDay) [][]models.Co
 		//			i, dateStr, weekIndex, dayIndex, count)
 	}
 
-	log.Printf("Organized into %d columns", len(columns))
+	slog.Info("Organized into columns", slog.Int("num cols", len(columns)))
 	return columns
 }

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 )
 
@@ -19,17 +19,16 @@ func AdminAuthMiddleware(next http.Handler) http.Handler {
 			adminPassword = r.FormValue("admin_pass")
 		}
 
-		log.Printf("Request URL: %s", r.URL.String())
-		log.Printf("Request Method: %s", r.Method)
-		log.Printf("Received admin password: %s", adminPassword)
+		slog.Info("Request URL: %s", slog.String("URL", r.URL.String()))
+		slog.Info("Request Method: %s", slog.String("method", r.Method))
 
 		if adminPassword != "your_secure_password" {
-			log.Printf("Unauthorized access attempt")
+			slog.Warn("Unauthorized admin access attempt")
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
-		log.Printf("Admin access granted")
+		slog.Info("Admin access granted")
 		next.ServeHTTP(w, r)
 	})
 }

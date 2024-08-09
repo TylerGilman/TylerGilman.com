@@ -115,7 +115,6 @@ func main() {
 	// Start the HTTPS server
 	slog.Info("HTTPS server starting", "listenAddr", server.Addr)
 	if err := server.ListenAndServeTLS("", ""); err != nil {
-		log.Fatal("Error starting HTTPS server:", err)
-
+		slog.Error("Error starting HTTPS server:", slog.String("error", err.Error()))
 	}
 }
