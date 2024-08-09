@@ -5,21 +5,45 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
+
+	"os"
+	"strings"
 
 	"github.com/TylerGilman/nereus_main_site/handlers"
 	"github.com/TylerGilman/nereus_main_site/views/blog"
 )
 
-func main() {
-	// Load environment variables
-	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file:", err)
+func getLogLevel(levelStr string) slog.Level {
+	switch strings.ToUpper(levelStr) {
+	case "DEBUG":
+		return slog.LevelDebug
+	case "INFO":
+		return slog.LevelInfo
+	case "WARN":
+		return slog.LevelWarn
+	case "ERROR":
+		return slog.LevelError
+	default:
+		return slog.LevelInfo // Default to INFO if not specified or invalid
 	}
+}
+
+func main() {
+	// Get log level from environment variable
+	logLevelStr := os.Getenv("LOG_LEVEL")
+	logLevel := getLogLevel(logLevelStr)
+
+	// Create a JSON handler with the specified log level
+	opts := &slog.HandlerOptions{
+		Level: logLevel,
+	}
+	handler := slog.NewJSONHandler(os.Stdout, opts)
+
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
 
 	// Initialize the database
 	if err := blog.InitDB(); err != nil {
@@ -66,7 +90,7 @@ func main() {
 	router.Get("/login", handlers.Make(handlers.HandleLoginIndex))
 
 	// Load the Cloudflare Origin certificate and key
-	cert, err := tls.LoadX509KeyPair("/etc/ssl/cloudflare/nereustechnology.net.pem", "/etc/ssh/cloudflare/nereustechnology.net.key")
+	cert, err := tls.LoadX509KeyPair("home/tgilman/etc/ssl/cloudflare/nereustechnology.net.pem", "home/tgilman/etc/ssh/cloudflare/nereustechnology.net.key")
 	if err != nil {
 		log.Fatalf("Error loading certificate and key: %v", err)
 	}
@@ -88,9 +112,6 @@ func main() {
 	slog.Info("HTTPS server starting", "listenAddr", server.Addr)
 	if err := server.ListenAndServeTLS("", ""); err != nil {
 		log.Fatal("Error starting HTTPS server:", err)
-	}
-}
 
-func public() http.Handler {
-	return http.FileServer(http.Dir("./public"))
+	}
 }
