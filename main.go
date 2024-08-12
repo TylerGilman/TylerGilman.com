@@ -1,27 +1,20 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"log/slog"
 	"net/http"
-	"os"
-	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/joho/godotenv"
+
+	"os"
+	"strings"
+
 	"github.com/TylerGilman/nereus_main_site/handlers"
 	"github.com/TylerGilman/nereus_main_site/views/blog"
-	"github.com/TylerGilman/nereus_main_site/config"
 )
-
-func init() {
-	if err := godotenv.Load(); err != nil {
-		log.Println("Error loading .env file:", err)
-	}
-	log.Println("ENV:", os.Getenv("ENV"))
-	log.Println("LOG_LEVEL:", os.Getenv("LOG_LEVEL"))
-}
 
 func getLogLevel(levelStr string) slog.Level {
 	switch strings.ToUpper(levelStr) {
@@ -48,18 +41,19 @@ func main() {
 		Level: logLevel,
 	}
 	handler := slog.NewJSONHandler(os.Stdout, opts)
+
 	logger := slog.New(handler)
 	slog.SetDefault(logger)
 
 	// Initialize the database
 	if err := blog.InitDB(); err != nil {
-		slog.Error("Error initializing database", "error", err)
-		os.Exit(1)
+		log.Fatal("Error initializing database:", err)
 	}
 	defer blog.CloseDB() // Ensure the database connection is closed when the program exits
 
 	// Set up the router
 	router := chi.NewMux()
+
 	handlers.UpdateProjectsCache()
 
 	// Set up periodic cache update
@@ -70,25 +64,6 @@ func main() {
 		}
 	}()
 
-	// Set up routes
-	setupRoutes(router)
-
-	// Determine whether to run in development or production mode
-	env := os.Getenv("ENV")
-	slog.Info("Current environment", "ENV", env)
-
-	switch env {
-	case "development":
-		runDevelopmentServer(router)
-	case "production":
-		runProductionServer(router)
-	default:
-		slog.Error("Invalid ENV value. Please set ENV to either 'development' or 'production'")
-		os.Exit(1)
-	}
-}
-
-func setupRoutes(router chi.Router) {
 	// Redirect "/" to "/home"
 	router.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/home", http.StatusMovedPermanently)
@@ -103,7 +78,7 @@ func setupRoutes(router chi.Router) {
 	// Public routes
 	router.Get("/modal/more-options", handlers.Make(handlers.HandleOptionsModal))
 	router.Get("/modal/notifications", handlers.Make(handlers.HandleNotificationsModal))
-	router.Get("/modal/contact", handlers.Make(handlers.HandleContactModal))
+	router.Get("/modal/user-profile", handlers.Make(handlers.HandleUserProfileModal))
 	router.Get("/close-modal", handlers.Make(handlers.HandleCloseModal))
 	router.Get("/home", handlers.Make(handlers.HandleHome))
 	router.Get("/projects", handlers.Make(handlers.HandleProjects))
@@ -112,27 +87,31 @@ func setupRoutes(router chi.Router) {
 	router.Get("/blog/article/{id}", handlers.Make(handlers.HandleFullArticle))
 	router.Get("/login", handlers.Make(handlers.HandleLoginIndex))
 
-	// Static file handling
-	router.Handle("/public/*", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
-}
-
-func runDevelopmentServer(router chi.Router) {
-	addr := ":8080" // Use a different port for development
-	slog.Info("Development server starting", "listenAddr", addr)
-	if err := http.ListenAndServe(addr, router); err != nil {
-		slog.Error("Error starting development server", "error", err)
-	}
-}
-
-func runProductionServer(router chi.Router) {
-	slog.Info("Attempting to run production server")
-	server, err := config.SetupHTTPSServer(router)
+	// Load the Cloudflare Origin certificate and key
+	cert, err := tls.LoadX509KeyPair("/home/tgilman/etc/ssl/cloudflare/nereustechnology.net.pem", "/home/tgilman/etc/ssl/cloudflare/nereustechnology.net.key")
 	if err != nil {
-		slog.Error("Error setting up HTTPS server", "error", err)
-		return
+		log.Fatalf("Error loading certificate and key: %v", err)
 	}
+
+	// Configure the TLS
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+		MinVersion:   tls.VersionTLS12, // Ensure minimum TLS 1.2
+	}
+
+	// Create a server with the TLS config
+	server := &http.Server{
+		Addr:      ":443", // HTTPS port
+		Handler:   router,
+		TLSConfig: tlsConfig,
+	}
+
+	// Static file handling
+	router.Handle("/public/*", public())
+
+	// Start the HTTPS server
 	slog.Info("HTTPS server starting", "listenAddr", server.Addr)
 	if err := server.ListenAndServeTLS("", ""); err != nil {
-		slog.Error("Error starting HTTPS server", "error", err)
+		slog.Error("Error starting HTTPS server:", slog.String("error", err.Error()))
 	}
 }
