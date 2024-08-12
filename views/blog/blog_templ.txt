@@ -1,0 +1,20 @@
+<div id=\"content\" class=\"container mx-auto px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl flex flex-col items-center justify-start min-h-screen py-8\"><div class=\"mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6\"><h2 class=\"text-2xl font-bold mb-4\">Search Articles</h2><form hx-boost=\"true\" hx-target=\"#main-articles\" hx-indicator=\"#search-indicator\" action=\"/blog/search\" method=\"get\"><div class=\"flex flex-wrap -mx-2\"><div class=\"w-full md:w-1/2 px-2 mb-4\"><input type=\"search\" name=\"query\" placeholder=\"Search...\" class=\"w-full p-2 border rounded\" hx-get=\"/blog/search\" hx-trigger=\"input changed delay:500ms, search\" hx-target=\"#main-articles\" hx-indicator=\"#search-indicator\"></div><div class=\"w-full md:w-1/4 px-2 mb-4\"><select name=\"category\" class=\"w-full p-2 border rounded\" hx-get=\"/blog/search\" hx-trigger=\"change\" hx-target=\"#main-articles\" hx-indicator=\"#search-indicator\"><option value=\"\">All Categories</option> <option>Life</option> <option>Technology</option> <option>Philosophy</option> <option>Random</option></select></div><div class=\"w-full md:w-1/4 px-2 mb-4\"><button type=\"submit\" class=\"w-full bg-red-400 text-white p-2 rounded hover:bg-red-500\">Search</button></div></div></form><div id=\"search-indicator\" class=\"htmx-indicator\">Searching...</div></div><div class=\"flex flex-wrap -mx-4\"><!-- Main content (3/5 width) --><div id=\"main-articles\" class=\"w-full lg:w-3/5 px-4\">
+</div><!-- Sidebar with smaller article previews (2/5 width) --><div class=\"w-full lg:w-2/5 px-4 mt-8 lg:mt-0\"><div class=\"space-y-4 border-t-2\">
+</div></div></div></div>
+<div class=\"border-t-2 space-y-8\">
+</div>
+<article class=\"bg-white shadow-lg rounded-lg overflow-hidden\"><div class=\"p-4\"><h3 class=\"text-lg font-semibold mb-2\">
+</h3><p class=\"text-gray-600 text-sm mb-2\">
+</p><p class=\"text-gray-500 text-xs\">
+</p></div></article>
+<article class=\"bg-white shadow-lg rounded-lg overflow-hidden\">
+<img src=\"
+\" alt=\"
+\" class=\"w-full h-64 object-cover\">
+<div class=\"p-6\"><h2 class=\"text-2xl font-bold mb-2\">
+</h2><p class=\"text-gray-600 text-sm mb-4\">By 
+ on 
+</p><p class=\"text-gray-700 mb-4\">
+</p><a href=\"
+\" hx-get=\"
+\" hx-push-url=\"true\" class=\"text-red-400 hover:underline\">Read More</a></div></article>

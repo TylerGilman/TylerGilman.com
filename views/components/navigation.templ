@@ -50,9 +50,8 @@ templ Navigation(page_mode string) {
                             </svg>
                         </a>
                     </div>
-
-                    <!-- Mobile Hamburger -->
-                    <button id="mobile-menu-button" class="md:hidden z-50">
+<!-- Mobile Hamburger -->
+                    <button id="mobile-menu-button" class="block md:hidden z-50">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
                         </svg>
@@ -165,25 +164,6 @@ templ Navigation(page_mode string) {
       font-size: 1.5rem;
     }
   }
-        @media (max-width: 768px) {
-            #mobile-extra-options {
-                display: none;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background-color: white;
-                padding: 1rem;
-                z-index: 40;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            }
-            #mobile-extra-options.mobile-menu-open {
-                display: block;
-            }
-            body.menu-open {
-                overflow: hidden;
-            }
-        }
     .modal-open {
         overflow: hidden;
     }
