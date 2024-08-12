@@ -7,12 +7,12 @@ import (
 	"os"
 	"strings"
 	"time"
+	"crypto/tls"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/joho/godotenv"
 	"github.com/TylerGilman/nereus_main_site/handlers"
 	"github.com/TylerGilman/nereus_main_site/views/blog"
-	"github.com/TylerGilman/nereus_main_site/config"
 )
 
 func init() {
@@ -126,13 +126,23 @@ func runDevelopmentServer(router chi.Router) {
 
 func runProductionServer(router chi.Router) {
 	slog.Info("Attempting to run production server")
-	server, err := config.SetupHTTPSServer(router)
+	cert, err := tls.LoadX509KeyPair("/home/tgilman/etc/ssl/cloudflare/nereustechnology.net.pem", "/home/tgilman/etc/ssl/cloudflare/nereustechnology.net.key")
 	if err != nil {
-		slog.Error("Error setting up HTTPS server", "error", err)
-		return
+		log.Fatalf("Error loading certificate and key: %v", err)
+	}
+	// configure TLS
+	tlsConfig := &tls.Config{
+		Certificates: []tls.Certificate{cert},
+		MinVersion: tls.VersionTLS12,
+	}
+	server := &http.Server{
+		Addr: ":433", // HTTPS
+		Handler: router,
+		TLSConfig: tlsConfig,
 	}
 	slog.Info("HTTPS server starting", "listenAddr", server.Addr)
 	if err := server.ListenAndServeTLS("", ""); err != nil {
-		slog.Error("Error starting HTTPS server", "error", err)
+		slog.Error("Error starting HTTPS server:", slog.String("error", err.Error()))
 	}
+
 }
