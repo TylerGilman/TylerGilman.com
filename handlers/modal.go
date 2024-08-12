@@ -18,10 +18,10 @@ func HandleNotificationsModal(w http.ResponseWriter, r *http.Request) error {
 	return Render(w, r, components.Modal(components.NotificationsModalContent(), !isHtmxRequest))
 }
 
-func HandleUserProfileModal(w http.ResponseWriter, r *http.Request) error {
+func HandleContactModal(w http.ResponseWriter, r *http.Request) error {
 	w.Header().Set("Content-Type", "text/html")
 	isHtmxRequest := r.Header.Get("HX-Request") == "true"
-	return Render(w, r, components.Modal(components.UserProfileModalContent(), !isHtmxRequest))
+	return Render(w, r, components.Modal(components.ContactModalContent(), !isHtmxRequest))
 }
 
 func HandleCloseModal(w http.ResponseWriter, r *http.Request) error {

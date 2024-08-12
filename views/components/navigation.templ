@@ -1,20 +1,134 @@
 package components
 
-
 templ Navigation(page_mode string) {
-<div class="border-b border-gray-800 py-2">
-  <div class="container mx-auto">
-    <div class="flex justify-between">
-      <div class="absolute flex left-10">
-        <!-- Logo -->
-        <div href="/home" hx-get="/home" hx-push-url="true" hx-swap="outerHTML" hx-target="#content" id="logo-wrapper" class="flex items-center group">
-          <div class="relative overflow-hidden">
-            <img src="/public/Nereus.png" alt="Nereus Logo" class="h-12 w-12 mb-4 object-contain transition-transform duration-300 ease-in-out group-hover:scale-210 group-hover:rotate-12">
-          </div>
-          <a class="text-2xl font-bold text-red-400">ereus Technology</a>
+    <nav class="border-b border-gray-800 py-2 relative">
+        <div class="container mx-auto px-4">
+            <!-- Top row: Logo, Main Navigation, Icons/Hamburger -->
+            <div class="flex justify-between items-center">
+                <!-- Logo -->
+              <div href="/home" hx-get="/home" hx-push-url="true" hx-swap="outerHTML" hx-target="#content" id="logo-wrapper" class="flex items-center group">
+                  <div class="relative overflow-hidden flex-shrink-0">
+                      <img src="/public/Nereus.png" alt="Nereus Logo" class="h-8 w-8 md:h-12 md:w-12 object-contain transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12">
+                  </div>
+                  <a class="text-xl md:text-2xl font-bold text-red-400 ml-2 transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12">ereus Technology</a>
+              </div>
+
+                <!-- Main Navigation -->
+                <div class="flex-1 px-4">
+                    <div class="flex justify-center md:justify-start">
+                        @MainNavBar(page_mode)
+                    </div>
+                </div>
+
+                <!-- Desktop Icons / Mobile Hamburger -->
+                <div class="flex items-center">
+                    <!-- Desktop Icons -->
+                    <div hx-boost="true" class="hidden md:flex justify-end space-x-2">
+
+                        <a hx-get="/modal/more-options" href="/modal/more-options" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Options">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <g fill="#000000">
+                                    <circle cx="5" cy="5" r="2"></circle>
+                                    <circle cx="12" cy="5" r="2"></circle>
+                                    <circle cx="19" cy="5" r="2"></circle>
+                                    <circle cx="5" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="19" cy="12" r="2"></circle>
+                                    <circle cx="5" cy="19" r="2"></circle>
+                                    <circle cx="12" cy="19" r="2"></circle>
+                                    <circle cx="19" cy="19" r="2"></circle>
+                                </g>
+                            </svg>
+                        </a>
+                        <a hx-get="/modal/notifications" href="/modal/notifications" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Newsletter">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" fill="#000000"></path>
+                            </svg>
+                        </a>
+                        <a hx-get="/modal/contact" href="/modal/contact" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Contact">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="#000000"></path>
+                            </svg>
+                        </a>
+                    </div>
+
+                    <!-- Mobile Hamburger -->
+                    <button id="mobile-menu-button" class="md:hidden z-50">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Extra Options (Hidden until hamburger is clicked) -->
+            <div id="mobile-extra-options" class="md:hidden">
+                <div class="py-4">
+                    <div hx-boost="true" class="flex justify-center space-x-4">
+
+                      <div class="flex flex-col items-center justify-center text-center">
+                        <a hx-get="/modal/more-options" href="/modal/more-options" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <g fill="#000000">
+                                    <circle cx="5" cy="5" r="2"></circle>
+                                    <circle cx="12" cy="5" r="2"></circle>
+                                    <circle cx="19" cy="5" r="2"></circle>
+                                    <circle cx="5" cy="12" r="2"></circle>
+                                    <circle cx="12" cy="12" r="2"></circle>
+                                    <circle cx="19" cy="12" r="2"></circle>
+                                    <circle cx="5" cy="19" r="2"></circle>
+                                    <circle cx="12" cy="19" r="2"></circle>
+                                    <circle cx="19" cy="19" r="2"></circle>
+                                </g>
+                            </svg>
+                        </a>
+                        More Options
+                        </div>
+
+                        <div class="flex flex-col items-center justify-center text-center">
+                        <a hx-get="/modal/notifications" href="/modal/notifications" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" fill="#000000"></path>
+                            </svg>
+                        </a>
+                        Notifications
+                        </div>
+                        
+                        <div class="flex flex-col items-center justify-center text-center">
+                        <a hx-get="/modal/contact" href="/modal/contact" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="#000000"></path>
+                            </svg>
+                        </a>
+                        Contact Me
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-<style>
+    </nav>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    var mobileMenuButton = document.getElementById('mobile-menu-button');
+    var mobileExtraOptions = document.getElementById('mobile-extra-options');
+
+    function toggleMobileMenu() {
+        mobileExtraOptions.classList.toggle('mobile-menu-open');
+        document.body.classList.toggle('menu-open');
+    }
+
+    mobileMenuButton.addEventListener('click', toggleMobileMenu);
+
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            mobileExtraOptions.classList.remove('mobile-menu-open');
+            document.body.classList.remove('menu-open');
+        }
+    });
+});
+    </script>
+    <style>
     .modal-open {
         overflow: hidden;
     }
@@ -24,64 +138,24 @@ templ Navigation(page_mode string) {
     #modal-overlay.show #modal-content {
         transform: translateY(0) scale(1);
     }
+  @media (max-width: 768px) {
+      #mobile-extra-options {
+          display: none; /* Initially hidden */
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background-color: white;
+          padding: 1rem;
+          z-index: 40;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+      }
+
+      #mobile-extra-options.mobile-menu-open {
+          display: block; /* Show when the class is added */
+      }
+  }
 </style>
-          <!-- -->
-          <!-- Search Bar 
-          <div class="relative">
-            <div id="magnifier-icon" class="absolute left-3 top-1/2 -translate-y-1/2"> <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M11 19a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"
-                  stroke="#6B7280"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                ></path>
-                <path d="m21 21-4.35-4.35" stroke="#6B7280" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
-              </svg>
-            </div>
-            <input
-              type="text"
-              class="pl-10 pr-2 py-2 rounded-md border border-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent transition-all duration-300 ease-in-out"
-              placeholder="Search HTMLBook"
-            />
-          </div>
-          -->
-          <!-- Navigation Menu -->
-          @MainNavBar(page_mode)
-          <!-- -->
-      <!-- Extra Options Icons -->
-      <div hx-boost="true" class="flex justify-right">
-        <div class="space-x-2 flex text-red-400">
-            <a hx-get="/modal/more-options" href="/modal/more-options" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Options">
-            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <g fill="#000000">
-                <circle cx="5" cy="5" r="2"></circle>
-                <circle cx="12" cy="5" r="2"></circle>
-                <circle cx="19" cy="5" r="2"></circle>
-                <circle cx="5" cy="12" r="2"></circle>
-                <circle cx="12" cy="12" r="2"></circle>
-                <circle cx="19" cy="12" r="2"></circle>
-                <circle cx="5" cy="19" r="2"></circle>
-                <circle cx="12" cy="19" r="2"></circle>
-                <circle cx="19" cy="19" r="2"></circle>
-              </g>
-            </svg>
-          </a>
-            <a hx-get="/modal/notifications" href="/modal/notifications" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Newsletter">
-            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z" fill="#000000"></path>
-            </svg>
-          </a>
-          <a hx-get="/modal/user-profile" href="/modal/notifications" hx-target="#modal-container" hx-swap="beforeend" class="rounded-full bg-slate-200 py-2 px-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg" data-tooltip="Contact">
-            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" fill="#000000"></path>
-            </svg>
-          </a>
-        </div>
-      </div>
-      </div>
-      </div>
-    </div>
   }
 
 templ OptionsModalContent() {
@@ -100,7 +174,7 @@ templ NotificationsModalContent() {
     </div>
 }
 
-templ UserProfileModalContent() {
+templ ContactModalContent() {
     <div class="p-4">
         <h2 class="text-xl font-bold mb-4">My Profiles</h2>
         <ul class="space-y-2">
@@ -209,18 +283,27 @@ templ MainNavBar(pageMode string) {
   <div id="nav_wrapper" hx-boost="true" class="mx-auto border-b border-gray-200">
     <input type="hidden" id="page_mode_input" name="page_mode" value={pageMode} />
     <div id="page_mode_menu" class="mx-auto flex justify-center space-x-4">
-      <a hx-get="/home" href="/home" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md" data-tooltip="Home">
+      <a hx-get="/home" href="/home" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md">
+      <div class="flex flex-col items-center justify-center text-center">
         @homeSVG()
+        Home
+      </div>
         <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
       </a>
 
-      <a hx-get="/projects" href="/projects" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md" data-tooltip="Projects">
+      <a hx-get="/projects" href="/projects" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md">
+      <div class="flex flex-col items-center justify-center text-center">
         @projectsSVG()
+        Projects
+      </div>
         <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
       </a>
 
-      <a hx-get="/blog" href="/blog" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md" data-tooltip="Blog">
+      <a hx-get="/blog" href="/blog" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md">
+      <div class="flex flex-col items-center justify-center text-center">
         @blogSVG()
+        Blog
+      </div>
         <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
       </a>
     </div>
