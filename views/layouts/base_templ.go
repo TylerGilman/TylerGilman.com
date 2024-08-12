@@ -28,7 +28,7 @@ func Base(page_mode string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html><html lang=\"en\"><head><title>Nereus Tech</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link type=\"text/css\" rel=\"stylesheet\" href=\"/public/styles.css\"><script src=\"https://code.jquery.com/jquery-3.7.1.min.js\" integrity=\"sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=\" crossorigin=\"anonymous\"></script><script src=\"https://unpkg.com/alpinejs\" defer></script><script src=\"https://unpkg.com/htmx.org@1.9.9\" defer></script><script src=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js\"></script></head><body class=\"antialiased\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -36,7 +36,7 @@ func Base(page_mode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modal-container\"></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -44,7 +44,7 @@ func Base(page_mode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script type=\"text/javascript\">\n\ndocument.addEventListener('htmx:afterSettle', function(event) {\n    if (window.initializeNavBar) {\n        window.initializeNavBar();\n    }\n});\n\n    document.body.addEventListener('htmx:afterSwap', function(event) {\n        if (event.detail.target.id === 'modal-container') {\n            requestAnimationFrame(() => {\n                const overlay = document.getElementById('modal-overlay');\n                if (overlay) {\n                    overlay.classList.add('show');\n                }\n            });\n        }\n    });\n    document.body.addEventListener('htmx:afterOnLoad', function(event) {\n        if (event.detail.elt.id === 'modal-container') {\n            document.body.classList.add('modal-open');\n            setTimeout(function() {\n                const overlay = document.getElementById('modal-overlay');\n                if (overlay) {\n                    overlay.classList.add('show');\n                }\n            }, 50);\n        }\n    });\n\n    document.body.addEventListener('htmx:beforeOnLoad', function(event) {\n        if (event.detail.requestConfig.target === '#modal-container') {\n            const overlay = document.getElementById('modal-overlay');\n            if (overlay) {\n                overlay.classList.remove('show');\n                setTimeout(function() {\n                    document.body.classList.remove('modal-open');\n                }, 300);\n            }\n        }\n    });\n    </script></body></html>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

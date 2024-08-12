@@ -26,7 +26,7 @@ func Navigation(page_mode string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"border-b border-gray-800 py-2 relative\"><div class=\"container mx-auto px-4 items-center\"><!-- Top row: Logo, Main Navigation, Icons/Hamburger --><div class=\"flex justify-between items-center\"><!-- Logo --><a href=\"/home\" hx-get=\"/home\" hx-push-url=\"true\" hx-swap=\"outerHTML\" hx-target=\"#content\" id=\"logo-wrapper\"><img src=\"/public/Nereus.png\" alt=\"Nereus Logo\" id=\"logo-image\"> <span id=\"logo-text\" class=\"mt-4 ml-0\">ereus</span></a><!-- Main Navigation --><div class=\"flex-1 px-4\"><div class=\"flex justify-center md:justify-start\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -34,7 +34,7 @@ func Navigation(page_mode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div><!-- Desktop Icons / Mobile Hamburger --><div class=\"flex items-center\"><!-- Desktop Icons --><div hx-boost=\"true\" class=\"hidden md:flex justify-end space-x-2\"><a hx-get=\"/modal/more-options\" href=\"/modal/more-options\" hx-target=\"#modal-container\" hx-swap=\"beforeend\" class=\"rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg\" data-tooltip=\"Options\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"#000000\"><circle cx=\"5\" cy=\"5\" r=\"2\"></circle> <circle cx=\"12\" cy=\"5\" r=\"2\"></circle> <circle cx=\"19\" cy=\"5\" r=\"2\"></circle> <circle cx=\"5\" cy=\"12\" r=\"2\"></circle> <circle cx=\"12\" cy=\"12\" r=\"2\"></circle> <circle cx=\"19\" cy=\"12\" r=\"2\"></circle> <circle cx=\"5\" cy=\"19\" r=\"2\"></circle> <circle cx=\"12\" cy=\"19\" r=\"2\"></circle> <circle cx=\"19\" cy=\"19\" r=\"2\"></circle></g></svg></a> <a hx-get=\"/modal/notifications\" href=\"/modal/notifications\" hx-target=\"#modal-container\" hx-swap=\"beforeend\" class=\"rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg\" data-tooltip=\"Newsletter\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z\" fill=\"#000000\"></path></svg></a> <a hx-get=\"/modal/contact\" href=\"/modal/contact\" hx-target=\"#modal-container\" hx-swap=\"beforeend\" class=\"rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg\" data-tooltip=\"Contact\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z\" fill=\"#000000\"></path></svg></a></div><!-- Mobile Hamburger --><button id=\"mobile-menu-button\" class=\"block md:hidden z-50\"><svg class=\"w-6 h-6\" fill=\"none\" stroke=\"currentColor\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h16M4 12h16m-7 6h7\"></path></svg></button></div></div><!-- Mobile Extra Options (Hidden until hamburger is clicked) --><div id=\"mobile-extra-options\" class=\"md:hidden\"><div class=\"py-4\"><div hx-boost=\"true\" class=\"flex justify-center space-x-4\"><div class=\"flex flex-col items-center justify-center text-center\"><a hx-get=\"/modal/more-options\" href=\"/modal/more-options\" hx-target=\"#modal-container\" hx-swap=\"beforeend\" class=\"rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"#000000\"><circle cx=\"5\" cy=\"5\" r=\"2\"></circle> <circle cx=\"12\" cy=\"5\" r=\"2\"></circle> <circle cx=\"19\" cy=\"5\" r=\"2\"></circle> <circle cx=\"5\" cy=\"12\" r=\"2\"></circle> <circle cx=\"12\" cy=\"12\" r=\"2\"></circle> <circle cx=\"19\" cy=\"12\" r=\"2\"></circle> <circle cx=\"5\" cy=\"19\" r=\"2\"></circle> <circle cx=\"12\" cy=\"19\" r=\"2\"></circle> <circle cx=\"19\" cy=\"19\" r=\"2\"></circle></g></svg></a> More Options</div><div class=\"flex flex-col items-center justify-center text-center\"><a hx-get=\"/modal/notifications\" href=\"/modal/notifications\" hx-target=\"#modal-container\" hx-swap=\"beforeend\" class=\"rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.63-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.64 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2zm-2 1H8v-6c0-2.48 1.51-4.5 4-4.5s4 2.02 4 4.5v6z\" fill=\"#000000\"></path></svg></a> Notifications</div><div class=\"flex flex-col items-center justify-center text-center\"><a hx-get=\"/modal/contact\" href=\"/modal/contact\" hx-target=\"#modal-container\" hx-swap=\"beforeend\" class=\"rounded-full bg-slate-200 p-2 transition-all duration-300 ease-in-out hover:bg-slate-300 hover:scale-110 hover:shadow-lg\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z\" fill=\"#000000\"></path></svg></a> Contact Me</div></div></div></div></div></nav><script>\n    document.addEventListener('DOMContentLoaded', function() {\n    var mobileMenuButton = document.getElementById('mobile-menu-button');\n    var mobileExtraOptions = document.getElementById('mobile-extra-options');\n\n    function toggleMobileMenu() {\n        mobileExtraOptions.classList.toggle('mobile-menu-open');\n        document.body.classList.toggle('menu-open');\n    }\n\n    mobileMenuButton.addEventListener('click', toggleMobileMenu);\n\n    window.addEventListener('resize', function() {\n        if (window.innerWidth > 768) {\n            mobileExtraOptions.classList.remove('mobile-menu-open');\n            document.body.classList.remove('menu-open');\n        }\n    });\n});\n    </script><style>\n  #logo-wrapper {\n    display: inline-flex;\n    align-items: center;\n    text-decoration: none;\n  }\n\n  #logo-image {\n    height: 2rem;\n    width: auto;\n    min-width: 2rem;\n    transition: transform 0.3s ease-in-out;\n  }\n\n  #logo-text {\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #f87171;\n    margin-left: 0.5rem;\n  }\n\n  /* Disable hover effects on mobile */\n  @media (hover: hover) and (pointer: fine) {\n    #logo-wrapper:hover #logo-image {\n      transform: scale(1.1) rotate(12deg);\n    }\n  }\n\n  @media (min-width: 768px) {\n    #logo-image {\n      height: 3rem;\n      min-width: 3rem;\n    }\n\n    #logo-text {\n      font-size: 1.5rem;\n    }\n  }\n    .modal-open {\n        overflow: hidden;\n    }\n    #modal-overlay.show {\n        opacity: 1;\n    }\n    #modal-overlay.show #modal-content {\n        transform: translateY(0) scale(1);\n    }\n  @media (max-width: 768px) {\n      #mobile-extra-options {\n          display: none; /* Initially hidden */\n          position: absolute;\n          top: 100%;\n          left: 0;\n          right: 0;\n          background-color: white;\n          padding: 1rem;\n          z-index: 40;\n          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);\n      }\n\n      #mobile-extra-options.mobile-menu-open {\n          display: block; /* Show when the class is added */\n      }\n  }\n</style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -60,7 +60,7 @@ func OptionsModalContent() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"\"><h2 class=\"text-xl font-bold mb-2\">Options</h2><ul>Darkmode</ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -86,7 +86,7 @@ func NotificationsModalContent() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-4\"><h2 class=\"text-xl font-bold mb-4\">Notifications</h2><ul class=\"space-y-4\"><li>Mail List Coming Soon.. </li></ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -112,7 +112,7 @@ func ContactModalContent() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-4\"><h2 class=\"text-xl font-bold mb-4\">My Profiles</h2><ul class=\"space-y-2\"><li><a href=\"https://github.com/TylerGilman\" class=\"text-blue-600 hover:underline\">Github</a></li><li><a href=\"https://www.linkedin.com/in/tyler-gilman-991b84223/\" class=\"text-blue-600 hover:underline\">LinkedIn</a></li><li><a href=\"https://www.linkedin.com/in/tyler-gilman-991b84223/\" class=\"text-blue-600 hover:underline\">X</a></li>Send me an email at _________</ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -138,7 +138,7 @@ func projectsSVG() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" stroke=\"#000000\" stroke-width=\"2\" stroke-linecap=\"round\"><!-- Left figure --><circle cx=\"8\" cy=\"6\" r=\"2\"></circle> <line x1=\"8\" y1=\"8\" x2=\"8\" y2=\"16\"></line> <line x1=\"5\" y1=\"12\" x2=\"11\" y2=\"12\"></line> <line x1=\"6\" y1=\"20\" x2=\"8\" y2=\"16\"></line> <line x1=\"10\" y1=\"20\" x2=\"8\" y2=\"16\"></line><!-- Right figure --><circle cx=\"16\" cy=\"6\" r=\"2\"></circle> <line x1=\"16\" y1=\"8\" x2=\"16\" y2=\"16\"></line> <line x1=\"13\" y1=\"12\" x2=\"19\" y2=\"12\"></line> <line x1=\"14\" y1=\"20\" x2=\"16\" y2=\"16\"></line> <line x1=\"18\" y1=\"20\" x2=\"16\" y2=\"16\"></line></g></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -164,7 +164,7 @@ func homeSVG() templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z\" fill=\"#000000\"></path></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -190,7 +190,7 @@ func blogSVG() templ.Component {
 			templ_7745c5c3_Var7 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" xmlns=\"http://www.w3.org/2000/svg\"><g fill=\"none\" stroke=\"#000000\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z\"></path> <line x1=\"7\" y1=\"9\" x2=\"17\" y2=\"9\"></line> <line x1=\"7\" y1=\"13\" x2=\"17\" y2=\"13\"></line> <line x1=\"7\" y1=\"17\" x2=\"12\" y2=\"17\"></line></g></svg>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -217,7 +217,7 @@ func Modal(content templ.Component, isFullPage bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if isFullPage {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html> <html lang=\"en\"><head><title>Nereus Tech</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"/public/styles.css\"><script src=\"https://code.jquery.com/jquery-3.7.1.min.js\" integrity=\"sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=\" crossorigin=\"anonymous\"></script><script src=\"https://unpkg.com/alpinejs\" defer></script><script src=\"https://unpkg.com/htmx.org@1.9.9\" defer></script><script src=\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js\"></script></head><body class=\"antialiased\"><div class=\"bg-gray-100 min-h-screen flex items-center justify-center\"><div id=\"modal-content\" class=\"bg-white rounded-2xl w-full max-w-md p-6 shadow-lg\"><a href=\"/close-modal\" class=\"px-4 bg-gray-300 hover:bg-gray-400 rounded-lg flex items-center inline-block\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 mr-2\" viewBox=\"0 0 20 20\" fill=\"currentColor\"><path fill-rule=\"evenodd\" d=\"M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z\" clip-rule=\"evenodd\"></path></svg> Back</a><div id=\"modal-body\" class=\"mt-8\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -225,12 +225,12 @@ func Modal(content templ.Component, isFullPage bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></body></html>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 11)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modal-container\"><div id=\"modal-overlay\" class=\"fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end sm:items-center justify-center opacity-0 transition-opacity duration-300 ease-in-out\" hx-get=\"/close-modal\" hx-target=\"#modal-container\" hx-swap=\"outerHTML\" hx-trigger=\"click\"><div id=\"modal-content\" class=\"bg-white rounded-t-2xl sm:rounded-2xl w-full sm:w-96 max-h-[80vh] sm:max-h-[90vh] p-6 shadow-lg overflow-y-auto transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-300 ease-in-out\"><a href=\"/close-modal\" hx-get=\"/close-modal\" hx-target=\"#modal-container\" hx-swap=\"outerHTML\" class=\"absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-2xl\">&times;</a><div id=\"modal-body\" class=\"mt-8\">")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -238,7 +238,7 @@ func Modal(content templ.Component, isFullPage bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 12)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div><script>\n            document.querySelector('#modal-content').addEventListener('click', function(event) {\n                event.stopPropagation();\n            }, false);\n        </script>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -265,7 +265,7 @@ func MainNavBar(pageMode string) templ.Component {
 			templ_7745c5c3_Var9 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 13)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"nav_wrapper\" hx-boost=\"true\" class=\"mx-auto border-b border-gray-200\"><input type=\"hidden\" id=\"page_mode_input\" name=\"page_mode\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -278,7 +278,7 @@ func MainNavBar(pageMode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 14)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div id=\"page_mode_menu\" class=\"mx-auto flex justify-center space-x-4\"><a hx-get=\"/home\" href=\"/home\" hx-target=\"#content\" hx-push-url=\"true\" hx-swap=\"outerHTML\" class=\"nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md\"><div class=\"flex flex-col items-center justify-center text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -286,7 +286,7 @@ func MainNavBar(pageMode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 15)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Home</div><div class=\"absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out\"></div></a> <a hx-get=\"/projects\" href=\"/projects\" hx-target=\"#content\" hx-push-url=\"true\" hx-swap=\"outerHTML\" class=\"nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md\"><div class=\"flex flex-col items-center justify-center text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -294,7 +294,7 @@ func MainNavBar(pageMode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 16)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Projects</div><div class=\"absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out\"></div></a> <a hx-get=\"/blog\" href=\"/blog\" hx-target=\"#content\" hx-push-url=\"true\" hx-swap=\"outerHTML\" class=\"nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md\"><div class=\"flex flex-col items-center justify-center text-center\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -302,7 +302,7 @@ func MainNavBar(pageMode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 17)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("Blog</div><div class=\"absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out\"></div></a></div></div><script>\n\n  (function() {\n    function updateSelectedMode(path) {\n      const menuItems = document.querySelectorAll('.nav-item');\n      menuItems.forEach(item => {\n        const underline = item.querySelector('div:last-child');\n        if (item.getAttribute('hx-get') === path) {\n          underline.classList.remove('scale-x-0');\n          underline.classList.add('scale-x-100');\n          item.classList.add('text-red-400');\n        } else {\n          underline.classList.remove('scale-x-100');\n          underline.classList.add('scale-x-0');\n          item.classList.remove('text-red-400');\n        }\n      });\n    }\n\n    function initializeNavBar() {\n      const currentPath = window.location.pathname;\n      updateSelectedMode(currentPath);\n    }\n\n    // Initialize on page load\n    initializeNavBar();\n\n    // Update on HTMX after-settle event\n    document.body.addEventListener('htmx:afterSettle', function(event) {\n      const currentPath = window.location.pathname;\n      updateSelectedMode(currentPath);\n    });\n  })();\n  function initializeTooltips() {\n    const tooltipTriggerList = document.querySelectorAll('[data-tooltip]');\n    tooltipTriggerList.forEach(triggerEl => {\n      const tooltipText = triggerEl.getAttribute('data-tooltip');\n      const tooltipEl = document.createElement('div');\n      tooltipEl.textContent = tooltipText;\n      tooltipEl.className = 'absolute z-10 px-3 py-2 text-sm font-medium text-white bg-gray-900 rounded-lg shadow-sm transition-opacity duration-300 tooltip dark:bg-gray-700 invisible opacity-0';\n      document.body.appendChild(tooltipEl);\n\n      function positionTooltip() {\n        const triggerRect = triggerEl.getBoundingClientRect();\n        const tooltipRect = tooltipEl.getBoundingClientRect();\n        \n        const top = triggerRect.bottom + window.scrollY + 10; // 10px below the button\n        const left = triggerRect.left + window.scrollX + (triggerRect.width / 2) - (tooltipRect.width / 2);\n\n        tooltipEl.style.top = `${top}px`;\n        tooltipEl.style.left = `${left}px`;\n      }\n\n      triggerEl.addEventListener('mouseenter', () => {\n        tooltipEl.classList.remove('invisible');\n        positionTooltip();\n        setTimeout(() => tooltipEl.classList.remove('opacity-0'), 10);\n      });\n\n      triggerEl.addEventListener('mouseleave', () => {\n        tooltipEl.classList.add('opacity-0');\n        setTimeout(() => tooltipEl.classList.add('invisible'), 300);\n      });\n\n      // Reposition tooltip on window resize\n      window.addEventListener('resize', positionTooltip);\n    });\n  }\n\n  // Call initializeTooltips on page load and after HTMX content updates\n  document.addEventListener('DOMContentLoaded', initializeTooltips);\n  document.body.addEventListener('htmx:afterSettle', initializeTooltips);\n  </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
