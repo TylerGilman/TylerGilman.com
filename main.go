@@ -109,6 +109,9 @@ func main() {
 	// Static file handling
 	router.Handle("/public/*", public())
 
+	// Static file handling
+	router.Handle("/public/*", public())
+
 	// Start the HTTPS server
 	slog.Info("HTTPS server starting", "listenAddr", server.Addr)
 	if err := server.ListenAndServeTLS("", ""); err != nil {
