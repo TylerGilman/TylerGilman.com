@@ -5,6 +5,6 @@ import (
 	"os"
 )
 
-func public() http.Handler {
+func Public() http.Handler {
 	return http.StripPrefix("/public/", http.FileServerFS(os.DirFS("public")))
 }

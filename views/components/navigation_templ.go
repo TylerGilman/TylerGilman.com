@@ -26,7 +26,7 @@ func Navigation(page_mode string) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"border-b border-gray-800 py-2 relative\"><div class=\"container mx-auto px-4\"><!-- Top row: Logo, Main Navigation, Icons/Hamburger --><div class=\"flex justify-between items-center\"><!-- Logo --><div href=\"/home\" hx-get=\"/home\" hx-push-url=\"true\" hx-swap=\"outerHTML\" hx-target=\"#content\" id=\"logo-wrapper\" class=\"flex items-center group\"><div class=\"relative overflow-hidden flex-shrink-0\"><img src=\"/public/Nereus.png\" alt=\"Nereus Logo\" class=\"h-8 w-8 md:h-12 md:w-12 object-contain transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12\"></div><a class=\"text-xl md:text-2xl font-bold text-red-400 ml-2 transition-transform duration-300 ease-in-out group-hover:scale-110 group-hover:rotate-12\">ereus Technology</a></div><!-- Main Navigation --><div class=\"flex-1 px-4\"><div class=\"flex justify-center md:justify-start\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"border-b border-gray-800 py-2 relative\"><div class=\"container mx-auto px-4 items-center\"><!-- Top row: Logo, Main Navigation, Icons/Hamburger --><div class=\"flex justify-between items-center\"><!-- Logo --><style>\n  #logo-wrapper {\n    display: inline-flex;\n    align-items: center;\n    text-decoration: none;\n  }\n\n  #logo-image {\n    height: 2rem;\n    width: auto;\n    min-width: 2rem;\n    transition: transform 0.3s ease-in-out;\n  }\n\n  #logo-text {\n    font-size: 1.25rem;\n    font-weight: bold;\n    color: #f87171;\n    margin-left: 0.5rem;\n  }\n\n  /* Disable hover effects on mobile */\n  @media (hover: hover) and (pointer: fine) {\n    #logo-wrapper:hover #logo-image {\n      transform: scale(1.1) rotate(12deg);\n    }\n  }\n\n  @media (min-width: 768px) {\n    #logo-image {\n      height: 3rem;\n      min-width: 3rem;\n    }\n\n    #logo-text {\n      font-size: 1.5rem;\n    }\n  }\n</style><a href=\"/home\" hx-get=\"/home\" hx-push-url=\"true\" hx-swap=\"outerHTML\" hx-target=\"#content\" id=\"logo-wrapper\"><img src=\"/public/Nereus.png\" alt=\"Nereus Logo\" id=\"logo-image\"> <span id=\"logo-text\" class=\"mt-4 ml-0\">ereus</span></a><!-- Main Navigation --><div class=\"flex-1 px-4\"><div class=\"flex justify-center md:justify-start\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -272,7 +272,7 @@ func MainNavBar(pageMode string) templ.Component {
 		var templ_7745c5c3_Var10 string
 		templ_7745c5c3_Var10, templ_7745c5c3_Err = templ.JoinStringErrs(pageMode)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/navigation.templ`, Line: 284, Col: 78}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `views/components/navigation.templ`, Line: 322, Col: 78}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var10))
 		if templ_7745c5c3_Err != nil {

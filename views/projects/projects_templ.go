@@ -76,7 +76,7 @@ func Partial(contributions []models.ContributionDay) templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" class=\"container mx-auto px-4 py-8 flex flex-col  gap-8\"><div class=\"w-full \"><div class=\"mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full\"><h1>Projects</h1><li>Safe Face </li><li>This Website </li><li>Sports Betting Arbitrage </li><li>Procedural Animation - js-animals (Work in progress only have a fish) </li><div class=\"project-container mb-8\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" class=\"container mx-auto px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl flex flex-col items-center justify-start min-h-screen py-8\"><div class=\"w-full \"><div class=\"mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full\"><h1>Projects</h1><li>Safe Face </li><li>This Website </li><li>Sports Betting Arbitrage </li><li>Procedural Animation - js-animals (Work in progress only have a fish) </li><div class=\"project-container mb-8\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
