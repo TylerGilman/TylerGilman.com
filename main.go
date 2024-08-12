@@ -78,7 +78,7 @@ func main() {
 	// Public routes
 	router.Get("/modal/more-options", handlers.Make(handlers.HandleOptionsModal))
 	router.Get("/modal/notifications", handlers.Make(handlers.HandleNotificationsModal))
-	router.Get("/modal/user-profile", handlers.Make(handlers.HandleUserProfileModal))
+	router.Get("/modal/contact", handlers.Make(handlers.HandleContactModal))
 	router.Get("/close-modal", handlers.Make(handlers.HandleCloseModal))
 	router.Get("/home", handlers.Make(handlers.HandleHome))
 	router.Get("/projects", handlers.Make(handlers.HandleProjects))
