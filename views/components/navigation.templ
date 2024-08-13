@@ -106,22 +106,74 @@ templ Navigation(page_mode string) {
         </div>
     </nav>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
+<script>
+(function() {
+    function updateSelectedMode(path) {
+        const menuItems = document.querySelectorAll('.nav-item');
+        menuItems.forEach(item => {
+            const underline = item.querySelector('div:last-child');
+            if (item.getAttribute('hx-get') === path) {
+                underline.classList.remove('scale-x-0');
+                underline.classList.add('scale-x-100');
+                item.classList.add('text-red-400');
+            } else {
+                underline.classList.remove('scale-x-100');
+                underline.classList.add('scale-x-0');
+                item.classList.remove('text-red-400');
+            }
+        });
+    }
+
+    function initializeNavBar() {
+        const currentPath = window.location.pathname;
+        updateSelectedMode(currentPath);
+    }
+
+    // Initialize on page load
+    initializeNavBar();
+
+    // Update on HTMX after-settle event
+    document.body.addEventListener('htmx:afterSettle', function(event) {
+        const currentPath = window.location.pathname;
+        updateSelectedMode(currentPath);
+    });
+})();
+
+document.addEventListener('DOMContentLoaded', function() {
     var mobileMenuButton = document.getElementById('mobile-menu-button');
     var mobileExtraOptions = document.getElementById('mobile-extra-options');
 
-    function toggleMobileMenu() {
+    function toggleMobileMenu(event) {
+        event.stopPropagation();
         mobileExtraOptions.classList.toggle('mobile-menu-open');
         document.body.classList.toggle('menu-open');
+        
+        if (mobileExtraOptions.classList.contains('mobile-menu-open')) {
+            document.addEventListener('click', closeMobileMenuOutside);
+        } else {
+            document.removeEventListener('click', closeMobileMenuOutside);
+        }
+    }
+
+    function closeMobileMenuOutside(event) {
+        if (!mobileExtraOptions.contains(event.target) && event.target !== mobileMenuButton) {
+            mobileExtraOptions.classList.remove('mobile-menu-open');
+            document.body.classList.remove('menu-open');
+            document.removeEventListener('click', closeMobileMenuOutside);
+        }
     }
 
     mobileMenuButton.addEventListener('click', toggleMobileMenu);
+
+    mobileExtraOptions.addEventListener('click', function(event) {
+        event.stopPropagation();
+    });
 
     window.addEventListener('resize', function() {
         if (window.innerWidth > 768) {
             mobileExtraOptions.classList.remove('mobile-menu-open');
             document.body.classList.remove('menu-open');
+            document.removeEventListener('click', closeMobileMenuOutside);
         }
     });
 });
@@ -215,8 +267,8 @@ templ ContactModalContent() {
         <ul class="space-y-2">
             <li><a href="https://github.com/TylerGilman" class="text-blue-600 hover:underline">Github</a></li>
             <li><a href="https://www.linkedin.com/in/tyler-gilman-991b84223/" class="text-blue-600 hover:underline">LinkedIn</a></li>
-            <li><a href="https://www.linkedin.com/in/tyler-gilman-991b84223/" class="text-blue-600 hover:underline">X</a></li>
-            Send me an email at _________
+            <li><a href="https://x.com/TylerGilman01" class="text-blue-600 hover:underline">X</a></li>
+            Send me an email @ nereustech@gmail.com
         </ul>
     </div>
 }
@@ -269,10 +321,7 @@ templ Modal(content templ.Component, isFullPage bool) {
                 <meta charset="UTF-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
                 <link rel="stylesheet" href="/public/styles.css"/>
-                <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-                <script src="https://unpkg.com/alpinejs" defer></script>
                 <script src="https://unpkg.com/htmx.org@1.9.9" defer></script>
-                <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
             </head>
             <body class="antialiased">
             <div class="bg-gray-100 min-h-screen flex items-center justify-center">
@@ -317,27 +366,33 @@ templ Modal(content templ.Component, isFullPage bool) {
 templ MainNavBar(pageMode string) {
   <div id="nav_wrapper" hx-boost="true" class="mx-auto border-b border-gray-200">
     <input type="hidden" id="page_mode_input" name="page_mode" value={pageMode} />
-    <div id="page_mode_menu" class="mx-auto flex justify-center space-x-4">
-      <a hx-get="/home" href="/home" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md">
+    <div id="page_mode_menu" class="mx-auto flex justify-center space-x-2 md:space-x-4">
+      <a hx-get="/home" href="/home" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-1 md:py-2 px-2 md:px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md">
       <div class="flex flex-col items-center justify-center text-center">
-        @homeSVG()
-        Home
+        <div class="w-5 h-5 md:w-6 md:h-6">
+          @homeSVG()
+        </div>
+        <span class="text-xs md:text-sm">Home</span>
       </div>
         <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
       </a>
 
-      <a hx-get="/projects" href="/projects" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md">
+      <a hx-get="/projects" href="/projects" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-1 md:py-2 px-2 md:px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md">
       <div class="flex flex-col items-center justify-center text-center">
-        @projectsSVG()
-        Projects
+        <div class="w-5 h-5 md:w-6 md:h-6">
+          @projectsSVG()
+        </div>
+        <span class="text-xs md:text-sm">Projects</span>
       </div>
         <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
       </a>
 
-      <a hx-get="/blog" href="/blog" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-2 px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md">
+      <a hx-get="/blog" href="/blog" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item relative py-1 md:py-2 px-2 md:px-4 cursor-pointer hover:bg-gray-100 rounded-md transition-all duration-300 ease-in-out hover:scale-110 hover:shadow-md">
       <div class="flex flex-col items-center justify-center text-center">
-        @blogSVG()
-        Blog
+        <div class="w-5 h-5 md:w-6 md:h-6">
+          @blogSVG()
+        </div>
+        <span class="text-xs md:text-sm">Blog</span>
       </div>
         <div class="absolute bottom-0 left-0 w-full h-0.5 bg-red-400 transform scale-x-0 transition-transform duration-300 ease-in-out"></div>
       </a>
@@ -345,37 +400,7 @@ templ MainNavBar(pageMode string) {
   </div>
   <script>
 
-  (function() {
-    function updateSelectedMode(path) {
-      const menuItems = document.querySelectorAll('.nav-item');
-      menuItems.forEach(item => {
-        const underline = item.querySelector('div:last-child');
-        if (item.getAttribute('hx-get') === path) {
-          underline.classList.remove('scale-x-0');
-          underline.classList.add('scale-x-100');
-          item.classList.add('text-red-400');
-        } else {
-          underline.classList.remove('scale-x-100');
-          underline.classList.add('scale-x-0');
-          item.classList.remove('text-red-400');
-        }
-      });
-    }
 
-    function initializeNavBar() {
-      const currentPath = window.location.pathname;
-      updateSelectedMode(currentPath);
-    }
-
-    // Initialize on page load
-    initializeNavBar();
-
-    // Update on HTMX after-settle event
-    document.body.addEventListener('htmx:afterSettle', function(event) {
-      const currentPath = window.location.pathname;
-      updateSelectedMode(currentPath);
-    });
-  })();
   function initializeTooltips() {
     const tooltipTriggerList = document.querySelectorAll('[data-tooltip]');
     tooltipTriggerList.forEach(triggerEl => {
