@@ -43,7 +43,6 @@ templ Partial(contributions []models.ContributionDay) {
     let ctx = null;
     let fishes = [];
     let isInitialized = false;
-    let initializeTimeout = null; // Declare initializeTimeout here
 
     const CANVAS_WIDTH = 600;
     const CANVAS_HEIGHT = 400;
@@ -311,6 +310,22 @@ templ Partial(contributions []models.ContributionDay) {
         console.log(`Initialized ${fishes.length} fish`);
     }
 
+    function initializeFishes() {
+        const numFish = 10;
+        fishes = [];
+        const minSpeed = 0.5;
+        const maxSpeed = 2.5;
+
+        for (let i = 0; i < numFish; i++) {
+            const x = Math.random() * CANVAS_WIDTH;
+            const y = Math.random() * CANVAS_HEIGHT;
+            const color = getRandomColor();
+            const speed = getRandomSpeed(minSpeed, maxSpeed);
+            fishes.push(new Fish(x, y, color, speed));
+        }
+        console.log(`Initialized ${fishes.length} fish`);
+    }
+
     function initializeFishTank() {
         console.log('Initializing fish tank');
         if (isInitialized) {
@@ -382,46 +397,26 @@ templ Partial(contributions []models.ContributionDay) {
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
         }
-        if (initializeTimeout) {
-            clearTimeout(initializeTimeout);
-        }
         isInitialized = false;
         fishes = [];
         canvas = null;
         ctx = null;
     }
 
-    function debouncedInitializeFishTank() {
-        console.log('Debounced initialize called');
-        if (initializeTimeout) {
-            clearTimeout(initializeTimeout);
-        }
-        initializeTimeout = setTimeout(() => {
-            const fishtank = document.getElementById('fishtank');
-            if (fishtank) {
-                console.log('Fishtank element found, initializing');
-                initializeFishTank();
-            } else {
-                console.log('Fish tank element not found, skipping initialization');
-            }
-        }, 100);
-    }
-
-    function handleHtmxEvent(event) {
-        console.log(`HTMX event fired: ${event.type}`);
-        // Safely check for the presence of fishtank-container
-        const targetElement = event.detail && (event.detail.elt || event.detail.target);
-        if (targetElement && (targetElement.id === 'fishtank-container' || targetElement.querySelector('#fishtank-container'))) {
-            debouncedInitializeFishTank();
+    // Function to attempt initialization
+    function attemptInitialization() {
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            initializeFishTank();
+        } else {
+            document.addEventListener('DOMContentLoaded', initializeFishTank);
         }
     }
 
-    // Initialize fish tank on page load
-    document.addEventListener('DOMContentLoaded', debouncedInitializeFishTank);
+    // Attempt to initialize immediately
+    attemptInitialization();
 
-    // Handle HTMX events
-    document.body.addEventListener('htmx:afterSwap', handleHtmxEvent);
-    document.body.addEventListener('htmx:load', handleHtmxEvent);
+    // Also attempt initialization when the window loads, just in case
+    window.addEventListener('load', initializeFishTank);
 
     // Clean up when navigating away (if using HTMX for navigation)
     document.body.addEventListener('htmx:beforeCleanupElement', function(event) {
@@ -431,7 +426,7 @@ templ Partial(contributions []models.ContributionDay) {
         }
     });
 
-    console.log('Fish tank script loaded');
+    console.log('Fish tank script loaded and initialization attempted');
 })();
 </script>
 }
