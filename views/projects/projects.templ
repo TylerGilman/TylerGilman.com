@@ -22,32 +22,41 @@ templ Partial(contributions []models.ContributionDay) {
                 <li> Sports Betting Arbitrage </li> 
                 <li> Procedural Animation - js-animals (Work in progress only have a fish) </li> 
 
-                <div class="project-container mb-8">
-                    @contributionGraph(contributions)
-        <div id="fishtank-container" class="m-5 w-full md:w-1/2 h-120 md:h-auto">
-            <h2 class="font-black text-orange-400 text-center justify-center mb-0">My Fish Tank</h2>
-            <canvas id="fishtank" class="w-full h-full border-4 border-orange-400 rounded-lg"></canvas>
-        </div>
-
-                    @githubButton()
-                </div>
-
-            </div>
+          <div class="flex flex-col items-center justify-center w-full">
+              <div id="fishtank-container" class="flex flex-col items-center justify-center m-5 w-[600px]">
+                  <h2 class="font-black text-orange-400 text-center mb-2">My Fish Tank</h2>
+                  <canvas id="fishtank" class="border-4 border-orange-400 rounded-lg w-[600px] h-[400px]"></canvas>
+              </div>
+              <div class="project-container mb-8 w-full flex flex-col items-center">
+                  @contributionGraph(contributions)
+                  @githubButton()
+              </div>
+          </div>
+</div>
 
         </div>
     </div>
-<script>
+  <script>
 (function() {
     let animationFrameId = null;
     let canvas = null;
     let ctx = null;
     let fishes = [];
+    let isInitialized = false;
+    let initializeTimeout = null; // Declare initializeTimeout here
 
-    function resizeCanvas() {
-        const container = document.getElementById('fishtank-container');
-        if (container && canvas) {
-            canvas.width = container.offsetWidth;
-            canvas.height = container.offsetHeight;
+    const CANVAS_WIDTH = 600;
+    const CANVAS_HEIGHT = 400;
+
+    function setCanvasSize() {
+        if (canvas) {
+            canvas.width = CANVAS_WIDTH;
+            canvas.height = CANVAS_HEIGHT;
+            canvas.style.width = CANVAS_WIDTH + 'px';
+            canvas.style.height = CANVAS_HEIGHT + 'px';
+            console.log(`Canvas size set to ${CANVAS_WIDTH}x${CANVAS_HEIGHT}`);
+        } else {
+            console.error('Cannot set canvas size: canvas is null');
         }
     }
 
@@ -286,28 +295,45 @@ templ Partial(contributions []models.ContributionDay) {
         return Math.random() * (max - min) + min;
     }
 
-    function initializeFishTank() {
-        canvas = document.getElementById('fishtank');
-        if (!canvas) return; // Exit if canvas is not found
-
-        ctx = canvas.getContext('2d');
-
-        window.removeEventListener('resize', resizeCanvas);
-        window.addEventListener('resize', resizeCanvas);
-        resizeCanvas();
-
+    function initializeFishes() {
         const numFish = 10;
         fishes = [];
         const minSpeed = 0.5;
         const maxSpeed = 2.5;
 
         for (let i = 0; i < numFish; i++) {
-            const x = Math.random() * canvas.width;
-            const y = Math.random() * canvas.height;
+            const x = Math.random() * CANVAS_WIDTH;
+            const y = Math.random() * CANVAS_HEIGHT;
             const color = getRandomColor();
             const speed = getRandomSpeed(minSpeed, maxSpeed);
             fishes.push(new Fish(x, y, color, speed));
         }
+        console.log(`Initialized ${fishes.length} fish`);
+    }
+
+    function initializeFishTank() {
+        console.log('Initializing fish tank');
+        if (isInitialized) {
+            console.log('Fish tank already initialized, skipping');
+            return;
+        }
+
+        canvas = document.getElementById('fishtank');
+        if (!canvas) {
+            console.error('Fish tank canvas not found');
+            return;
+        }
+
+        console.log('Canvas found:', canvas);
+
+        ctx = canvas.getContext('2d');
+        if (!ctx) {
+            console.error('Failed to get 2D context from canvas');
+            return;
+        }
+
+        setCanvasSize();
+        initializeFishes();
 
         let mouseX = null;
         let mouseY = null;
@@ -324,7 +350,14 @@ templ Partial(contributions []models.ContributionDay) {
         });
 
         function draw() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            if (!document.body.contains(canvas)) {
+                console.log('Canvas removed from DOM, stopping animation');
+                cancelAnimationFrame(animationFrameId);
+                isInitialized = false;
+                return;
+            }
+
+            ctx.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
             for (const fish of fishes) {
                 fish.update(mouseX, mouseY);
@@ -338,32 +371,67 @@ templ Partial(contributions []models.ContributionDay) {
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
         }
+        console.log('Starting draw loop');
         draw();
+        isInitialized = true;
+        console.log('Fish tank initialization complete');
     }
 
-    // Clean up function to stop animation when leaving the page
     function cleanUpFishTank() {
+        console.log('Cleaning up fish tank');
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
         }
-        window.removeEventListener('resize', resizeCanvas);
+        if (initializeTimeout) {
+            clearTimeout(initializeTimeout);
+        }
+        isInitialized = false;
+        fishes = [];
+        canvas = null;
+        ctx = null;
+    }
+
+    function debouncedInitializeFishTank() {
+        console.log('Debounced initialize called');
+        if (initializeTimeout) {
+            clearTimeout(initializeTimeout);
+        }
+        initializeTimeout = setTimeout(() => {
+            const fishtank = document.getElementById('fishtank');
+            if (fishtank) {
+                console.log('Fishtank element found, initializing');
+                initializeFishTank();
+            } else {
+                console.log('Fish tank element not found, skipping initialization');
+            }
+        }, 100);
+    }
+
+    function handleHtmxEvent(event) {
+        console.log(`HTMX event fired: ${event.type}`);
+        // Safely check for the presence of fishtank-container
+        const targetElement = event.detail && (event.detail.elt || event.detail.target);
+        if (targetElement && (targetElement.id === 'fishtank-container' || targetElement.querySelector('#fishtank-container'))) {
+            debouncedInitializeFishTank();
+        }
     }
 
     // Initialize fish tank on page load
-    document.addEventListener('DOMContentLoaded', initializeFishTank);
+    document.addEventListener('DOMContentLoaded', debouncedInitializeFishTank);
 
-    // Initialize or reinitialize fish tank after HTMX content swap
-    document.body.addEventListener('htmx:afterSwap', function(event) {
-        // Short delay to ensure DOM is updated
-        setTimeout(initializeFishTank, 0);
-    });
+    // Handle HTMX events
+    document.body.addEventListener('htmx:afterSwap', handleHtmxEvent);
+    document.body.addEventListener('htmx:load', handleHtmxEvent);
 
     // Clean up when navigating away (if using HTMX for navigation)
     document.body.addEventListener('htmx:beforeCleanupElement', function(event) {
         if (event.target.id === 'fishtank-container') {
+            console.log('htmx:beforeCleanupElement event fired for fish tank');
             cleanUpFishTank();
         }
     });
+
+    console.log('Fish tank script loaded');
 })();
 </script>
 }
