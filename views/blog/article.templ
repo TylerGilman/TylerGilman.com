@@ -14,8 +14,8 @@ templ FullArticle(article Article) {
                 <div class="p-6 border-t-2 shadow">
                     <h1 class="text-3xl font-bold mb-2">{article.Title}</h1>
                     <p class="text-gray-600 text-sm mb-4">By {article.Author} on {article.Date.Format("Jan 2, 2006")} | Category: {article.Category}</p>
-                    <div class="prose max-w-none text-lg">
-                        {article.Content}
+                    <div class="prose max-w-none">
+                        @templ.Raw(article.HTMLContent)
                     </div>
                 </div>
             </article>

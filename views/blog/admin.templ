@@ -2,46 +2,133 @@ package blog
 
 import "github.com/TylerGilman/nereus_main_site/views/layouts"
 
-templ AdminBlogPost(adminPass string) {
-	@layouts.Base("Admin - New Blog Post") {
-		<div class="container mx-auto px-4 py-8">
-			<h1 class="text-2xl font-bold mb-4">Create New Blog Post</h1>
-			<form hx-post="/admin/blog/create" hx-target="#message" class="space-y-4">
-				<input type="hidden" name="admin_pass" value={ adminPass }/>
-				<div>
-					<label for="title" class="block mb-1">Title</label>
-					<input type="text" id="title" name="title" required class="w-full p-2 border rounded"/>
-				</div>
-				<div>
-					<label for="author" class="block mb-1">Author</label>
-					<input type="text" id="author" name="author" required class="w-full p-2 border rounded"/>
-				</div>
-				<div>
-					<label for="category" class="block mb-1">Category</label>
-					<select id="category" name="category" required class="w-full p-2 border rounded">
-						<option value="Life">Life</option>
-						<option value="Technology">Technology</option>
-						<option value="Philosophy">Philosophy</option>
-						<option value="Random">Random</option>
-					</select>
-				</div>
-				<div>
-					<label for="summary" class="block mb-1">Summary</label>
-					<textarea id="summary" name="summary" required class="w-full p-2 border rounded" rows="3"></textarea>
-				</div>
-				<div>
-					<label for="content" class="block mb-1">Content</label>
-					<textarea id="content" name="content" required class="w-full p-2 border rounded" rows="10"></textarea>
-				</div>
-				<div>
-					<label for="imageUrl" class="block mb-1">Image URL</label>
-					<input type="url" id="imageUrl" name="imageUrl" class="w-full p-2 border rounded"/>
-				</div>
-				<div>
-					<button type="submit" class="bg-red-400 text-white p-2 rounded hover:bg-red-500">Create Post</button>
-				</div>
-			</form>
-			<div id="message" class="mt-4"></div>
-		</div>
-	}
+templ AdminPage(adminPass string) {
+    @layouts.Base("admin") {
+        <div id="content" class="container mx-auto px-4 py-8">
+            <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+                <h1 class="text-2xl font-bold mb-6">Create Blog Post</h1>
+                
+                <form hx-post="/admin/blog" class="space-y-6">
+                    <input type="hidden" name="admin_pass" value={adminPass}/>
+
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" 
+                            id="title" 
+                            name="title" 
+                            required 
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+                    </div>
+
+                    <div>
+                        <label for="author" class="block text-sm font-medium text-gray-700">Author</label>
+                        <input type="text" 
+                            id="author" 
+                            name="author" 
+                            required 
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+                    </div>
+
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                        <select id="category" 
+                            name="category" 
+                            required 
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            <option value="Life">Life</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Programming">Programming</option>
+                            <option value="Projects">Projects</option>
+                            <option value="Thoughts">Thoughts</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="summary" class="block text-sm font-medium text-gray-700">Summary</label>
+                        <textarea id="summary" 
+                            name="summary" 
+                            required 
+                            rows="3"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="markdownEditor" class="block text-sm font-medium text-gray-700">Content (Markdown)</label>
+                        <div class="mt-1 flex gap-4">
+                            <textarea 
+                                id="markdownEditor" 
+                                name="content" 
+                                rows="20" 
+                                required
+                                oninput="updateMarkdownPreview()"
+                                class="block w-1/2 border border-gray-300 rounded-md shadow-sm p-2 font-mono"></textarea>
+                            <div id="markdownPreview" 
+                                class="w-1/2 p-4 border border-gray-300 rounded-md prose prose-slate prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-a:text-blue-600 hover:prose-a:text-blue-500 max-w-none bg-white overflow-y-auto"
+                                style="height: 500px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button type="submit" 
+                            class="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-colors">
+                            Publish Post
+                        </button>
+                    </div>
+                </form>
+
+                <div id="message" class="mt-4"></div>
+            </div>
+        </div>
+
+        <script>
+            const defaultMarkdown = `# Example Title
+
+## This is a subtitle
+
+This is a paragraph with **bold** and *italic* text.
+
+### Code Example
+\`\`\`python
+def hello_world():
+    print("Hello, World!")
+\`\`\`
+
+- List item 1
+- List item 2
+  - Nested item
+
+> This is a blockquote
+
+[Link Example](https://example.com)`;
+
+            function updateMarkdownPreview() {
+                const editor = document.getElementById('markdownEditor');
+                const preview = document.getElementById('markdownPreview');
+                if (editor && preview) {
+                    preview.innerHTML = marked.parse(editor.value);
+                    // Highlight code blocks
+                    preview.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightElement(block);
+                    });
+                }
+            }
+
+            // Initialize editor and preview
+            window.onload = function() {
+                const editor = document.getElementById('markdownEditor');
+                if (editor) {
+                    editor.value = defaultMarkdown;
+                    updateMarkdownPreview();
+                }
+            }
+        </script>
+    }
+}
+
+templ AdminSuccess() {
+    <div class="text-green-600 p-4 bg-green-50 rounded-md">
+        Blog post published successfully!
+        <a href="/blog" class="text-blue-600 hover:underline ml-2">View Blog</a>
+    </div>
 }

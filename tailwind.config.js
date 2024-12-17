@@ -1,5 +1,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [ "./**/*.html", "./**/*.templ", "./**/*.go", ],
-  safelist: [],
+  theme: {},
+  plugins: [
+    require('@tailwindcss/typography'),
+  ],
 }
