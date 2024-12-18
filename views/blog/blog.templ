@@ -12,22 +12,22 @@ templ Blog(mainArticles []Article, sidebarArticles []Article, isAdmin bool) {
 }
 
 templ Partial(mainArticles []Article, sidebarArticles []Article) {
-  <div id="content" class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl flex flex-col items-center justify-start min-h-screen py-8">
-        <div class="mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full">
-            <h2 class="text-2xl font-bold mb-4">Search Articles</h2>
+    <div id="content" class="blog-container">
+        <div class="blog-search-container">
+            <h2 class="search-heading">Search Articles</h2>
             <form hx-boost="true" hx-target="#main-articles" hx-indicator="#search-indicator" action="/blog/search" method="get">
-                <div class="flex flex-wrap -mx-2">
-                    <div class="w-full md:w-1/2 px-2 mb-4">
-                        <input type="search" name="query" placeholder="Search..." 
-                              class="w-full p-2 border rounded"
-                              hx-get="/blog/search"
-                              hx-trigger="input changed delay:500ms, search"
-                              hx-target="#main-articles"
-                              hx-indicator="#search-indicator"/>
+                <div class="search-row">
+                    <div class="search-input-group">
+                        <input type="search" name="query" placeholder="Search..."
+                               class="search-input"
+                               hx-get="/blog/search"
+                               hx-trigger="input changed delay:500ms, search"
+                               hx-target="#main-articles"
+                               hx-indicator="#search-indicator"/>
                     </div>
-                    <div class="w-full md:w-1/4 px-2 mb-4">
-                        <select name="category" 
-                                class="w-full p-2 border rounded"
+                    <div class="category-input-group">
+                        <select name="category"
+                                class="category-select"
                                 hx-get="/blog/search"
                                 hx-trigger="change"
                                 hx-target="#main-articles"
@@ -40,35 +40,35 @@ templ Partial(mainArticles []Article, sidebarArticles []Article) {
                         </select>
                     </div>
                     <noscript>
-                    <div class="w-full md:w-1/4 px-2 mb-4">
-                        <button type="submit" class="w-full bg-red-400 text-white p-2 rounded hover:bg-red-500">Search</button>
-                    </div>
+                        <div class="search-button-group">
+                            <button type="submit" class="search-button">Search</button>
+                        </div>
                     </noscript>
                 </div>
             </form>
-            <div id="search-indicator" class="htmx-indicator">Searching...</div>
+            <div id="search-indicator" class="search-indicator">Searching...</div>
         </div>
 
-        <div class="w-full flex flex-col lg:flex-row lg:space-x-8">
-            <!-- Main content (2/3 width on large screens) -->
-            <div id="main-articles" class="w-full lg:w-2/3">
-                @MainArticles(mainArticles)
-            </div>
-
-            <!-- Sidebar with smaller article previews (1/3 width on large screens) -->
-            <div class="w-full lg:w-1/3 mt-8 lg:mt-0">
-                <div class="space-y-4 border-t-2">
+        <div class="blog-main-layout">
+            <!-- Sidebar first in HTML for mobile-top placement -->
+            <div class="sidebar">
+                <h2 class="sidebar-heading">More Articles</h2>
+                <div class="sidebar-article-list">
                     for _, article := range sidebarArticles {
                         @smallArticle(article)
                     }
                 </div>
+            </div>
+
+            <div id="main-articles" class="article-list">
+                @MainArticles(mainArticles)
             </div>
         </div>
     </div>
 }
 
 templ MainArticles(articles []Article) {
-    <div class="border-t-2 space-y-8">
+    <div class="main-article-list">
         for _, article := range articles {
             @largeArticle(article)
         }
@@ -76,25 +76,27 @@ templ MainArticles(articles []Article) {
 }
 
 templ smallArticle(article Article) {
-    <article class="bg-white shadow-lg rounded-lg overflow-hidden">
-        <div class="p-4">
-            <h3 class="text-lg font-semibold mb-2">{article.Title}</h3>
-            <p class="text-gray-600 text-sm mb-2">{article.Category}</p>
-            <p class="text-gray-500 text-xs">{article.Date.Format("Jan 2, 2006")}</p>
+    <article class="sidebar-article">
+        <div class="sidebar-article-content">
+            <h3 class="sidebar-article-title">{article.Title}</h3>
+            <p class="sidebar-article-meta">{article.Category} • {article.Date.Format("Jan 2, 2006")}</p>
         </div>
     </article>
 }
 
 templ largeArticle(article Article) {
-    <article class="bg-white shadow-lg rounded-lg overflow-hidden">
+    <article class="article-card">
         if article.ImageUrl != "" {
-            <img src={article.ImageUrl} alt={article.Title} class="w-full h-64 object-cover"/>
+            <img src={article.ImageUrl} alt={article.Title} class="article-image"/>
         }
-        <div class="p-6">
-            <h2 class="text-2xl font-bold mb-2">{article.Title}</h2>
-            <p class="text-gray-600 text-sm mb-4">By {article.Author} on {article.Date.Format("Jan 2, 2006")}</p>
-            <p class="text-gray-700 mb-4">{article.Summary}</p>
-            <a href={templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID))} hx-get={string(templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID)))} hx-push-url="true" class="text-red-400 hover:underline">Read More</a>
+        <div class="article-content">
+            <h2 class="article-title">{article.Title}</h2>
+            <p class="article-meta">By {article.Author} on {article.Date.Format("Jan 2, 2006")}</p>
+            <p class="article-summary">{article.Summary}</p>
+            <a href={templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID))} 
+               hx-get={string(templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID)))} 
+               hx-push-url="true" 
+               class="read-more-link">Read More</a>
         </div>
     </article>
 }

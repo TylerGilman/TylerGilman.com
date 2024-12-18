@@ -108,7 +108,7 @@ router.Route("/admin", func(r chi.Router) {
 	})
 
 	// Static files
-	router.Get("/public/*", Public())
+  router.Handle("/public/*", Public())
 }
 
 func main() {
