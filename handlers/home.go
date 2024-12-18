@@ -9,10 +9,11 @@ import (
 
 func HandleHome(w http.ResponseWriter, r *http.Request) error {
     isAdmin := authpkg.IsAuthenticated(r)
-    isHtmxRequest := r.Header.Get("HX-Request") == "true"
 
-    if isHtmxRequest {
-        return Render(w, r, home.Partial())
-    }
-    return Render(w, r, home.Index(isAdmin))
+    renderer := NewPageRenderer(
+        home.Index(isAdmin),
+        home.Partial(),
+    )
+
+    return renderer.Render(w, r)
 }

@@ -52,25 +52,41 @@ func generateRandomKey(length int) (string, error) {
     return base64.StdEncoding.EncodeToString(bytes), nil
 }
 
+func ClearUserSession(w http.ResponseWriter, r *http.Request) error {
+    session, err := store.Get(r, "auth-session")
+    if err != nil {
+        // If we can't get the session, create a new one to ensure we clear anything that might exist
+        session = sessions.NewSession(store, "auth-session")
+    }
+    
+    // Clear all values
+    session.Values = make(map[interface{}]interface{})
+    
+    // Set the session to expire immediately
+    session.Options.MaxAge = -1
+    
+    return session.Save(r, w)
+}
+
 func SetUserSession(w http.ResponseWriter, r *http.Request) error {
     session, err := store.Get(r, "auth-session")
     if err != nil {
-        // Create a new session if there was an error getting the existing one
+        // If there's an error getting the session, create a new one
         session = sessions.NewSession(store, "auth-session")
     }
     
     session.Values["authenticated"] = true
     session.Values["last_active"] = time.Now()
-    return session.Save(r, w)
-}
-
-func ClearUserSession(w http.ResponseWriter, r *http.Request) error {
-    session, err := store.Get(r, "auth-session")
-    if err != nil {
-        return err
+    
+    // Ensure proper session configuration
+    session.Options = &sessions.Options{
+        Path:     "/",
+        MaxAge:   86400 * 7, // 7 days
+        HttpOnly: true,
+        Secure:   os.Getenv("ENV") != "development",
+        SameSite: http.SameSiteStrictMode,
     }
     
-    session.Options.MaxAge = -1 // This will delete the cookie
     return session.Save(r, w)
 }
 

@@ -16,7 +16,6 @@ import (
 
 func HandleBlog(w http.ResponseWriter, r *http.Request) error {
     r = setHtmxContext(r)
-    isHtmxRequest := r.Header.Get("HX-Request") == "true"
     isAdmin := authpkg.IsAuthenticated(r)
     slog.Info("HX-Request", "value", r.Context().Value(HtmxRequestKey))
 
@@ -31,10 +30,12 @@ func HandleBlog(w http.ResponseWriter, r *http.Request) error {
         sidebarArticles = sidebarArticles[:7]
     }
 
-    if isHtmxRequest {
-        return Render(w, r, blog.Partial(mainArticles, sidebarArticles))
-    }
-    return Render(w, r, blog.Blog(mainArticles, sidebarArticles, isAdmin))
+    renderer := NewPageRenderer(
+        blog.Blog(mainArticles, sidebarArticles, isAdmin),
+        blog.Partial(mainArticles, sidebarArticles),
+    )
+
+    return renderer.Render(w, r)
 }
 
 func HandleFullArticle(w http.ResponseWriter, r *http.Request) error {

@@ -68,19 +68,19 @@ func setupRoutes(router *chi.Mux) {
 	router.Post("/login", handlers.Make(handlers.HandleLogin))
 	router.Get("/logout", handlers.Make(handlers.HandleLogout))
 
-	// Admin routes
-	router.Route("/admin", func(r chi.Router) {
-		r.Use(handlers.AdminAuthMiddleware)
-		
-		// Blog management
-		r.Route("/blog", func(r chi.Router) {
-			r.Get("/", handlers.Make(handlers.HandleAdminBlogPage))
-			r.Post("/", handlers.Make(handlers.HandleAdminBlogPost))
-			r.Get("/edit/{id}", handlers.Make(handlers.HandleEditArticle))
-			r.Put("/{id}", handlers.Make(handlers.HandleUpdateArticle))
-			r.Delete("/{id}", handlers.Make(handlers.HandleDeleteArticle))
-		})
-	})
+router.Route("/admin", func(r chi.Router) {
+    // Apply the admin middleware to all routes under /admin
+    r.Use(handlers.AdminAuthMiddleware)
+    
+    // Blog management
+    r.Route("/blog", func(r chi.Router) {
+        r.Get("/", handlers.Make(handlers.HandleAdminBlogPage))
+        r.Post("/", handlers.Make(handlers.HandleAdminBlogPost))
+        r.Get("/edit/{id}", handlers.Make(handlers.HandleEditArticle))
+        r.Put("/{id}", handlers.Make(handlers.HandleUpdateArticle))
+        r.Delete("/{id}", handlers.Make(handlers.HandleDeleteArticle))
+    })
+})
 
 	// Public routes
 	router.Route("/", func(r chi.Router) {

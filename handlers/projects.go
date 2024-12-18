@@ -67,7 +67,6 @@ func UpdateProjectsCache() {
 }
 
 func HandleProjects(w http.ResponseWriter, r *http.Request) error {
-	isHtmxRequest := r.Header.Get("HX-Request") == "true"
 	isAdmin := authpkg.IsAuthenticated(r)
 
 	cacheMutex.RLock()
@@ -88,10 +87,12 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 		contributions = []models.ContributionDay{}
 	}
 
-	if isHtmxRequest {
-		return projects.Partial(contributions).Render(r.Context(), w)
-	}
-	return projects.Projects(contributions, isAdmin).Render(r.Context(), w)
+    renderer := NewPageRenderer(
+        projects.Projects(contributions, isAdmin),
+        projects.Partial(contributions),
+    )
+
+    return renderer.Render(w, r)
 }
 
 func fetchGitHubContributions(username string) ([]byte, error) {
