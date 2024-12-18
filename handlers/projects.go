@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/TylerGilman/nereus_main_site/authpkg"
 	"github.com/TylerGilman/nereus_main_site/views/models"
 	"github.com/TylerGilman/nereus_main_site/views/projects"
 )
@@ -39,7 +40,8 @@ func UpdateProjectsCache() {
 	var fullBuf, partialBuf bytes.Buffer
 	ctx := context.Background()
 
-	err = projects.Projects(contributions).Render(ctx, &fullBuf)
+	// Pass false as isAdmin for cached version since we'll check auth at request time
+	err = projects.Projects(contributions, false).Render(ctx, &fullBuf)
 	if err != nil {
 		slog.Error("Error rendering full projects page: %v", slog.String("Error", err.Error()))
 		return
@@ -66,6 +68,7 @@ func UpdateProjectsCache() {
 
 func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 	isHtmxRequest := r.Header.Get("HX-Request") == "true"
+	isAdmin := authpkg.IsAuthenticated(r)
 
 	cacheMutex.RLock()
 	fullCacheEmpty := len(cachedFullPage) == 0
@@ -79,43 +82,16 @@ func HandleProjects(w http.ResponseWriter, r *http.Request) error {
 		UpdateProjectsCache()
 	}
 
-	if isHtmxRequest {
-		cacheMutex.RLock()
-		defer cacheMutex.RUnlock()
-
-		if len(cachedPartialPage) > 0 && !partialCacheExpired {
-			log.Println("Serving partial projects page from cache")
-			w.Header().Set("X-Served-From-Cache", "true")
-			_, err := w.Write(cachedPartialPage)
-			return err
-		} else {
-			log.Println("Partial cache is empty or expired. Rendering partial projects page on the fly")
-			contributions, err := getGitHubContributions("TylerGilman")
-			if err != nil {
-				log.Printf("Error fetching GitHub contributions: %v", err)
-				contributions = []models.ContributionDay{}
-			}
-			return projects.Partial(contributions).Render(r.Context(), w)
-		}
-	} else {
-		cacheMutex.RLock()
-		defer cacheMutex.RUnlock()
-
-		if len(cachedFullPage) > 0 && !fullCacheExpired {
-			log.Println("Serving full projects page from cache")
-			w.Header().Set("X-Served-From-Cache", "true")
-			_, err := w.Write(cachedFullPage)
-			return err
-		} else {
-			log.Println("Full cache is empty or expired. Rendering full projects page on the fly")
-			contributions, err := getGitHubContributions("TylerGilman")
-			if err != nil {
-				log.Printf("Error fetching GitHub contributions: %v", err)
-				contributions = []models.ContributionDay{}
-			}
-			return projects.Projects(contributions).Render(r.Context(), w)
-		}
+	contributions, err := getGitHubContributions("TylerGilman")
+	if err != nil {
+		slog.Error("Error fetching GitHub contributions", "error", err)
+		contributions = []models.ContributionDay{}
 	}
+
+	if isHtmxRequest {
+		return projects.Partial(contributions).Render(r.Context(), w)
+	}
+	return projects.Projects(contributions, isAdmin).Render(r.Context(), w)
 }
 
 func fetchGitHubContributions(username string) ([]byte, error) {

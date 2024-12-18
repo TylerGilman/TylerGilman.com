@@ -6,8 +6,8 @@ import (
     "github.com/TylerGilman/nereus_main_site/views/models"
 )
 
-templ Projects(contributions []models.ContributionDay) {
-    @layouts.Base("projects") {
+templ Projects(contributions []models.ContributionDay, isAdmin bool) {
+    @layouts.Base("projects", isAdmin) {
         @Partial(contributions)
     }
 }

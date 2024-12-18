@@ -2,6 +2,7 @@ package handlers
 
 import (
     "log/slog"
+    "fmt"
     "net/http"
     "strconv"
     "time"
@@ -9,13 +10,14 @@ import (
     "github.com/go-chi/chi/v5"
     "github.com/gomarkdown/markdown"
     "github.com/gomarkdown/markdown/parser"
+    "github.com/TylerGilman/nereus_main_site/authpkg"
     "github.com/gomarkdown/markdown/html"
 )
 
-// HandleBlog handles the blog listing page
 func HandleBlog(w http.ResponseWriter, r *http.Request) error {
     r = setHtmxContext(r)
     isHtmxRequest := r.Header.Get("HX-Request") == "true"
+    isAdmin := authpkg.IsAuthenticated(r)
     slog.Info("HX-Request", "value", r.Context().Value(HtmxRequestKey))
 
     mainArticles, err := blog.GetAllArticles()
@@ -32,10 +34,9 @@ func HandleBlog(w http.ResponseWriter, r *http.Request) error {
     if isHtmxRequest {
         return Render(w, r, blog.Partial(mainArticles, sidebarArticles))
     }
-    return Render(w, r, blog.Blog(mainArticles, sidebarArticles))
+    return Render(w, r, blog.Blog(mainArticles, sidebarArticles, isAdmin))
 }
 
-// HandleFullArticle displays a single article
 func HandleFullArticle(w http.ResponseWriter, r *http.Request) error {
     idStr := chi.URLParam(r, "id")
     id, err := strconv.Atoi(idStr)
@@ -50,7 +51,8 @@ func HandleFullArticle(w http.ResponseWriter, r *http.Request) error {
         return err
     }
 
-    return Render(w, r, blog.FullArticle(article))
+    isAdmin := authpkg.IsAuthenticated(r)
+    return Render(w, r, blog.FullArticle(article, isAdmin))
 }
 
 // HandleSearch handles article search functionality
@@ -114,4 +116,85 @@ func HandleAdminBlogPost(w http.ResponseWriter, r *http.Request) error {
     }
 
     return Render(w, r, blog.AdminSuccess())
+}
+
+// For editing articles
+func HandleEditArticle(w http.ResponseWriter, r *http.Request) error {
+    idStr := chi.URLParam(r, "id")
+    id, err := strconv.Atoi(idStr)
+    if err != nil {
+        http.Error(w, "Invalid article ID", http.StatusBadRequest)
+        return err
+    }
+
+    article, err := blog.GetArticleByID(id)
+    if err != nil {
+        http.Error(w, "Article not found", http.StatusNotFound)
+        return err
+    }
+
+    return Render(w, r, blog.EditPage(article))
+}
+
+// For updating existing articles
+func HandleUpdateArticle(w http.ResponseWriter, r *http.Request) error {
+    if err := r.ParseForm(); err != nil {
+        http.Error(w, "Failed to parse form", http.StatusBadRequest)
+        return err
+    }
+
+    idStr := chi.URLParam(r, "id")
+    id, err := strconv.Atoi(idStr)
+    if err != nil {
+        http.Error(w, "Invalid article ID", http.StatusBadRequest)
+        return err
+    }
+
+    markdownContent := r.FormValue("content")
+    extensions := parser.CommonExtensions | parser.AutoHeadingIDs
+    p := parser.NewWithExtensions(extensions)
+    doc := p.Parse([]byte(markdownContent))
+    htmlFlags := html.CommonFlags | html.HrefTargetBlank
+    opts := html.RendererOptions{Flags: htmlFlags}
+    renderer := html.NewRenderer(opts)
+    htmlContent := string(markdown.Render(doc, renderer))
+
+    article := blog.Article{
+        ID:          id,
+        Title:       r.FormValue("title"),
+        Author:      r.FormValue("author"),
+        Date:        time.Now(),
+        Summary:     r.FormValue("summary"),
+        Category:    r.FormValue("category"),
+        Content:     markdownContent,
+        HTMLContent: htmlContent,
+    }
+
+    err = blog.UpdateArticle(article)
+    if err != nil {
+        http.Error(w, "Failed to update article", http.StatusInternalServerError)
+        return err
+    }
+
+    http.Redirect(w, r, fmt.Sprintf("/blog/article/%d", id), http.StatusSeeOther)
+    return nil
+}
+
+// For deleting articles
+func HandleDeleteArticle(w http.ResponseWriter, r *http.Request) error {
+    idStr := chi.URLParam(r, "id")
+    id, err := strconv.Atoi(idStr)
+    if err != nil {
+        http.Error(w, "Invalid article ID", http.StatusBadRequest)
+        return err
+    }
+
+    err = blog.DeleteArticle(id)
+    if err != nil {
+        http.Error(w, "Failed to delete article", http.StatusInternalServerError)
+        return err
+    }
+
+    w.WriteHeader(http.StatusOK)
+    return nil
 }

@@ -56,6 +56,23 @@ func CloseDB() {
     }
 }
 
+func UpdateArticle(article Article) error {
+    _, err := db.Exec(`
+        UPDATE articles 
+        SET title = ?, author = ?, date = ?, summary = ?, 
+            category = ?, content = ?, html_content = ?, image_url = ?
+        WHERE id = ?
+    `, article.Title, article.Author, article.Date.UTC().Format(time.RFC3339),
+       article.Summary, article.Category, article.Content, article.HTMLContent,
+       article.ImageUrl, article.ID)
+    return err
+}
+
+func DeleteArticle(id int) error {
+    _, err := db.Exec(`DELETE FROM articles WHERE id = ?`, id)
+    return err
+}
+
 func scanArticle(row interface{}) (Article, error) {
     var article Article
     var dateStr string

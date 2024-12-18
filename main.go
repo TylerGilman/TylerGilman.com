@@ -38,10 +38,6 @@ func init() {
 			log.Printf(".env file loaded successfully from %s\n", envPath)
 		}
 	}
-
-	for _, env := range os.Environ() {
-		log.Println(env)
-	}
 }
 
 func getLogLevel(levelStr string) slog.Level {
@@ -57,6 +53,62 @@ func getLogLevel(levelStr string) slog.Level {
 	default:
 		return slog.LevelInfo
 	}
+}
+
+func setupRoutes(router *chi.Mux) {
+	// Global middleware
+  router.Use(middleware.Logger)
+  router.Use(middleware.Recoverer)
+  router.Use(middleware.RequestID)
+  router.Use(middleware.RealIP)
+  router.Use(handlers.SessionMiddleware) 
+
+	// Auth routes
+	router.Get("/login", handlers.Make(handlers.HandleLogin))
+	router.Post("/login", handlers.Make(handlers.HandleLogin))
+	router.Get("/logout", handlers.Make(handlers.HandleLogout))
+
+	// Admin routes
+	router.Route("/admin", func(r chi.Router) {
+		r.Use(handlers.AdminAuthMiddleware)
+		
+		// Blog management
+		r.Route("/blog", func(r chi.Router) {
+			r.Get("/", handlers.Make(handlers.HandleAdminBlogPage))
+			r.Post("/", handlers.Make(handlers.HandleAdminBlogPost))
+			r.Get("/edit/{id}", handlers.Make(handlers.HandleEditArticle))
+			r.Put("/{id}", handlers.Make(handlers.HandleUpdateArticle))
+			r.Delete("/{id}", handlers.Make(handlers.HandleDeleteArticle))
+		})
+	})
+
+	// Public routes
+	router.Route("/", func(r chi.Router) {
+		// Modal routes
+		r.Route("/modal", func(mr chi.Router) {
+			mr.Get("/more-options", handlers.Make(handlers.HandleOptionsModal))
+			mr.Get("/notifications", handlers.Make(handlers.HandleNotificationsModal))
+			mr.Get("/contact", handlers.Make(handlers.HandleContactModal))
+			mr.Get("/close", handlers.Make(handlers.HandleCloseModal))
+		})
+
+		// Blog routes
+		r.Route("/blog", func(br chi.Router) {
+			br.Get("/", handlers.Make(handlers.HandleBlog))
+			br.Get("/search", handlers.Make(handlers.HandleSearch))
+			br.Get("/article/{id}", handlers.Make(handlers.HandleFullArticle))
+		})
+
+		// Core pages
+		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/home", http.StatusMovedPermanently)
+		})
+		r.Get("/home", handlers.Make(handlers.HandleHome))
+		r.Get("/projects", handlers.Make(handlers.HandleProjects))
+	})
+
+	// Static files
+	router.Handle("/public/*", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 }
 
 func main() {
@@ -91,56 +143,20 @@ func main() {
 	}()
 
 	router := chi.NewMux()
-
-	// Global middleware
-	router.Use(middleware.Logger)
-	router.Use(middleware.Recoverer)
-	router.Use(middleware.RequestID)
-	router.Use(middleware.RealIP)
-
-	// Admin routes
-	router.Route("/admin", func(r chi.Router) {
-		r.Use(handlers.AdminAuthMiddleware)
-		r.Get("/blog", handlers.Make(handlers.HandleAdminBlogPage))
-		r.Post("/blog", handlers.Make(handlers.HandleAdminBlogPost))
-	})
-
-	// Public routes
-	router.Route("/", func(r chi.Router) {
-		// Modal routes
-		r.Route("/modal", func(mr chi.Router) {
-			mr.Get("/more-options", handlers.Make(handlers.HandleOptionsModal))
-			mr.Get("/notifications", handlers.Make(handlers.HandleNotificationsModal))
-			mr.Get("/contact", handlers.Make(handlers.HandleContactModal))
-			mr.Get("/close", handlers.Make(handlers.HandleCloseModal))
-		})
-
-		// Blog routes
-		r.Route("/blog", func(br chi.Router) {
-			br.Get("/", handlers.Make(handlers.HandleBlog))
-			br.Get("/search", handlers.Make(handlers.HandleSearch))
-			br.Get("/article/{id}", handlers.Make(handlers.HandleFullArticle))
-		})
-
-		// Core pages
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			http.Redirect(w, r, "/home", http.StatusMovedPermanently)
-		})
-		r.Get("/home", handlers.Make(handlers.HandleHome))
-		r.Get("/projects", handlers.Make(handlers.HandleProjects))
-		r.Get("/login", handlers.Make(handlers.HandleLoginIndex))
-	})
-
-	// Static files
-	router.Handle("/public/*", Public())
+	setupRoutes(router)
 
 	// Graceful shutdown setup
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-	srv := setupServer(router)
+	srv := &http.Server{
+		Handler:      router,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
 
-	// Start server in a goroutine
+	// Start server
 	go func() {
 		env := os.Getenv("ENV")
 		if env == "" {
@@ -151,7 +167,6 @@ func main() {
 		if env == "development" {
 			port := os.Getenv("DEV_PORT")
 			if port == "" {
-				log.Println("DEV_PORT not set, defaulting to 8080")
 				port = "8080"
 			}
 			srv.Addr = ":" + port
@@ -184,11 +199,9 @@ func main() {
 		}
 	}()
 
-	// Wait for interrupt signal
 	<-quit
 	slog.Info("Server is shutting down...")
 
-	// Graceful shutdown
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
@@ -197,13 +210,4 @@ func main() {
 	}
 
 	slog.Info("Server exited properly")
-}
-
-func setupServer(handler http.Handler) *http.Server {
-	return &http.Server{
-		Handler:      handler,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
-	}
 }

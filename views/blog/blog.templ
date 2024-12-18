@@ -5,8 +5,8 @@ import (
     "fmt"
 )
 
-templ Blog(mainArticles []Article, sidebarArticles []Article) {
-    @layouts.Base("blog") {
+templ Blog(mainArticles []Article, sidebarArticles []Article, isAdmin bool) {
+    @layouts.Base("blog", isAdmin) {
         @Partial(mainArticles, sidebarArticles)
     }
 }

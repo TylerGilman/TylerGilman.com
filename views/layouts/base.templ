@@ -1,8 +1,10 @@
 package layouts
 
-import "github.com/TylerGilman/nereus_main_site/views/components"
+import (
+    "github.com/TylerGilman/nereus_main_site/views/components"
+    )
 
-templ Base(page_mode string) {
+templ Base(page_mode string, isAdmin bool) {
 	<!DOCTYPE html>
 	<html lang="en">
 		<head>
@@ -17,9 +19,9 @@ templ Base(page_mode string) {
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
 		</head>
 		<body class="antialiased">
-			@components.Navigation(page_mode)
-    <div id="modal-container"></div>
-			{ children... }
+            @components.Navigation(page_mode, isAdmin)
+            <div id="modal-container"></div>
+            { children... }
 
 
     <script type="text/javascript">

@@ -1,3 +1,6 @@
+<div class=\"flex gap-4 mt-4\"><a href=\"
+\" class=\"px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600\">Edit Article</a> <button id=\"delete-btn\" data-article-id=\"
+\" onclick=\"deleteArticle(this.getAttribute(&#39;data-article-id&#39;))\" class=\"px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600\">Delete Article</button></div>
 <div id=\"content\" hx-swap-oob=\"true\" class=\"container mx-auto px-4 py-8\"><article class=\"bg-white shadow-lg rounded-lg overflow-hidden\">
 <img src=\"
 \" alt=\"
@@ -7,4 +10,6 @@
  on 
  | Category: 
 </p><div class=\"prose max-w-none\">
-</div></div></article><div class=\"mt-8\"><a hx-get=\"/blog\" href=\"/blog\" hx-target=\"#content\" hx-push-url=\"true\" class=\"text-red-400 hover:underline\">Back to Blog</a></div></div>
+</div></div>
+</article><div class=\"mt-8\"><a hx-get=\"/blog\" href=\"/blog\" hx-target=\"#content\" hx-push-url=\"true\" class=\"text-red-400 hover:underline\">Back to Blog</a></div></div>
+<script>\n                function deleteArticle(id) {\n                    if (confirm('Are you sure you want to delete this article?')) {\n                        fetch(`/admin/blog/${id}`, {\n                            method: 'DELETE',\n                        }).then(response => {\n                            if (response.ok) {\n                                window.location.href = '/blog';\n                            }\n                        });\n                    }\n                }\n            </script>

@@ -6,8 +6,8 @@ import (
     "fmt"
 )
 
-templ Index() {
-    @layouts.Base("home") {
+templ Index(isAdmin bool) {
+    @layouts.Base("home", isAdmin) {
         @Partial()
     }
 }

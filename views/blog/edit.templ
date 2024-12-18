@@ -1,0 +1,113 @@
+package blog
+
+import (
+    "github.com/TylerGilman/nereus_main_site/views/layouts"
+    "fmt"
+)
+
+templ EditPage(article Article) {
+    @layouts.Base("admin", true) {
+        <div class="container mx-auto px-4 py-8">
+            <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+                <h1 class="text-2xl font-bold mb-6">Edit Article</h1>
+                
+                <form hx-put={fmt.Sprintf("/admin/blog/%d", article.ID)} class="space-y-6">
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
+                        <input type="text" 
+                            id="title" 
+                            name="title" 
+                            value={article.Title}
+                            required 
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+                    </div>
+
+                    <div>
+                        <label for="author" class="block text-sm font-medium text-gray-700">Author</label>
+                        <input type="text" 
+                            id="author" 
+                            name="author" 
+                            value={article.Author}
+                            required 
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+                    </div>
+
+                    <div>
+                        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                        <select id="category" 
+                            name="category" 
+                            required 
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
+                            <option value="Life" selected?={article.Category == "Life"}>Life</option>
+                            <option value="Technology" selected?={article.Category == "Technology"}>Technology</option>
+                            <option value="Programming" selected?={article.Category == "Programming"}>Programming</option>
+                            <option value="Projects" selected?={article.Category == "Projects"}>Projects</option>
+                            <option value="Thoughts" selected?={article.Category == "Thoughts"}>Thoughts</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="summary" class="block text-sm font-medium text-gray-700">Summary</label>
+                        <textarea 
+                            id="summary" 
+                            name="summary" 
+                            required 
+                            rows="3"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">{article.Summary}</textarea>
+                    </div>
+
+                    <div>
+                        <label for="content" class="block text-sm font-medium text-gray-700">Content (Markdown)</label>
+                        <div class="mt-1 flex gap-4">
+                            <textarea 
+                                id="markdownEditor" 
+                                name="content" 
+                                rows="20" 
+                                required
+                                onInput="updateMarkdownPreview()"
+                                class="block w-1/2 border border-gray-300 rounded-md shadow-sm p-2 font-mono">{article.Content}</textarea>
+                            <div id="markdownPreview" 
+                                class="w-1/2 p-4 border border-gray-300 rounded-md prose prose-slate prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-a:text-blue-600 hover:prose-a:text-blue-500 max-w-none bg-white overflow-y-auto"
+                                style="height: 500px;">
+                                @templ.Raw(article.HTMLContent)
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between">
+                        <button type="submit" 
+                            class="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-colors">
+                            Update Article
+                        </button>
+                        <a href={templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID))}
+                           class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors">
+                            Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            function updateMarkdownPreview() {
+                const editor = document.getElementById('markdownEditor');
+                const preview = document.getElementById('markdownPreview');
+                if (editor && preview) {
+                    preview.innerHTML = marked.parse(editor.value);
+                    // Highlight code blocks
+                    preview.querySelectorAll('pre code').forEach((block) => {
+                        hljs.highlightElement(block);
+                    });
+                }
+            }
+
+            // Initialize editor and preview on page load
+            window.onload = function() {
+                const editor = document.getElementById('markdownEditor');
+                if (editor) {
+                    updateMarkdownPreview();
+                }
+            }
+        </script>
+    }
+}
