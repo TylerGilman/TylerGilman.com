@@ -115,7 +115,6 @@ a:hover {
 nav {
     background-color: var(--background-color);
     color: var(--text-color);
-    border-bottom: 2px solid var(--primary-color);
     font-family: var(--heading-font);
     box-shadow: var(--shadow-md);
     z-index: 1000;
@@ -127,8 +126,6 @@ nav {
     align-items: center;
     text-decoration: none;
     font-size: 1.5rem;
-    gap: var(--spacing-sm);
-    padding: var(--spacing-sm) var(--spacing-md);
 }
 
 #logo-image {
@@ -140,7 +137,7 @@ nav {
 #logo-text {
     color: var(--primary-color);
     font-weight: bold;
-    margin-left: var(--spacing-xs);
+    margin-left: 0;
 }
 
 #logo-wrapper:hover #logo-image {
@@ -173,17 +170,18 @@ nav {
     align-items: center;
     justify-content: center;
     padding: var(--spacing-sm) var(--spacing-md);
-    color: var(--text-color);
+    color: var(--primary-color);
     border-radius: var(--border-radius);
     transition: transform 0.3s ease, background-color 0.3s ease, color 0.3s ease;
     position: relative;
-    font-size: 0.9rem;
+    font-size: 1.2rem;
+    font-weight: normal;  
 }
 
 .nav-item:hover {
     transform: scale(1.05);
     background-color: var(--secondary-color);
-    color: var(--primary-color);
+    color: var(--text-color);
 }
 
 .nav-item .text-xs {
@@ -207,6 +205,15 @@ nav {
 .nav-item.text-red-400 div:last-child {
     transform: translateX(-50%) scaleX(1);
 }
+
+.header-subtitle {
+    font-size: .7rem;
+    text-align: center;
+    max-width: 600px;
+    margin: .5rem;
+    color: #444;
+}
+
 
 /* Tooltip */
 .tooltip {

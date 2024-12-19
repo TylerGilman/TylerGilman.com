@@ -14,7 +14,7 @@ templ Blog(mainArticles []Article, sidebarArticles []Article, isAdmin bool) {
 templ Partial(mainArticles []Article, sidebarArticles []Article) {
     <div id="content" class="blog-container">
         <div class="blog-search-container">
-            <h2 class="search-heading">Search Articles</h2>
+            <h2 class="search-heading">Search Posts</h2>
             <form hx-boost="true" hx-target="#main-articles" hx-indicator="#search-indicator" action="/blog/search" method="get">
                 <div class="search-row">
                     <div class="search-input-group">
@@ -52,7 +52,7 @@ templ Partial(mainArticles []Article, sidebarArticles []Article) {
         <div class="blog-main-layout">
             <!-- Sidebar first in HTML for mobile-top placement -->
             <div class="sidebar">
-                <h2 class="sidebar-heading">More Articles</h2>
+                <h2 class="sidebar-heading">More Posts</h2>
                 <div class="sidebar-article-list">
                     for _, article := range sidebarArticles {
                         @smallArticle(article)

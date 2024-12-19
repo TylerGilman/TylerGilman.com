@@ -1,4 +1,5 @@
 :root {
+    --primary-color: #004B87; /* Deep blue, inspired by Swedish design */
     --text-color: #2C2C2C;
     --background-color: #FAFAFA;
     --accent-color: #CC3333;
@@ -53,7 +54,7 @@ body {
     font-size: 1.75rem;
     font-weight: bold;
     margin-bottom: 1rem;
-    color: var(--accent-color);
+    color: var(--primary-color);
 }
 
 .search-row {

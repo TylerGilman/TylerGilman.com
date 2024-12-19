@@ -13,20 +13,30 @@ templ Projects(contributions []models.ContributionDay, isAdmin bool) {
 }
 
 templ Partial(contributions []models.ContributionDay) {
-  <div id="content" class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-full sm:max-w-screen-sm md:max-w-screen-md lg:max-w-screen-lg xl:max-w-screen-xl flex flex-col items-center justify-start min-h-screen py-8">
-        <div  class="w-full ">
+  <div id="content" class="content-container">
+        <div class="content-section">
             <div class="mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full">
-                <h1>Projects</h1>
-                <li> Safe Face </li>
-                <li> This Website </li>
-                <li> Sports Betting Arbitrage </li> 
-                <li> Procedural Animation - js-animals (Work in progress only have a fish) </li> 
+                <h1 class="section-title">Projects</h1>
+                <ul class="list">
+                    <li>
+                        <span class="list-item-title">This Website</span>
+                        <p class="list-item-description">HTMX and Golang (templ)</p>
+                    </li>
+                    <li>
+                        <span class="list-item-title">Chat Memory</span>
+                        <p class="list-item-description">LoRA fine tuned llama3.1 8B to summarize chat conversations</p>
+                    </li>
+                    <li>
+                        <span class="list-item-title">Fish Tank</span>
+                        <p class="list-item-description">Feed the fish! (vanilla js)</p>
+                        <div id="fishtank-container" class="flex flex-col items-center justify-center m-5 w-[600px]">
+                            <canvas id="fishtank" class="border-4 border-orange-400 rounded-lg w-[600px] h-[400px]"></canvas>
+                        </div>
+                    </li>
+
+                </ul>
 
           <div class="flex flex-col items-center justify-center w-full">
-              <div id="fishtank-container" class="flex flex-col items-center justify-center m-5 w-[600px]">
-                  <h2 class="font-black text-orange-400 text-center mb-2">My Fish Tank</h2>
-                  <canvas id="fishtank" class="border-4 border-orange-400 rounded-lg w-[600px] h-[400px]"></canvas>
-              </div>
               <div class="project-container mb-8 w-full flex flex-col items-center">
                   @contributionGraph(contributions)
                   @githubButton()
