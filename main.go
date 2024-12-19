@@ -112,6 +112,13 @@ router.Route("/admin", func(r chi.Router) {
 }
 
 func main() {
+    // Load environment variables first
+    if err := godotenv.Load(); err != nil {
+        slog.Error("Error loading .env file", "error", err)
+    }
+    
+    // Initialize the session store after environment is loaded
+    authpkg.InitStore()
 	logLevelStr := os.Getenv("LOG_LEVEL")
 	if logLevelStr == "" {
 		log.Println("LOG_LEVEL not set, defaulting to INFO")
