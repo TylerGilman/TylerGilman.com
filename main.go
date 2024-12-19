@@ -18,6 +18,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/TylerGilman/nereus_main_site/handlers"
 	"github.com/TylerGilman/nereus_main_site/views/blog"
+	"github.com/TylerGilman/nereus_main_site/authpkg"
 )
 
 func init() {
