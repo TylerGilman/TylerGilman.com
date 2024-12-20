@@ -497,7 +497,7 @@ document.addEventListener('htmx:afterSettle', function(event) {
             const options = isNav ? {
                 height: 64,
                 width: window.innerWidth,
-                fishCount: 5,
+                fishCount: 10,
                 minSpeed: 0.3,
                 maxSpeed: 1.5
             } : {};

@@ -14,45 +14,77 @@ templ Projects(contributions []models.ContributionDay, isAdmin bool) {
 
 templ Partial(contributions []models.ContributionDay) {
   <div id="content" class="content-container">
-        <div class="content-section">
-            <div class="mb-8 bg-white shadow-lg border-t-2 rounded-lg p-6 w-full">
-                <h1 class="section-title">Projects</h1>
-                <ul class="list">
-                    <li>
-                        <span class="list-item-title">This Website</span>
-                        <p class="list-item-description">HTMX and Golang (templ)</p>
-                    </li>
-                    <li>
-                        <span class="list-item-title">Chat Memory</span>
-                        <p class="list-item-description">LoRA fine tuned llama3.1 8B to summarize chat conversations</p>
-                    </li>
-                    <li>
-                        <span class="list-item-title">Fish Tank</span>
-                        <p class="list-item-description">Dont overfeed the fish! (vanilla js)</p>
-                    <div id="fishtank-container" class="flex flex-col items-center justify-center m-5 w-[600px]">
-                        <canvas id="project-fishtank" class="border-4 border-orange-400 rounded-lg w-[600px] h-[400px]"></canvas>
-                    </div>
-                    </li>
-
-                </ul>
-
-          <div class="flex flex-col items-center justify-center w-full">
-              <div class="project-container mb-8 w-full flex flex-col items-center">
-                  @contributionGraph(contributions)
-                  @githubButton()
-              </div>
+    <div class="content-section">
+      <div class="projects-container">
+        <h1 class="section-title">Projects</h1>
+        <div class="project-list">
+          <div class="card project-card">
+            <h2 class="project-title" style="margin-top:0;">
+              <a href="https://github.com/TylerGilman/js-animals" class="project-title-link" target="_blank" rel="noopener noreferrer">
+                Fish Tank
+              </a>
+            </h2>
+            <h3 class="project-subtitle">Can you watch my fish when I'm away? (Just don't overfeed them)</h3>
+            <p class="project-description">
+              Procedurally animated fish. Click to place food. Vanilla JS.
+            </p>
+            <div id="fishtank-container" class="project-media">
+              <canvas id="project-fishtank" class="fishtank-canvas"></canvas>
+            </div>
           </div>
-</div>
+          
+          <div class="card project-card">
+            <h2 class="project-title" style="margin-top:0;">
+              <a href="https://github.com/TylerGilman/nereus_main_site" class="project-title-link" target="_blank" rel="noopener noreferrer">
+                This Website
+              </a>
+            </h2>
+            <h3 class="project-subtitle">HTMX and Golang (templ)</h3>
+            <p class="project-description">
+              A dynamic website built with Go templates and HTMX for fluid user experiences.
+            </p>
+          </div>
+
+          <div class="card project-card">
+            <h2 class="project-title" style="margin-top:0;">
+              <a href="https://github.com/TylerGilman/chat_memory" class="project-title-link" target="_blank" rel="noopener noreferrer">
+                Chat Memory
+              </a>
+            </h2>
+            <h3 class="project-subtitle">LoRA fine-tuned LLaMA3.1 8B</h3>
+            <p class="project-description">
+              Summarizes chat conversations using a fine-tuned large language model.
+            </p>
+          </div>
+
+          <div class="card project-card">
+            <h2 class="project-title" style="margin-top:0;">
+              <a href="https://github.com/TylerGilman/Genetic-Algo-Visualization" class="project-title-link" target="_blank" rel="noopener noreferrer">
+                Fish Neuroevolution Simulation
+              </a>
+            </h2>
+            <h3 class="project-subtitle">Elaborate fish environment simulation using genetic algorithm to optimize neural weights. </h3>
+            <p class="project-description">
+              Python Fastapi and vanilla JS highly interactive simulation to demonstrate how genetic algorithms can be an alternative to back propagation for learning neural network weights in complex problems. 
+            </p>
+          </div>
+
 
         </div>
-    </div>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const projectTank = new FishTank('project-fishtank');
-        projectTank.initialize();
-    });
 
-    </script>
+        <div class="project-container">
+          @contributionGraph(contributions)
+          @githubButton()
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const projectTank = new FishTank('project-fishtank');
+      projectTank.initialize();
+    });
+  </script>
 }
 
 templ contributionGraph(contributions []models.ContributionDay) {

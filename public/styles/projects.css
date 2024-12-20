@@ -1,0 +1,145 @@
+.projects-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+  background-color: #fff;
+  /* Matches the card background and your site's neutral tones */
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-lg);
+}
+
+.project-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.project-card {
+  /* `.card` already gives some styling, we just add spacing or overrides if needed */
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin: 0;
+  /* Already handled by `.card` and container spacing */
+}
+
+.project-title {
+  font-family: var(--heading-font);
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  margin-bottom: var(--spacing-sm);
+}
+
+.project-subtitle {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+  line-height: var(--line-height);
+}
+
+.project-description {
+  font-size: 1rem;
+  line-height: var(--line-height);
+  color: var(--text-color);
+  margin-bottom: var(--spacing-md);
+}
+
+.project-media {
+  margin-top: var(--spacing-md);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.fishtank-canvas {
+  width: 600px;
+  height: 400px;
+  border: 4px solid var(--secondary-color);
+  border-radius: var(--border-radius);
+}
+
+/* Contribution Graph and GitHub Button */
+
+.project-container {
+  margin-top: var(--spacing-xl);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.github-button {
+  /* Utilize your button styles or tweak them here */
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background-color: var(--primary-color);
+  color: #fff;
+  text-decoration: none;
+  border-radius: var(--border-radius);
+  font-weight: bold;
+  transition: background-color 0.3s;
+  margin-top: var(--spacing-md);
+}
+
+.github-button:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+}
+
+/* Ensure the contribution graph fits in with the theme */
+
+.contribution-graph {
+  background-color: #f6f8fa;
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.contribution-day {
+  border-radius: var(--border-radius);
+}
+
+/* Adjust these colors if you want them more in line with your palette */
+
+.contribution-level-0 {
+  background-color: #ebedf0;
+}
+
+.contribution-level-1 {
+  background-color: #9be9a8;
+}
+
+.contribution-level-2 {
+  background-color: #40c463;
+}
+
+.contribution-level-3 {
+  background-color: #30a14e;
+}
+
+.contribution-level-4 {
+  background-color: #216e39;
+}
+
+.project-title-link {
+  color: var(--primary-color);
+  text-decoration: none;
+  transition: color 0.3s ease, -webkit-text-decoration 0.3s ease;
+  transition: color 0.3s ease, text-decoration 0.3s ease;
+  transition: color 0.3s ease, text-decoration 0.3s ease, -webkit-text-decoration 0.3s ease;
+}
+
+.project-title-link:hover {
+  color: var(--accent-color);
+  text-decoration: underline;
+  cursor: pointer;
+}
