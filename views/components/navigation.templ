@@ -1,27 +1,27 @@
 package components
 
 templ Navigation(page_mode string, isAdmin bool) {
-	<nav class="border-b border-gray-800 py-2 relative bg-white">
-		<div class="container mx-auto px-4 items-center">
-			<div class="border border-red flex border-justify-between items-center">
-				<!-- Logo -->
-				<a href="/home" hx-get="/home" hx-push-url="true" hx-swap="outerHTML" hx-target="#content" id="logo-wrapper">
-					<img src="/public/Nereus.png" alt="Nereus Logo" id="logo-image"/>
-					<span id="logo-text">ereus</span>
-					<p class="header-subtitle">Technology Consulting</p>
-				</a>
-				<!-- Main Navigation -->
-				<div class="flex items-center space-x-8">
-					@MainNavBar(page_mode)
-					if isAdmin {
-						<a href="/logout" class="text-sm font-bold text-red-500 hover:text-red-700 transition-colors duration-300">
-							Logout
-						</a>
-					}
-				</div>
-			</div>
-		</div>
-	</nav>
+    <nav class="border-b border-gray-800 py-2 relative bg-white overflow-hidden">
+        <canvas id="nav-fishtank" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;"></canvas>
+        
+        <div class="container mx-auto px-4 items-center" style="z-index: 2; position: relative;">
+            <div class="flex border-justify-between items-center">
+                <a href="/home" hx-get="/home" hx-push-url="true" hx-swap="outerHTML" hx-target="#content" id="logo-wrapper">
+                    <img src="/public/Nereus.png" alt="Nereus Logo" id="logo-image"/>
+                    <span id="logo-text">ereus</span>
+                    <p class="header-subtitle">Technology Consulting</p>
+                </a>
+                <div class="flex items-center space-x-8">
+                    @MainNavBar(page_mode)
+                    if isAdmin {
+                        <a href="/logout" class="text-sm font-bold text-red-500 hover:text-red-700 transition-colors duration-300">
+                            Logout
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </nav>
 	<script>
   (function () {
     function updateSelectedMode(path) {
@@ -54,7 +54,27 @@ templ Navigation(page_mode string, isAdmin bool) {
       updateSelectedMode(currentPath);
     });
   })();
-</script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const navElement = document.querySelector('nav');
+        const navTank = new FishTank('nav-fishtank', {
+            height: navElement.offsetHeight,
+            width: window.innerWidth,
+            fishCount: 5,
+            minSpeed: 0.3,
+            maxSpeed: 1.5,
+            buffer: 50,
+            isNavBar: true
+        });
+        navTank.initialize();
+
+        window.addEventListener('resize', () => {
+            navTank.options.width = window.innerWidth;
+            navTank.options.height = navElement.offsetHeight;
+            navTank.setCanvasSize();
+        });
+    });
+    </script>
 	<style>
   #logo-wrapper {
     display: inline-flex;
