@@ -1,0 +1,29 @@
+package components
+// views/components/nav_fishtank.templ
+templ NavFishtank() {
+    <div class="nav-fishtank-container relative">
+        <canvas id="nav-fishtank" class="w-full h-16"></canvas>
+        <div class="nav-content absolute top-0 left-0 w-full h-full">
+            // Your existing navigation content
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const navTank = new FishTank('nav-fishtank', {
+                height: 64, // Adjust based on your nav height
+                width: window.innerWidth,
+                fishCount: 5,
+                minSpeed: 0.3,
+                maxSpeed: 1.5,
+                isNavBar: true
+            });
+            navTank.initialize();
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                navTank.setCanvasSize(window.innerWidth, 64);
+            });
+        });
+    </script>
+}
