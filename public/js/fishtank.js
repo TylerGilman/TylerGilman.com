@@ -372,14 +372,29 @@ class FishTank {
         this.foods = [];
     }
 
-    setCanvasSize() {
-        if (this.canvas) {
-            this.canvas.width = this.options.width;
-            this.canvas.height = this.options.height;
-            this.canvas.style.width = this.options.width + 'px';
-            this.canvas.style.height = this.options.height + 'px';
-        }
+setCanvasSize() {
+    if (!this.canvas) return;
+    
+    if (this.canvasId === 'nav-fishtank') {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = 64;
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '64px';
+        return;
     }
+
+    const container = this.canvas.parentElement;
+    const containerWidth = container.clientWidth;
+    const isMobile = window.innerWidth <= 768;
+    
+    this.options.width = containerWidth;
+    this.options.height = isMobile ? containerWidth * 0.75 : containerWidth * 0.66;
+    
+    this.canvas.width = this.options.width;
+    this.canvas.height = this.options.height;
+    this.canvas.style.width = '100%';
+    this.canvas.style.height = 'auto';
+}
 
     getRandomColor() {
         const hue = Math.floor(Math.random() * 360);

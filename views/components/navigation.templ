@@ -75,48 +75,6 @@ templ Navigation(page_mode string, isAdmin bool) {
         });
     });
     </script>
-	<style>
-  #logo-wrapper {
-    display: inline-flex;
-    align-items: center;
-    text-decoration: none;
-  }
-
-  #logo-image {
-    height: 2rem;
-    width: auto;
-    min-width: 2rem;
-    transition: transform 0.3s ease-in-out;
-  }
-
-  #logo-text {
-    font-size: 1.25rem;
-    font-weight: bold;
-    color: #f87171;
-    margin-left: 0.5rem;
-  }
-
-  @media (hover: hover) and (pointer: fine) {
-    #logo-wrapper:hover #logo-image {
-      transform: scale(1.1) rotate(12deg);
-    }
-  }
-
-  @media (min-width: 768px) {
-    #logo-image {
-      height: 3rem;
-      min-width: 3rem;
-    }
-
-    #logo-text {
-      font-size: 1.5rem;
-    }
-  }
-
-  .modal-open {
-    overflow: hidden;
-  }
-</style>
 }
 
 templ MainNavBar(pageMode string) {
