@@ -30,7 +30,7 @@ func NavFishtank() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"nav-fishtank-container relative\"><canvas id=\"nav-fishtank\" class=\"w-full h-16\"></canvas><div class=\"nav-content absolute top-0 left-0 w-full h-full\"></div></div><script>\n        document.addEventListener('DOMContentLoaded', function() {\n            const navTank = new FishTank('nav-fishtank', {\n                height: 64, // Adjust based on your nav height\n                width: window.innerWidth,\n                fishCount: 5,\n                minSpeed: 0.3,\n                maxSpeed: 1.5,\n                isNavBar: true\n            });\n            navTank.initialize();\n\n            // Handle window resize\n            window.addEventListener('resize', () => {\n                navTank.setCanvasSize(window.innerWidth, 64);\n            });\n        });\n    </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

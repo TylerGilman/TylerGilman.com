@@ -29,7 +29,7 @@ func Navigation(page_mode string, isAdmin bool) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<nav class=\"border-b border-gray-800 py-2 relative bg-white overflow-hidden\"><canvas id=\"nav-fishtank\" class=\"absolute inset-0 w-full h-full pointer-events-none\" style=\"z-index: 1;\"></canvas><div class=\"container mx-auto px-4 items-center\" style=\"z-index: 2; position: relative;\"><div class=\"flex border-justify-between items-center\"><a href=\"/home\" hx-get=\"/home\" hx-push-url=\"true\" hx-swap=\"outerHTML\" hx-target=\"#content\" id=\"logo-wrapper\"><img src=\"/public/Nereus.png\" alt=\"Nereus Logo\" id=\"logo-image\"> <span id=\"logo-text\">ereus</span><p class=\"header-subtitle\">Technology Consulting</p></a><div class=\"flex items-center space-x-8\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -38,12 +38,12 @@ func Navigation(page_mode string, isAdmin bool) templ.Component {
 			return templ_7745c5c3_Err
 		}
 		if isAdmin {
-			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/logout\" class=\"text-sm font-bold text-red-500 hover:text-red-700 transition-colors duration-300\">Logout</a>")
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></nav><script>\n  (function () {\n    function updateSelectedMode(path) {\n      const menuItems = document.querySelectorAll('.nav-item');\n      menuItems.forEach(item => {\n        const underline = item.querySelector('div:last-child');\n        if (item.getAttribute('hx-get') === path) {\n          underline.classList.remove('scale-x-0');\n          underline.classList.add('scale-x-100');\n          item.classList.add('text-red-400');\n        } else {\n          underline.classList.remove('scale-x-100');\n          underline.classList.add('scale-x-0');\n          item.classList.remove('text-red-400');\n        }\n      });\n    }\n\n    function initializeNavBar() {\n      const currentPath = window.location.pathname;\n      updateSelectedMode(currentPath);\n    }\n\n    // Initialize on page load\n    initializeNavBar();\n\n    // Update on HTMX after-settle event\n    document.body.addEventListener('htmx:afterSettle', function (event) {\n      const currentPath = window.location.pathname;\n      updateSelectedMode(currentPath);\n    });\n  })();\n\n    document.addEventListener('DOMContentLoaded', function() {\n        const navElement = document.querySelector('nav');\n        const navTank = new FishTank('nav-fishtank', {\n            height: navElement.offsetHeight,\n            width: window.innerWidth,\n            fishCount: 5,\n            minSpeed: 0.3,\n            maxSpeed: 1.5,\n            buffer: 50,\n            isNavBar: true\n        });\n        navTank.initialize();\n\n        window.addEventListener('resize', () => {\n            navTank.options.width = window.innerWidth;\n            navTank.options.height = navElement.offsetHeight;\n            navTank.setCanvasSize();\n        });\n    });\n    </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -72,7 +72,7 @@ func MainNavBar(pageMode string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"nav_wrapper\" class=\"main-nav-wrapper\"><input type=\"hidden\" id=\"page_mode_input\" name=\"page_mode\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -85,7 +85,7 @@ func MainNavBar(pageMode string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\"><div id=\"page_mode_menu\" class=\"main-nav\"><a hx-get=\"/home\" href=\"/home\" hx-target=\"#content\" hx-push-url=\"true\" hx-swap=\"outerHTML\" class=\"nav-item\"><div class=\"nav-item-content\"><span class=\"nav-item-label\">Home</span></div><div class=\"nav-item-underline\"></div></a> <a hx-get=\"/projects\" href=\"/projects\" hx-target=\"#content\" hx-push-url=\"true\" hx-swap=\"outerHTML\" class=\"nav-item\"><div class=\"nav-item-content\"><span class=\"nav-item-label\">Projects</span></div><div class=\"nav-item-underline\"></div></a> <a hx-get=\"/blog\" href=\"/blog\" hx-target=\"#content\" hx-push-url=\"true\" hx-swap=\"outerHTML\" class=\"nav-item\"><div class=\"nav-item-content\"><span class=\"nav-item-label\">Blog</span></div><div class=\"nav-item-underline\"></div></a></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
