@@ -1,7 +1,4 @@
 node_modules
-tmp
-bin
 package-lock.json
 package.json
 blog.db
-public/styles/
