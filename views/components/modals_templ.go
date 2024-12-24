@@ -29,7 +29,7 @@ func OptionsModalContent() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div><h2 class=\"text-xl font-bold mb-2\">Options</h2><ul>Darkmode</ul></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -58,7 +58,7 @@ func NotificationsModalContent() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-4\"><h2 class=\"text-xl font-bold mb-4\">Notifications</h2><ul class=\"space-y-4\"><li>Mail List Coming Soon..</li></ul></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -87,7 +87,7 @@ func ContactModalContent() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"p-4\"><h2 class=\"text-xl font-bold mb-4\">My Profiles</h2><ul class=\"space-y-2\"><li><a href=\"https://github.com/TylerGilman\" class=\"text-blue-600 hover:underline\">Github</a></li><li><a href=\"https://www.linkedin.com/in/tyler-gilman-991b84223/\" class=\"text-blue-600 hover:underline\">LinkedIn</a></li><li><a href=\"https://x.com/TylerGilman01\" class=\"text-blue-600 hover:underline\">X</a></li>Send me an email @ nereustech@gmail.com</ul></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -117,7 +117,7 @@ func Modal(content templ.Component, isFullPage bool) templ.Component {
 		}
 		ctx = templ.ClearChildren(ctx)
 		if isFullPage {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<!doctype html> <html lang=\"en\"><head><title>Nereus Tech</title><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"><link rel=\"stylesheet\" href=\"/public/styles.css\"><script src=\"https://unpkg.com/htmx.org@1.9.9\" defer></script></head><body class=\"antialiased\"><div class=\"bg-gray-100 min-h-screen flex items-center justify-center\"><div id=\"modal-content\" class=\"bg-white rounded-2xl w-full max-w-md p-6 shadow-lg\"><a href=\"/close-modal\" class=\"px-4 bg-gray-300 hover:bg-gray-400 rounded-lg flex items-center\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-5 w-5 mr-2\" viewBox=\"0 0 20 20\" fill=\"currentColor\"><path fill-rule=\"evenodd\" d=\"M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z\" clip-rule=\"evenodd\"></path></svg> Back</a><div id=\"modal-body\" class=\"mt-8\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -125,12 +125,12 @@ func Modal(content templ.Component, isFullPage bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></body></html>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		} else {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"modal-container\"><div id=\"modal-overlay\" class=\"fixed inset-0 bg-black bg-opacity-50 z-50 flex items-end sm:items-center justify-center opacity-0 transition-opacity duration-300 ease-in-out\" hx-get=\"/close-modal\" hx-target=\"#modal-container\" hx-swap=\"outerHTML\" hx-trigger=\"click\"><div id=\"modal-content\" class=\"bg-white rounded-t-2xl sm:rounded-2xl w-full sm:w-96 max-h-[80vh] sm:max-h-[90vh] p-6 shadow-lg overflow-y-auto transform translate-y-full sm:translate-y-0 sm:scale-95 transition-all duration-300 ease-in-out\"><a href=\"/close-modal\" hx-get=\"/close-modal\" hx-target=\"#modal-container\" hx-swap=\"outerHTML\" class=\"absolute top-4 right-4 text-gray-600 hover:text-gray-800 text-2xl\">&times;</a><div id=\"modal-body\" class=\"mt-8\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -138,7 +138,7 @@ func Modal(content templ.Component, isFullPage bool) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div><script>\n            document.querySelector('#modal-content').addEventListener('click', function(event) {\n                event.stopPropagation();\n            }, false);\n        </script>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}

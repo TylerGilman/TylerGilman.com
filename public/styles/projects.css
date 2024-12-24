@@ -61,6 +61,14 @@
   border-radius: var(--border-radius);
 }
 
+.fishtank-placeholder {
+  transition: opacity 0.3s ease-out;
+}
+
+.fishtank-canvas {
+  transition: opacity 0.3s ease-in;
+}
+
 @media (max-width: 768px) {
   .fishtank-canvas {
     height: 300px;

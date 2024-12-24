@@ -82,7 +82,7 @@ func Partial() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div id=\"content\" class=\"content-container\"><div class=\"content-section\"><h1 class=\"main-title\">Tyler Gilman @ Nereus Technology</h1><p class=\"subtitle\">SWE passionate about Open Source and Machine Learning</p><div class=\"technology-and-services\"><div class=\"technology\"><h2 class=\"section-title\">Technology</h2><ul class=\"list\"><li><span class=\"list-item-title\">Systems</span><p class=\"list-item-description\">~ 1 Year of intern systems development for low latency FX Trading</p></li><li><span class=\"list-item-title\">Web</span><p class=\"list-item-description\">2 Years of development experience in web development with a focus on hypermedia systems.</p></li><li><span class=\"list-item-title\">Machine Learning</span><p class=\"list-item-description\">Machine learning is the concentration of my degree. Solid knowledge of the mathematical fundamentals. I enjoy experimenting with open source models and fine tuning.</p></li></ul></div><div class=\"services\"><h2 class=\"section-title\">Services</h2><ul class=\"list\"><li><span class=\"list-item-title\">Computer Science Tutoring</span><p class=\"list-item-description\">Personalized instruction in languages such as Python (Machine Learning, Django/Flask), Golang, Java, Javascript, REACT</p></li><li><span class=\"list-item-title\">Interactive & Custom Websites</span><p class=\"list-item-description\">Competitive pricing for custom websites. Specializing in accessibility and Hypermedia solutions.</p></li></ul></div></div><div class=\"about\"><h3 class=\"about-title\">About Me</h3><ul class=\"about-list\"><li>Undergraduate CS Major (Concentration on Machine Learning)</li><li>Located on the East Coast of the United States</li></ul></div><div class=\"action-buttons\"><a href=\"/projects\" hx-get=\"/projects\" hx-target=\"#content\" hx-push-url=\"true\" class=\"primary-button\">View My Projects</a> <a href=\"/modal/contact\" hx-get=\"modal/contact\" hx-target=\"#modal-container\" hx-swap=\"innerHTML\" class=\"secondary-button\">Contact Me</a></div><p class=\"footer-text\">This Website is built for accessibility and speed using golang and hypermedia. It is fast and fully functional <span class=\"highlight\">with javascript disabled</span> thanks to the power of HTMX</p>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 1)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -90,7 +90,7 @@ func Partial() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"closing\"><p class=\"closing-text\">Ready to bring your tech ideas to life? Let's collaborate!</p><p class=\"signature\">Tyler @ Nereus Technology</p></div></div></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 2)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -148,12 +148,12 @@ func BlogPreviewContent(articles []blog.Article) templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"blog-preview\"><h2 class=\"blog-title\">Latest Blog Posts</h2><div class=\"blog-articles\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 3)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		for _, article := range articles {
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"article-preview\">")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 4)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -161,12 +161,12 @@ func BlogPreviewContent(articles []blog.Article) templ.Component {
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
-			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div>")
+			templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 5)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div hx-get=\"/blog\" hx-target=\"#content\" hx-push-url=\"true\" class=\"blog-link\"><a href=\"/blog\" class=\"view-all\">View All Posts</a></div></div>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 6)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -195,7 +195,7 @@ func previewArticle(article blog.Article) templ.Component {
 			templ_7745c5c3_Var6 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<article class=\"article\"><a href=\"")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 7)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -204,7 +204,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-get=\"")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 8)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -217,7 +217,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" hx-push-url=\"true\"><div class=\"article-content\"><h3 class=\"article-title\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 9)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -230,7 +230,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</h3><p class=\"article-category\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 10)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -243,7 +243,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p><p class=\"article-summary\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 11)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -256,7 +256,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></div><p class=\"article-date\">")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 12)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -269,7 +269,7 @@ func previewArticle(article blog.Article) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</p></a></article>")
+		templ_7745c5c3_Err = templ.WriteWatchModeString(templ_7745c5c3_Buffer, 13)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

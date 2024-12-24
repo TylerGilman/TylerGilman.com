@@ -81,19 +81,40 @@ templ MainNavBar(pageMode string) {
 	<div id="nav_wrapper" class="main-nav-wrapper">
 		<input type="hidden" id="page_mode_input" name="page_mode" value={ pageMode }/>
 		<div id="page_mode_menu" class="main-nav">
-			<a hx-get="/home" href="/home" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item">
+			<a hx-get="/home" 
+               href="/home" 
+               hx-target="#content" 
+               hx-push-url="true" 
+               hx-swap="outerHTML" 
+               class="nav-item" 
+               hx-ext="preload" 
+               preload="mouseover">
 				<div class="nav-item-content">
 					<span class="nav-item-label">Home</span>
 				</div>
 				<div class="nav-item-underline"></div>
 			</a>
-			<a hx-get="/projects" href="/projects" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item">
+			<a hx-get="/projects" 
+               href="/projects" 
+               hx-target="#content" 
+               hx-push-url="true" 
+               hx-swap="outerHTML" 
+               class="nav-item" 
+               hx-ext="preload" 
+               preload="mouseover">
 				<div class="nav-item-content">
 					<span class="nav-item-label">Projects</span>
 				</div>
 				<div class="nav-item-underline"></div>
 			</a>
-			<a hx-get="/blog" href="/blog" hx-target="#content" hx-push-url="true" hx-swap="outerHTML" class="nav-item">
+			<a hx-get="/blog" 
+               href="/blog" 
+               hx-target="#content" 
+               hx-push-url="true" 
+               hx-swap="outerHTML" 
+               class="nav-item" 
+               hx-ext="preload" 
+               preload="mouseover">
 				<div class="nav-item-content">
 					<span class="nav-item-label">Blog</span>
 				</div>

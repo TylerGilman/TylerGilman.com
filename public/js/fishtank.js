@@ -412,11 +412,17 @@ setCanvasSize() {
 
     initializeFishes() {
         this.fishes = [];
+        const totalWidth = this.options.width + this.options.buffer * 2;
+        const totalHeight = this.options.height + this.options.buffer * 2;
+        
+        // Create fish in a distributed pattern
         for (let i = 0; i < this.options.fishCount; i++) {
-            const x = Math.random() * (this.options.width + this.options.buffer * 2) - this.options.buffer;
-            const y = Math.random() * (this.options.height + this.options.buffer * 2) - this.options.buffer;
+            const segment = totalWidth / this.options.fishCount;
+            const x = (segment * i) - this.options.buffer;
+            const y = Math.random() * totalHeight - this.options.buffer;
             const color = this.getRandomColor();
             const speed = this.getRandomSpeed(this.options.minSpeed, this.options.maxSpeed);
+            
             this.fishes.push(new Fish(
                 x, y, color, speed,
                 this.options.width,
@@ -485,23 +491,26 @@ initialize() {
     this.ctx = this.canvas.getContext('2d');
     if (!this.ctx) return;
 
-    // Small delay to ensure proper sizing
-    setTimeout(() => {
-        this.setCanvasSize();
-        this.initializeFishes();
-        this.setupEventListeners();
+    // Set initial size
+    this.setCanvasSize();
+    
+    // Initialize everything before showing the canvas
+    this.initializeFishes();
+    this.setupEventListeners();
+
+    // Show canvas and hide placeholder once everything is ready
+    requestAnimationFrame(() => {
+        const placeholder = this.canvas.parentElement.querySelector('.fishtank-placeholder');
+        if (placeholder) {
+            placeholder.style.opacity = '0';
+            setTimeout(() => placeholder.remove(), 300);
+        }
+        this.canvas.classList.remove('opacity-0');
         this.draw();
         this.isInitialized = true;
-    }, 100);
+    });
 }
 
-    cleanup() {
-        if (this.animationFrameId) {
-            cancelAnimationFrame(this.animationFrameId);
-        }
-        this.isInitialized = false;
-        this.fishes = [];
-    }
 }
 
 
