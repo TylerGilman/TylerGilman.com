@@ -457,7 +457,7 @@ setCanvasSize() {
             return;
         }
 
-        this.ctx.clearRect(0, 0, this.options.width, this.options.height);
+        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         // Draw foods
         this.drawFoods();
@@ -479,13 +479,14 @@ setCanvasSize() {
 
         this.ctx = this.canvas.getContext('2d');
         if (!this.ctx) return;
-
-        this.setCanvasSize();
-        this.initializeFishes();
-        this.setupEventListeners();
-        this.draw();
-
-        this.isInitialized = true;
+	
+	setTimeout(() => {
+		this.setCanvasSize();
+		this.initializeFishes();
+		this.setupEventListeners();
+		this.draw();
+		this.isInitialized = true;
+	}
     }
 
     cleanup() {
