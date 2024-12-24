@@ -462,6 +462,16 @@ setCanvasSize() {
         }
     }
 
+    cleanup() {
+        if (this.animationFrameId) {
+            cancelAnimationFrame(this.animationFrameId);
+            this.animationFrameId = null;
+        }
+        this.isInitialized = false;
+        this.fishes = [];
+        this.foods = [];
+    }
+
     draw = () => {
         if (!document.body.contains(this.canvas)) {
             this.cleanup();

@@ -57,7 +57,7 @@ templ Partial() {
             </ul>
         </div>
         <div class="action-buttons">
-            <a href="/projects" hx-get="/projects" hx-target="#content" hx-push-url="true" class="primary-button">
+            <a href="/projects" hx-get="/projects" hx-target="#content" hx-swap="outerHTML" hx-push-url="true" class="primary-button">
                 View My Projects
             </a>
             <a href="/modal/contact" hx-get="modal/contact" hx-target="#modal-container" hx-swap="innerHTML" class="secondary-button">
