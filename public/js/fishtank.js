@@ -471,23 +471,27 @@ setCanvasSize() {
         this.animationFrameId = requestAnimationFrame(this.draw);
     }
 
-    initialize() {
-        if (this.isInitialized) return;
+initialize() {
+    if (this.isInitialized) return;
 
-        this.canvas = document.getElementById(this.canvasId);
-        if (!this.canvas) return;
+    this.canvas = document.getElementById(this.canvasId);
+    if (!this.canvas) return;
 
-        this.ctx = this.canvas.getContext('2d');
-        if (!this.ctx) return;
-	
-	setTimeout(() => {
-		this.setCanvasSize();
-		this.initializeFishes();
-		this.setupEventListeners();
-		this.draw();
-		this.isInitialized = true;
-	}
-    }
+    this.ctx = this.canvas.getContext('2d');
+    if (!this.ctx) return;
+
+    // Set size before doing anything else
+    this.setCanvasSize();
+    
+    // Small delay to ensure proper sizing
+    setTimeout(() => {
+        this.setCanvasSize();
+        this.initializeFishes();
+        this.setupEventListeners();
+        this.draw();
+        this.isInitialized = true;
+    }, 100);
+}
 
     cleanup() {
         if (this.animationFrameId) {
