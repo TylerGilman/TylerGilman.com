@@ -181,21 +181,22 @@ func HandleUpdateArticle(w http.ResponseWriter, r *http.Request) error {
     return nil
 }
 
-// For deleting articles
 func HandleDeleteArticle(w http.ResponseWriter, r *http.Request) error {
-    idStr := chi.URLParam(r, "id")
-    id, err := strconv.Atoi(idStr)
+    articleIDStr := chi.URLParam(r, "id")
+    articleID, err := strconv.Atoi(articleIDStr)
     if err != nil {
-        http.Error(w, "Invalid article ID", http.StatusBadRequest)
+        http.Error(w, "invalid id", http.StatusBadRequest)
         return err
     }
 
-    err = blog.DeleteArticle(id)
-    if err != nil {
-        http.Error(w, "Failed to delete article", http.StatusInternalServerError)
+    // do the delete
+    if err := blog.DeleteArticle(articleID); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
         return err
     }
 
-    http.Redirect(w, r, fmt.Sprintf("/blog"), 200)
+    // Now you want to set HX-Redirect for HTMX:
+    w.Header().Set("HX-Redirect", "/blog")
+    w.WriteHeader(http.StatusOK)
     return nil
 }

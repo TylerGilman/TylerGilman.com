@@ -192,7 +192,7 @@ class Fish {
             this.limitJointAngle(this.points[i], this.points[i + 1], this.points[i + 2]);
         }
 
-        // Try to eat any food you're close to
+        // Try to eat anblogy food you're close to
         this.eatFood(foods);
     }
 
@@ -482,41 +482,7 @@ class FishTank {
     }
 }
 
-// Global event handlers for HTMX integration
-document.addEventListener('htmx:afterSettle', function(event) {
-    const tanks = event.detail.target.getElementsByTagName('canvas');
-    if (!tanks.length) {
-        console.warn('No canvas elements found in updated content');
-        return;
-    }
 
-    Array.from(tanks).forEach(tank => {
-        if (tank.id && tank.id.includes('fishtank')) {
-            console.log(`Initializing tank with id: ${tank.id}`);
-            const isNav = tank.id === 'nav-fishtank';
-            const options = isNav ? {
-                height: 64,
-                width: window.innerWidth,
-                fishCount: 10,
-                minSpeed: 0.3,
-                maxSpeed: 1.5
-            } : {};
-            
-            const fishTank = new FishTank(tank.id, options);
-            fishTank.initialize();
-            tank.fishTank = fishTank;
-        }
-    });
-});
-
-document.addEventListener('htmx:beforeCleanupElement', function(event) {
-    const tanks = event.target.getElementsByTagName('canvas');
-    Array.from(tanks).forEach(tank => {
-        if (tank.fishTank) {
-            tank.fishTank.cleanup();
-        }
-    });
-});
 
 document.addEventListener('htmx:afterSettle', function(event) {
     const tanks = document.querySelectorAll('canvas[id$="-fishtank"]');

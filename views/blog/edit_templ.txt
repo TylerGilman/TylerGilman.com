@@ -1,4 +1,4 @@
-<div class=\"container mx-auto px-4 py-8\"><div class=\"max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6\"><h1 class=\"text-2xl font-bold mb-6\">Edit Article</h1><form hx-put=\"
+<div id=\"content\" class=\"container mx-auto px-4 py-8\"><div class=\"max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6\"><h1 class=\"text-2xl font-bold mb-6\">Edit Article</h1><form hx-put=\"
 \" class=\"space-y-6\"><div><label for=\"title\" class=\"block text-sm font-medium text-gray-700\">Title</label> <input type=\"text\" id=\"title\" name=\"title\" value=\"
 \" required class=\"mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2\"></div><div><label for=\"author\" class=\"block text-sm font-medium text-gray-700\">Author</label> <input type=\"text\" id=\"author\" name=\"author\" value=\"
 \" required class=\"mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2\"></div><div><label for=\"category\" class=\"block text-sm font-medium text-gray-700\">Category</label> <select id=\"category\" name=\"category\" required class=\"mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2\"><option value=\"Life\"
