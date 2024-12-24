@@ -196,6 +196,6 @@ func HandleDeleteArticle(w http.ResponseWriter, r *http.Request) error {
         return err
     }
 
-    w.WriteHeader(http.StatusOK)
+    http.Redirect(w, r, fmt.Sprintf("/blog"), 200)
     return nil
 }

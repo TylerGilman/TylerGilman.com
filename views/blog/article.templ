@@ -8,14 +8,14 @@ import (
 
 templ EditControls(article Article) {
     <div class="flex gap-4 mt-4">
-        <a href={ templ.SafeURL(fmt.Sprintf("/admin/blog/edit/%d", article.ID)) }
+        <a href={ templ.URL(fmt.Sprintf("/admin/blog/edit/%d", article.ID)) }
            class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
             Edit Article
         </a>
         <button 
             id="delete-btn"
-            data-article-id={ fmt.Sprintf("%d", article.ID) }
-            onclick="deleteArticle(this.getAttribute('data-article-id'))"
+            hx-delete={ fmt.Sprintf("/admin/blog/%d", article.ID) }
+            hx-confirm="Are you sure you want to delete this article?"
             class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
             Delete Article
         </button>
@@ -44,21 +44,5 @@ templ FullArticle(article Article, isAdmin bool) {
                 <a hx-get="/blog" href="/blog" hx-target="#content" hx-push-url="true" class="text-red-400 hover:underline">Back to Blog</a>
             </div>
         </div>
-
-        if isAdmin {
-            <script>
-                function deleteArticle(id) {
-                    if (confirm('Are you sure you want to delete this article?')) {
-                        fetch(`/admin/blog/${id}`, {
-                            method: 'DELETE',
-                        }).then(response => {
-                            if (response.ok) {
-                                window.location.href = '/blog';
-                            }
-                        });
-                    }
-                }
-            </script>
-        }
     }
 }
