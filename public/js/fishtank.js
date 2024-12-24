@@ -384,16 +384,21 @@ setCanvasSize() {
     }
 
     const container = this.canvas.parentElement;
-    const containerWidth = container.clientWidth;
+    const containerWidth = Math.min(container.clientWidth, 600); // Max width of 600px
     const isMobile = window.innerWidth <= 768;
     
-    this.options.width = containerWidth;
-    this.options.height = isMobile ? containerWidth * 0.75 : containerWidth * 0.66;
+    // Calculate height based on width and screen size
+    const height = isMobile ? 
+        Math.min(containerWidth * 0.75, 300) : // Mobile height
+        Math.min(containerWidth * 0.66, 400);  // Desktop height
     
-    this.canvas.width = this.options.width;
-    this.canvas.height = this.options.height;
+    this.options.width = containerWidth;
+    this.options.height = height;
+    
+    this.canvas.width = containerWidth;
+    this.canvas.height = height;
     this.canvas.style.width = '100%';
-    this.canvas.style.height = 'auto';
+    this.canvas.style.height = height + 'px';
 }
 
     getRandomColor() {
@@ -480,9 +485,6 @@ initialize() {
     this.ctx = this.canvas.getContext('2d');
     if (!this.ctx) return;
 
-    // Set size before doing anything else
-    this.setCanvasSize();
-    
     // Small delay to ensure proper sizing
     setTimeout(() => {
         this.setCanvasSize();

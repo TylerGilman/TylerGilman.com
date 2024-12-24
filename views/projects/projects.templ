@@ -80,27 +80,10 @@ templ Partial(contributions []models.ContributionDay) {
     </div>
   </div>
   <script>
-      document.addEventListener('DOMContentLoaded', function() {
-          if (typeof FishTank === 'undefined') {
-              console.error('FishTank class not loaded');
-              return;
-          }
-          
-          const canvas = document.getElementById('project-fishtank');
-          const container = document.getElementById('fishtank-container');
-          
-          function resizeFishtank() {
-              const width = container.clientWidth;
-              canvas.width = width;
-              canvas.height = width < 480 ? 250 : width < 768 ? 300 : 400;
-          }
-
-          const projectTank = new FishTank('project-fishtank');
-          projectTank.initialize();
-          
-          resizeFishtank();
-          window.addEventListener('resize', resizeFishtank);
-      });
+    document.addEventListener('DOMContentLoaded', function() {
+        const projectTank = new FishTank('project-fishtank');
+        projectTank.initialize();
+    });
   </script>
 }
 
