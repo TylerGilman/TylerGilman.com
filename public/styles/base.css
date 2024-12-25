@@ -147,6 +147,7 @@ nav {
   color: var(--primary-color);
   font-weight: bold;
   margin-left: 0;
+  margin-top: 0rem;
 }
 
 #logo-wrapper:hover #logo-image {
@@ -166,6 +167,7 @@ nav {
   flex: 1;
   display: flex;
   justify-content: center;
+  z-index: 0;
 }
 
 .main-nav {

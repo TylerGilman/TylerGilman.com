@@ -376,10 +376,16 @@ setCanvasSize() {
     if (!this.canvas) return;
     
     if (this.canvasId === 'nav-fishtank') {
+        const navElement = this.canvas.closest('nav');
+        const navHeight = navElement ? navElement.offsetHeight : 64;
+        
         this.canvas.width = window.innerWidth;
-        this.canvas.height = 64;
+        this.canvas.height = navHeight;
         this.canvas.style.width = '100%';
-        this.canvas.style.height = '64px';
+        this.canvas.style.height = navHeight + 'px';
+        
+        this.options.width = window.innerWidth;
+        this.options.height = navHeight;
         return;
     }
 
