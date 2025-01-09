@@ -2,7 +2,6 @@ package handlers
 
 import (
     "net/http"
-    "log/slog"
     "github.com/TylerGilman/nereus_main_site/authpkg"
 )
 
