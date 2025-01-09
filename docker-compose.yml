@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   web:
     build: .
@@ -10,6 +11,7 @@ services:
         target: /app/blog.db
       - ${SSL_CERT_PATH}:/ssl/cert.pem
       - ${SSL_KEY_PATH}:/ssl/key.pem
+      - ./.env:/app/.env
     environment:
       - ENV=production
       - SSL_CERT_PATH=/ssl/cert.pem
