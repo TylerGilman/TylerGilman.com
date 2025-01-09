@@ -9,6 +9,7 @@ services:
       - ./blog.db:/app/blog.db
       - ${SSL_CERT_PATH}:/ssl/cert.pem
       - ${SSL_KEY_PATH}:/ssl/key.pem
+      - ./.env:/app/.env
     environment:
       - ENV=production
       - SSL_CERT_PATH=/ssl/cert.pem
