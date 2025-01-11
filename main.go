@@ -165,57 +165,26 @@ func main() {
 	}
 
 	// Start server
-	go func() {
-		env := os.Getenv("ENV")
-		if env == "" {
-			log.Println("ENV not set, defaulting to production")
-			env = "production"
-		}
+// Start server
+go func() {
+    port := os.Getenv("DEV_PORT")
+    if port == "" {
+        port = "8080"
+    }
+    srv.Addr = ":" + port
+    
+    // No need for SSL here since Nginx handles it
+    slog.Info("Starting server", "port", port)
+    if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+        slog.Error("Error starting server:", slog.String("error", err.Error()))
+    }
+}()
 
-		if env == "development" {
-			port := os.Getenv("DEV_PORT")
-			if port == "" {
-				port = "8080"
-			}
-			srv.Addr = ":" + port
-			slog.Info("Starting development server", "port", port)
-			if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-				slog.Error("Error starting development server:", slog.String("error", err.Error()))
-			}
-		} else {
-			certPath := os.Getenv("SSL_CERT_PATH")
-			keyPath := os.Getenv("SSL_KEY_PATH")
-			if certPath == "" || keyPath == "" {
-				log.Fatal("SSL_CERT_PATH or SSL_KEY_PATH not set in environment")
-			}
-
-			cert, err := tls.LoadX509KeyPair(certPath, keyPath)
-			if err != nil {
-				log.Fatalf("Error loading certificate and key: %v", err)
-			}
-
-			srv.TLSConfig = &tls.Config{
-				Certificates: []tls.Certificate{cert},
-				MinVersion:  tls.VersionTLS12,
-			}
-			srv.Addr = ":443"
-
-			slog.Info("HTTPS server starting", "listenAddr", srv.Addr)
-			if err := srv.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
-				slog.Error("Error starting HTTPS server:", slog.String("error", err.Error()))
-			}
-		}
-	}()
-
-	<-quit
-	slog.Info("Server is shutting down...")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	if err := srv.Shutdown(ctx); err != nil {
-		slog.Error("Server forced to shutdown:", slog.String("error", err.Error()))
-	}
-
-	slog.Info("Server exited properly")
+<-quit
+slog.Info("Server is shutting down...")
+ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+defer cancel()
+if err := srv.Shutdown(ctx); err != nil {
+    slog.Error("Server forced to shutdown:", slog.String("error", err.Error()))
 }
+slog.Info("Server exited properly")
