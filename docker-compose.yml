@@ -3,17 +3,17 @@ services:
   web:
     build: .
     ports:
-      - "80:80"
-      - "443:443"
+      - "8002:8080"  # Changed to use port 8002 externally, 8080 internally
     volumes:
       - type: bind
         source: ./blog.db
         target: /app/blog.db
-      - ${SSL_CERT_PATH}:/ssl/cert.pem
-      - ${SSL_KEY_PATH}:/ssl/key.pem
+      - /etc/letsencrypt/live/tylergilman.com/fullchain.pem:/ssl/cert.pem
+      - /etc/letsencrypt/live/tylergilman.com/privkey.pem:/ssl/key.pem
       - ./.env:/app/.env
     environment:
       - ENV=production
+      - DEV_PORT=8080  # Internal port
       - SSL_CERT_PATH=/ssl/cert.pem
       - SSL_KEY_PATH=/ssl/key.pem
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
