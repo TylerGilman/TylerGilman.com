@@ -120,71 +120,74 @@ func main() {
     
     // Initialize the session store after environment is loaded
     authpkg.InitStore()
-	logLevelStr := os.Getenv("LOG_LEVEL")
-	if logLevelStr == "" {
-		log.Println("LOG_LEVEL not set, defaulting to INFO")
-		logLevelStr = "INFO"
-	}
-	logLevel := getLogLevel(logLevelStr)
-
-	opts := &slog.HandlerOptions{
-		Level: logLevel,
-	}
-	handler := slog.NewJSONHandler(os.Stdout, opts)
-	logger := slog.New(handler)
-	slog.SetDefault(logger)
-
-	if err := blog.InitDB(); err != nil {
-		log.Fatal("Error initializing database:", err)
-	}
-	defer blog.CloseDB()
-
-	// Initial projects cache update
-	handlers.UpdateProjectsCache()
-
-	// Set up periodic cache update
-	go func() {
-		for {
-			time.Sleep(1 * time.Hour)
-			handlers.UpdateProjectsCache()
-		}
-	}()
-
-	router := chi.NewMux()
-	setupRoutes(router)
-
-	// Graceful shutdown setup
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-
-	srv := &http.Server{
-		Handler:      router,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
-	}
-
-	// Start server
-// Start server
-go func() {
-    port := os.Getenv("DEV_PORT")
-    if port == "" {
-        port = "8080"
+    logLevelStr := os.Getenv("LOG_LEVEL")
+    if logLevelStr == "" {
+        log.Println("LOG_LEVEL not set, defaulting to INFO")
+        logLevelStr = "INFO"
     }
-    srv.Addr = ":" + port
-    
-    // No need for SSL here since Nginx handles it
-    slog.Info("Starting server", "port", port)
-    if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-        slog.Error("Error starting server:", slog.String("error", err.Error()))
-    }
-}()
+    logLevel := getLogLevel(logLevelStr)
 
-<-quit
-slog.Info("Server is shutting down...")
-ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-defer cancel()
-if err := srv.Shutdown(ctx); err != nil {
-    slog.Error("Server forced to shutdown:", slog.String("error", err.Error()))
+    opts := &slog.HandlerOptions{
+        Level: logLevel,
+    }
+    handler := slog.NewJSONHandler(os.Stdout, opts)
+    logger := slog.New(handler)
+    slog.SetDefault(logger)
+
+    if err := blog.InitDB(); err != nil {
+        log.Fatal("Error initializing database:", err)
+    }
+    defer blog.CloseDB()
+
+    // Initial projects cache update
+    handlers.UpdateProjectsCache()
+
+    // Set up periodic cache update
+    go func() {
+        for {
+            time.Sleep(1 * time.Hour)
+            handlers.UpdateProjectsCache()
+        }
+    }()
+
+    router := chi.NewMux()
+    setupRoutes(router)
+
+    // Graceful shutdown setup
+    quit := make(chan os.Signal, 1)
+    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+    srv := &http.Server{
+        Handler:      router,
+        ReadTimeout:  15 * time.Second,
+        WriteTimeout: 15 * time.Second,
+        IdleTimeout:  60 * time.Second,
+    }
+
+    // Start server
+    go func() {
+        port := os.Getenv("DEV_PORT")
+        if port == "" {
+            port = "8080"
+        }
+        srv.Addr = ":" + port
+        
+        // No need for SSL here since Nginx handles it
+        slog.Info("Starting server", "port", port)
+        if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+            slog.Error("Error starting server:", slog.String("error", err.Error()))
+        }
+    }()
+
+    <-quit
+    slog.Info("Server is shutting down...")
+
+    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+    defer cancel()
+
+    if err := srv.Shutdown(ctx); err != nil {
+        slog.Error("Server forced to shutdown:", slog.String("error", err.Error()))
+    }
+
+    slog.Info("Server exited properly")
 }
-slog.Info("Server exited properly")
