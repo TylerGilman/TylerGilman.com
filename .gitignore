@@ -5,3 +5,16 @@ blog.db
 .env
 *.pem
 /tmp
+
+**/*_templ.go
+*_templ.go
+
+*.db
+
+# Binary files
+/bin/
+/nereus_main_site
+
+# Environment files
+.env
+.null_ls
