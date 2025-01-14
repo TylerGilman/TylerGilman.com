@@ -1,6 +1,7 @@
 package authpkg
 
 import (
+    "encoding/gob"
     "log/slog"
     "net/http"
     "os"
@@ -12,6 +13,7 @@ var SessionManager *scs.SessionManager
 
 // InitStore must be called after environment variables are loaded
 func InitStore() {
+    gob.Register(time.Time{})
     SessionManager = scs.New()
     
     // Configure session options
