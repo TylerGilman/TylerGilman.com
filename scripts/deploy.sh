@@ -1,13 +1,10 @@
 #!/bin/bash
 set -e
 
-# Pull latest changes
-git pull
+# Build the new image
+docker build -t yourusername/tylergilman:latest .
 
-# Build and start containers
-docker-compose down
-docker-compose build
-docker-compose up -d
+# Push to Docker Hub
+docker push yourusername/tylergilman:latest
 
-# Check status
-docker-compose ps
+# Watchtower will automatically detect and pull the new image
