@@ -46,7 +46,7 @@ services:
       retries: 3
 
   web:
-    image: tylergilman/tylergilman:latest
+    image: tylergilman/tylergilman:prod
     deploy:
       mode: replicated
       replicas: 3
