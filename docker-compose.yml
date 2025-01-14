@@ -15,11 +15,7 @@ services:
     networks:
       - traefik-public
     labels:
-      - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`tylergilman.com`)"
-      - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
-      - "traefik.http.services.web.loadbalancer.server.port=8080"
     volumes:
       - type: bind
         source: ./blog.db
