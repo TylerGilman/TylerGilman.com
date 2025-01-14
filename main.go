@@ -15,9 +15,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
-	"github.com/TylerGilman/nereus_main_site/handlers"
-	"github.com/TylerGilman/nereus_main_site/views/blog"
-	"github.com/TylerGilman/nereus_main_site/authpkg"
+	"github.com/TylerGilman/TylerGilman.com/handlers"
+	"github.com/TylerGilman/TylerGilman.com/views/blog"
+	"github.com/TylerGilman/TylerGilman.com/authpkg"
 )
 
 func init() {

@@ -6,11 +6,11 @@ import (
     "net/http"
     "strconv"
     "time"
-    "github.com/TylerGilman/nereus_main_site/views/blog"
+    "github.com/TylerGilman/TylerGilman.com/views/blog"
     "github.com/go-chi/chi/v5"
     "github.com/gomarkdown/markdown"
     "github.com/gomarkdown/markdown/parser"
-    "github.com/TylerGilman/nereus_main_site/authpkg"
+    "github.com/TylerGilman/TylerGilman.com/authpkg"
     "github.com/gomarkdown/markdown/html"
 )
 

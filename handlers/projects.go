@@ -14,9 +14,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/TylerGilman/nereus_main_site/authpkg"
-	"github.com/TylerGilman/nereus_main_site/views/models"
-	"github.com/TylerGilman/nereus_main_site/views/projects"
+	"github.com/TylerGilman/TylerGilman.com/authpkg"
+	"github.com/TylerGilman/TylerGilman.com/views/models"
+	"github.com/TylerGilman/TylerGilman.com/views/projects"
 )
 
 var (

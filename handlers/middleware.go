@@ -2,7 +2,7 @@ package handlers
 
 import (
     "net/http"
-    "github.com/TylerGilman/nereus_main_site/authpkg"
+    "github.com/TylerGilman/TylerGilman.com/authpkg"
 )
 
 func SessionMiddleware(next http.Handler) http.Handler {

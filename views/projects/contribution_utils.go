@@ -4,7 +4,7 @@ import (
 	"log/slog"
 	"time"
 
-	"github.com/TylerGilman/nereus_main_site/views/models"
+	"github.com/TylerGilman/TylerGilman.com/views/models"
 )
 
 func organizeContributions(contributions []models.ContributionDay) [][]models.ContributionDay {

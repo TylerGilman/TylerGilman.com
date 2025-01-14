@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/TylerGilman/nereus_main_site/views/components"
+	"github.com/TylerGilman/TylerGilman.com/views/components"
 )
 
 func HandleOptionsModal(w http.ResponseWriter, r *http.Request) error {

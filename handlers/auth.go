@@ -5,8 +5,8 @@ import (
     "crypto/subtle"
     "os"
     "log/slog"
-    "github.com/TylerGilman/nereus_main_site/authpkg"
-    authviews "github.com/TylerGilman/nereus_main_site/views/auth"
+    "github.com/TylerGilman/TylerGilman.com/authpkg"
+    authviews "github.com/TylerGilman/TylerGilman.com/views/auth"
 )
 
 func HandleLogin(w http.ResponseWriter, r *http.Request) error {
