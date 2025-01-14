@@ -50,7 +50,6 @@ templ Partial(mainArticles []Article, sidebarArticles []Article) {
         </div>
 
         <div class="blog-main-layout">
-            <!-- Sidebar first in HTML for mobile-top placement -->
             <div class="sidebar">
                 <h2 class="sidebar-heading">More Posts</h2>
                 <div class="sidebar-article-list">
@@ -64,7 +63,7 @@ templ Partial(mainArticles []Article, sidebarArticles []Article) {
                 @MainArticles(mainArticles)
             </div>
         </div>
-    </div>
+      </div>
 }
 
 templ MainArticles(articles []Article) {

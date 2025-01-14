@@ -5,13 +5,13 @@ templ Navigation(page_mode string, isAdmin bool) {
         <canvas id="nav-fishtank" class="absolute inset-0 w-full h-full pointer-events-none" style="z-index: 1;"></canvas>
         
         <div class="container mx-auto px-4 items-center" style="z-index: 2; position: relative;">
-<div class="flex justify-between items-center">  // Change border-justify-between to justify-between
+<div class="flex justify-between items-center"> 
     <a href="/home" hx-get="/home" hx-push-url="true" hx-swap="outerHTML" hx-target="#content" id="logo-wrapper">
         <img src="/public/Nereus.png" alt="Nereus Logo" id="logo-image"/>
         <span id="logo-text">ereus</span>
         <p class="header-subtitle">Technology Consulting</p>
     </a>
-    <div class="flex items-center gap-4">  // Changed space-x-8 to gap-4 for better spacing
+    <div class="flex items-center gap-4"> 
         @MainNavBar(page_mode)
         <button
             id="theme-toggle"

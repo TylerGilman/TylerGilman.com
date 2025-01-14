@@ -23,7 +23,7 @@ templ ContactModalContent() {
         <h2 class="text-xl font-bold mb-4">My Profiles</h2>
         <ul class="space-y-2">
             <li><a href="https://github.com/TylerGilman" class="text-blue-600 hover:underline">Github</a></li>
-            <li><a href="https://www.linkedin.com/in/tyler-gilman-991b84223/" class="text-blue-600 hover:underline">LinkedIn</a></li>
+            <li><a href="https://www.linkedin.com/in/tyler-gilman-991b84223/" class="text-blue-600 hover:underline"> LinkedIn </a></li>
             <li><a href="https://x.com/TylerGilman01" class="text-blue-600 hover:underline">X</a></li>
             Send me an email @ nereustech@gmail.com
         </ul>
@@ -38,10 +38,10 @@ templ Modal(content templ.Component, isFullPage bool) {
                 <title>Nereus Tech</title>
                 <meta charset="UTF-8"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-                <link rel="stylesheet" href="/public/styles.css"/>
-                <script src="https://unpkg.com/htmx.org@1.9.9" defer></script>
+                <link rel="stylesheet" href="/public/styles.css" />
+                <script src="https://unpkg.com/htmx.org@1.9.9" defer="defer"></script>
             </head>
-            <body class="antialiased">
+            <body class="antialiased" >
                 <div class="bg-gray-100 min-h-screen flex items-center justify-center">
                     <div id="modal-content" class="bg-white rounded-2xl w-full max-w-md p-6 shadow-lg">
                         <a href="/close-modal" class="px-4 bg-gray-300 hover:bg-gray-400 rounded-lg flex items-center">
