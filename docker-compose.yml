@@ -1,20 +1,31 @@
 version: '3.8'
+
 services:
+  reverse-proxy:
+    image: traefik:v3.3
+    command:
+      - "--api.insecure=true --providers.docker"
+    ports:
+      - "80:80" #http
+      - "8080:8080" # web ui
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
   web:
     build: .
-    ports:
-      - "8002:8080"  # Changed to use port 8002 externally, 8080 internally
+    networks:
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.web.rule=Host(`tylergilman.com`)"
+      - "traefik.http.routers.web.entrypoints=websecure"
+      - "traefik.http.routers.web.tls.certresolver=letsencrypt"
+      - "traefik.http.services.web.loadbalancer.server.port=8080"
     volumes:
       - type: bind
         source: ./blog.db
         target: /app/blog.db
-      - /etc/letsencrypt/live/tylergilman.com/fullchain.pem:/ssl/cert.pem
-      - /etc/letsencrypt/live/tylergilman.com/privkey.pem:/ssl/key.pem
       - ./.env:/app/.env
     environment:
       - ENV=production
-      - DEV_PORT=8080  # Internal port
-      - SSL_CERT_PATH=/ssl/cert.pem
-      - SSL_KEY_PATH=/ssl/key.pem
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - DEV_PORT=8080
     restart: unless-stopped

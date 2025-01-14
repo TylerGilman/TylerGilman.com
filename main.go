@@ -170,8 +170,6 @@ func main() {
             port = "8080"
         }
         srv.Addr = ":" + port
-        
-        // No need for SSL here since Nginx handles it
         slog.Info("Starting server", "port", port)
         if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
             slog.Error("Error starting server:", slog.String("error", err.Error()))
