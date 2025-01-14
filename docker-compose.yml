@@ -1,20 +1,34 @@
 version: '3.8'
 
+networks:
+  web:
+    external: false
+
 services:
   reverse-proxy:
     image: traefik:v3.3
     command:
       - "--api.insecure=true"
-      - "--providers.docker"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
     ports:
-      - "80:80" #http
-      - "8080:8080" # web ui
+      - "80:80"     # HTTP
+      - "8080:8080" # Web UI
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - web
+
   web:
     build: .
+    networks:
+      - web
     labels:
+      - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`tylergilman.com`)"
+      - "traefik.http.routers.web.entrypoints=web"
+      - "traefik.http.services.web.loadbalancer.server.port=8080"
     volumes:
       - type: bind
         source: ./blog.db
