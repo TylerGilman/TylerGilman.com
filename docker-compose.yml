@@ -12,16 +12,24 @@ services:
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--ping=true"  # Enable ping for health checks
     ports:
-      - "80:80"     # HTTP
-      - "8080:8080" # Web UI
+      - "80:80"
+      - "8080:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - web
+    healthcheck:
+      test: ["CMD", "traefik", "healthcheck"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
 
   web:
     build: .
+    deploy:
+      replicas: 3  # Default number of replicas
     networks:
       - web
     labels:
@@ -29,6 +37,8 @@ services:
       - "traefik.http.routers.web.rule=Host(`tylergilman.com`)"
       - "traefik.http.routers.web.entrypoints=web"
       - "traefik.http.services.web.loadbalancer.server.port=8080"
+      # Add load balancing configuration
+      - "traefik.http.services.web.loadbalancer.passhostheader=true"
     volumes:
       - type: bind
         source: ./blog.db
