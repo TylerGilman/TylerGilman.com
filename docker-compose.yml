@@ -12,8 +12,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
   web:
     build: .
-    networks:
-      - traefik-public
     labels:
       - "traefik.http.routers.web.rule=Host(`tylergilman.com`)"
     volumes:
