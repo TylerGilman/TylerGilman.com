@@ -1,5 +1,4 @@
 version: '3.8'
-
 networks:
   web:
     external: false
@@ -18,7 +17,7 @@ services:
       - "--entrypoints.web.address=:80"
       - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
       - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--ping=true"  # Enable ping for health checks
+      - "--ping=true"
     ports:
       - "80:80"
       - "443:443"
@@ -38,14 +37,15 @@ services:
     build: .
     deploy:
       mode: replicated
-      replicas: 3  # Default number of replicas
+      replicas: 3
     networks:
       - web
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`tylergilman.com`)"
       - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.guestbook.tls.certresolver=myresolver"
+      - "traefik.http.routers.web.tls.certresolver=myresolver"  # Fixed router name
+      - "traefik.http.services.web.loadbalancer.server.port=8080"  # Added missing port configuration
     volumes:
       - type: bind
         source: ./blog.db
