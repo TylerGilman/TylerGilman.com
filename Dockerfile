@@ -7,7 +7,7 @@ RUN apk add --no-cache gcc musl-dev git
 # Install templ CLI
 RUN go install github.com/a-h/templ/cmd/templ@latest
 
-# Enable CGO
+# Enable CGO for SQLite
 ENV CGO_ENABLED=1
 
 WORKDIR /app
@@ -35,10 +35,16 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/views ./views
 
-# Set permissions
-RUN chmod -R 755 /app/public && \
-    chmod -R 755 /app/views
+# Create data directory and set permissions
+RUN mkdir -p /app/data && \
+    chown -R 1000:1000 /app && \
+    chmod -R 755 /app/public && \
+    chmod -R 755 /app/views && \
+    chmod 755 /app/main
 
 # Runtime configuration
+USER 1000
 EXPOSE 80
-CMD ["./main"]
+
+# Ensure data directory exists and run application
+CMD ["sh", "-c", "mkdir -p /app/data && ./main"]
