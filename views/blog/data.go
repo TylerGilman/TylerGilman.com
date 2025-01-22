@@ -28,14 +28,30 @@ const (
 )
 
 func InitDB() error {
-    var err error
     dbPath := os.Getenv("DB_PATH")
-    db, err = sql.Open("sqlite3", dbPath)
-    if err != nil {
-        return err
+    
+    // Ensure database directory exists
+    if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
+        return fmt.Errorf("failed to create database directory: %w", err)
     }
 
-    // Only create the table if it doesn't exist
+    // Create database file if it doesn't exist
+    if _, err := os.Stat(dbPath); os.IsNotExist(err) {
+        file, err := os.Create(dbPath)
+        if err != nil {
+            return fmt.Errorf("failed to create database file: %w", err)
+        }
+        file.Close()
+    }
+
+    // Open database with write permissions
+    var err error
+    db, err = sql.Open("sqlite3", dbPath+"?_journal_mode=WAL&_fk=true&mode=rwc")
+    if err != nil {
+        return fmt.Errorf("failed to open database: %w", err)
+    }
+
+    // Create tables
     _, err = db.Exec(`
         CREATE TABLE IF NOT EXISTS articles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,7 +65,11 @@ func InitDB() error {
             image_url TEXT
         )
     `)
-    return err
+    if err != nil {
+        return fmt.Errorf("failed to create table: %w", err)
+    }
+    
+    return nil
 }
 
 func CloseDB() {
