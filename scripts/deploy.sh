@@ -8,3 +8,4 @@ docker build -t tylergilman/tylergilman:prod .
 docker push tylergilman/tylergilman:prod
 
 # Watchtower will automatically detect and pull the new image
+echo "Deployment complete! Watchtower will automatically update the container."
