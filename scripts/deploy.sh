@@ -5,6 +5,6 @@ set -e
 docker build -t tylergilman/tylergilman:prod .
 
 # Push to Docker Hub
-docker push tylersgilman/tylergilman:prod
+docker push tylergilman/tylergilman:prod
 
 # Watchtower will automatically detect and pull the new image

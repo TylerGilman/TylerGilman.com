@@ -5,6 +5,7 @@ import (
     "time"
     "fmt"
     _ "github.com/mattn/go-sqlite3"
+    "os"
 )
 
 type Article struct {
@@ -28,7 +29,8 @@ const (
 
 func InitDB() error {
     var err error
-    db, err = sql.Open("sqlite3", "./blog.db")
+    dbPath := os.Getenv("DB_PATH")
+    db, err = sql.Open("sqlite3", dbPath)
     if err != nil {
         return err
     }
