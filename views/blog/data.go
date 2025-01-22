@@ -6,6 +6,7 @@ import (
     "fmt"
     _ "github.com/mattn/go-sqlite3"
     "os"
+    "path/filepath"
 )
 
 type Article struct {
@@ -30,6 +31,11 @@ const (
 func InitDB() error {
     dbPath := os.Getenv("DB_PATH")
     
+    // Ensure full path exists
+    if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
+        return fmt.Errorf("failed to create database path: %v (UID: %d, GID: %d)", 
+            err, os.Getuid(), os.Getgid())
+    }
     // Ensure database directory exists
     if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
         return fmt.Errorf("failed to create database directory: %w", err)
