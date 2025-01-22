@@ -1,7 +1,6 @@
-version: '3.8'
 networks:
   web:
-    external: false
+    external: true  # Use the existing `web` network
 
 services:
   watchtower:
@@ -14,7 +13,6 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - web
-  
 
   reverse-proxy:
     image: traefik:v3.3
@@ -56,8 +54,8 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.web.rule=Host(`tylergilman.com`)"
       - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.web.tls.certresolver=myresolver"  # Fixed router name
-      - "traefik.http.services.web.loadbalancer.server.port=8080"  # Added missing port configuration
+      - "traefik.http.routers.web.tls.certresolver=myresolver"
+      - "traefik.http.services.web.loadbalancer.server.port=8080"
       - "com.centurylinklabs.watchtower.enable=true"
     volumes:
       - type: bind
