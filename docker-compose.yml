@@ -1,6 +1,6 @@
 networks:
   web:
-    external: true
+    external: true  # Use existing Traefik network
 
 services:
   web:
@@ -9,34 +9,13 @@ services:
       - web
     labels:
       - "traefik.enable=true"
-      - "com.centurylinklabs.watchtower.enable=true"
-      - "com.centurylinklabs.watchtower.scope=prod"
       - "traefik.http.routers.tyler.rule=Host(`tylergilman.com`)"
       - "traefik.http.routers.tyler.entrypoints=websecure"
-      - "traefik.http.routers.tyler.tls.certresolver=leresolver"
+      - "traefik.http.routers.tyler.tls.certresolver=myresolver"
       - "traefik.http.services.tyler.loadbalancer.server.port=8080"
-      - "traefik.http.routers.tyler.middlewares=security-headers"
-      - "traefik.http.middlewares.security-headers.headers.stsincludesubdomains=true"
-      - "traefik.http.middlewares.security-headers.headers.stspreload=true"
-      - "traefik.http.middlewares.security-headers.headers.stsseconds=31536000"
-      - "traefik.http.middlewares.security-headers.headers.framedeny=true"
-      - "traefik.http.middlewares.security-headers.headers.contenttypenosniff=true"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 512M
-    security_opt:
-      - no-new-privileges:true
-    read_only: true
-    tmpfs:
-      - /tmp
     volumes:
-      - ./data:/app/data
+      - ./blog.db:/app/blog.db
       - ./.env:/app/.env:ro
     environment:
-      - DB_PATH=/app/data/blog.db
+      - ENV=production
     restart: unless-stopped
-
-volumes:
-  blog-data:

@@ -1,22 +1,27 @@
 # Build stage
 FROM golang:1.23-rc-alpine AS builder
 
+# Install build dependencies
 RUN apk add --no-cache gcc musl-dev git
-RUN go install github.com/a-h/templ/cmd/templ@latest
+
+# Enable CGO for SQLite
+ENV CGO_ENABLED=1
 
 WORKDIR /app
 COPY . .
 RUN go mod download
-RUN templ generate
-RUN CGO_ENABLED=1 go build -o main .
+RUN go build -o main
 
-# Final stage
+# Run stage
 FROM alpine:latest
 
 WORKDIR /app
 COPY --from=builder /app/main .
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/views ./views
+COPY ./public ./public
+COPY ./views ./views
+
+# Create database file with proper permissions
+RUN touch blog.db && chmod 666 blog.db
 
 EXPOSE 80
 CMD ["./main"]
