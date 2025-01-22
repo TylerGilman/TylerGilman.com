@@ -30,12 +30,12 @@ FROM alpine:latest
 
 WORKDIR /app
 
-# Copy required files from builder
+# Copy required files
 COPY --from=builder /app/main .
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/views ./views
 
-# Create data directory and set permissions
+# Set permissions and create data directory
 RUN mkdir -p /app/data && \
     chown -R 1000:1000 /app && \
     chmod -R 755 /app/public && \
@@ -46,5 +46,5 @@ RUN mkdir -p /app/data && \
 USER 1000
 EXPOSE 80
 
-# Ensure data directory exists and run application
+# Entrypoint with directory creation
 CMD ["sh", "-c", "mkdir -p /app/data && ./main"]
