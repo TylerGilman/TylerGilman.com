@@ -31,30 +31,24 @@ const (
 func InitDB() error {
     dbPath := os.Getenv("DB_PATH")
     
-    // Ensure full path exists
+    // Create parent directories if needed
     if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
-        return fmt.Errorf("failed to create database path: %v (UID: %d, GID: %d)", 
-            err, os.Getuid(), os.Getgid())
-    }
-    // Ensure database directory exists
-    if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
-        return fmt.Errorf("failed to create database directory: %w", err)
+        return fmt.Errorf("failed to create database directory: %v", err)
     }
 
-    // Create database file if it doesn't exist
+    // Create empty database file if missing
     if _, err := os.Stat(dbPath); os.IsNotExist(err) {
         file, err := os.Create(dbPath)
         if err != nil {
-            return fmt.Errorf("failed to create database file: %w", err)
+            return fmt.Errorf("failed to create database file: %v", err)
         }
         file.Close()
     }
 
     // Open database with write permissions
-    var err error
-    db, err = sql.Open("sqlite3", dbPath+"?_journal_mode=WAL&_fk=true&mode=rwc")
+    db, err := sql.Open("sqlite3", dbPath+"?_journal_mode=WAL&_fk=true")
     if err != nil {
-        return fmt.Errorf("failed to open database: %w", err)
+        return err
     }
 
     // Create tables

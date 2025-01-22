@@ -33,10 +33,11 @@ services:
       - /tmp
     user: "1000:1000"
     volumes:
-      - ./data:/app/data:rw
+      - ./data:/app/data
       - ./.env:/app/.env:ro
     environment:
       - DB_PATH=/app/data/blog.db
+    restart: unless-stopped
 
 volumes:
   blog-data:
