@@ -9,6 +9,8 @@ services:
       - web
     labels:
       - "traefik.enable=true"
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=prod"
       - "traefik.http.routers.tyler.rule=Host(`tylergilman.com`)"
       - "traefik.http.routers.tyler.entrypoints=websecure"
       - "traefik.http.routers.tyler.tls.certresolver=myresolver"
