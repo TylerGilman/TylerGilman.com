@@ -1,71 +1,40 @@
 networks:
   web:
-    external: true  # Use the existing `web` network
+    external: true
 
 services:
-  watchtower:
-    image: containrrr/watchtower
-    command:
-      - "--label-enable"
-      - "--interval"
-      - "30"
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - web
-
-  reverse-proxy:
-    image: traefik:v3.3
-    command:
-      - "--api.insecure=true"
-      - "--providers.docker=true"
-      - "--providers.docker.exposedbydefault=false"
-      - "--entrypoints.websecure.address=:443"
-      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
-      - "--certificatesresolvers.myresolver.acme.email=tylersgilman@gmail.com"
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
-      - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
-      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
-      - "--ping=true"
-    ports:
-      - "80:80"
-      - "443:443"
-      - "8080:8080"
-    volumes:
-      - letsencrypt:/letsencrypt
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - web
-    healthcheck:
-      test: ["CMD", "traefik", "healthcheck"]
-      interval: 10s
-      timeout: 5s
-      retries: 3
-
   web:
     image: tylergilman/tylergilman:prod
-    deploy:
-      mode: replicated
-      replicas: 3
     networks:
       - web
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.web.rule=Host(`tylergilman.com`)"
-      - "traefik.http.routers.web.entrypoints=websecure"
-      - "traefik.http.routers.web.tls.certresolver=myresolver"
-      - "traefik.http.services.web.loadbalancer.server.port=8080"
       - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=prod"
+      - "traefik.http.routers.tyler.rule=Host(`tylergilman.com`)"
+      - "traefik.http.routers.tyler.entrypoints=websecure"
+      - "traefik.http.routers.tyler.tls.certresolver=leresolver"
+      - "traefik.http.services.tyler.loadbalancer.server.port=8080"
+      - "traefik.http.routers.tyler.middlewares=security-headers"
+      - "traefik.http.middlewares.security-headers.headers.stsincludesubdomains=true"
+      - "traefik.http.middlewares.security-headers.headers.stspreload=true"
+      - "traefik.http.middlewares.security-headers.headers.stsseconds=31536000"
+      - "traefik.http.middlewares.security-headers.headers.framedeny=true"
+      - "traefik.http.middlewares.security-headers.headers.contenttypenosniff=true"
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+    user: "1000:1000"
     volumes:
-      - type: bind
-        source: ./blog.db
-        target: /app/blog.db
-      - ./.env:/app/.env
-    environment:
-      - ENV=production
-      - DEV_PORT=8080
-    restart: unless-stopped
+      - blog-data:/app/blog.db
+      - ./.env:/app/.env:ro
 
 volumes:
-  letsencrypt:
+  blog-data:
