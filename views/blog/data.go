@@ -31,24 +31,29 @@ const (
 func InitDB() error {
     dbPath := os.Getenv("DB_PATH")
     
-    // Create parent directories if needed
-    if err := os.MkdirAll(filepath.Dir(dbPath), 0755); err != nil {
-        return fmt.Errorf("failed to create database directory: %v", err)
+    // Use absolute path verification
+    absPath, err := filepath.Abs(dbPath)
+    if err != nil {
+        return fmt.Errorf("path resolution failed: %v", err)
     }
 
-    // Create empty database file if missing
-    if _, err := os.Stat(dbPath); os.IsNotExist(err) {
-        file, err := os.Create(dbPath)
-        if err != nil {
+    // Create only the necessary directory
+    dataDir := filepath.Dir(absPath)
+    if err := os.MkdirAll(dataDir, 0755); err != nil {
+        return fmt.Errorf("failed to create directory '%s': %v", dataDir, err)
+    }
+
+    // Create empty database file
+    if _, err := os.Stat(absPath); os.IsNotExist(err) {
+        if _, err := os.Create(absPath); err != nil {
             return fmt.Errorf("failed to create database file: %v", err)
         }
-        file.Close()
     }
 
-    // Open database with write permissions
-    db, err := sql.Open("sqlite3", dbPath+"?_journal_mode=WAL&_fk=true")
+    // Open database
+    db, err := sql.Open("sqlite3", absPath+"?_journal_mode=WAL")
     if err != nil {
-        return err
+        return fmt.Errorf("database connection failed: %v", err)
     }
 
     // Create tables

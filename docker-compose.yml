@@ -31,7 +31,6 @@ services:
     read_only: true
     tmpfs:
       - /tmp
-    user: "1000:1000"
     volumes:
       - ./data:/app/data
       - ./.env:/app/.env:ro
