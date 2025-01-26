@@ -16,7 +16,7 @@ services:
       - "traefik.http.routers.tyler.tls.certresolver=myresolver"
       - "traefik.http.services.tyler.loadbalancer.server.port=8080"
     volumes:
-      - ./blog.db:/app/blog.db
+      - ./blog.db:/app/data/blog.db
       - ./.env:/app/.env:ro
     environment:
       - ENV=production
