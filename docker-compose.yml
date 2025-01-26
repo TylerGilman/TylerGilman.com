@@ -15,7 +15,7 @@ services:
       - "traefik.http.routers.tyler.rule=Host(`tylergilman.com`)"
       - "traefik.http.routers.tyler.entrypoints=websecure"
       - "traefik.http.routers.tyler.tls.certresolver=myresolver"
-      - "traefik.http.services.tyler.loadbalancer.server.port=8080"
+      - "traefik.http.services.tyler.loadbalancer.server.port=home8080"
     volumes:
       - ./blog.db:/app/blog.db
       - ./.env:/app/.env:ro
