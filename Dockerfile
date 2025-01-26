@@ -35,9 +35,7 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/views ./views
 
-# Create non-root user
-RUN adduser -D -u 1000 appuser && \
-    chown -R appuser:appuser /app
+RUN adduser -D -u 1001 appuser && chown -R appuser:appuser /app && chmod -R 755 /app
 
 USER appuser
 

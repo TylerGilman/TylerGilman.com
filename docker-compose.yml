@@ -5,6 +5,7 @@ networks:
 services:
   web:
     image: tylergilman/tylergilman:prod
+    user: "1001:1001"
     networks:
       - web
     labels:
@@ -16,7 +17,7 @@ services:
       - "traefik.http.routers.tyler.tls.certresolver=myresolver"
       - "traefik.http.services.tyler.loadbalancer.server.port=8080"
     volumes:
-      - ./blog.db:/app/data/blog.db
+      - ./blog.db:/app/blog.db
       - ./.env:/app/.env:ro
     environment:
       - ENV=production
