@@ -13,6 +13,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+  "os"
 
 	"github.com/TylerGilman/TylerGilman.com/authpkg"
 	"github.com/TylerGilman/TylerGilman.com/views/models"
@@ -129,7 +130,8 @@ func fetchGitHubContributions(username string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	req.Header.Set("Authorization", "Bearer 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")
+  token := os.Getenv("GITHUB_TOKEN")
+  req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
 	client := &http.Client{}
 	resp, err := client.Do(req)
@@ -139,6 +141,7 @@ func fetchGitHubContributions(username string) ([]byte, error) {
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
+  fmt.Printf("Raw GitHub Response: %s\n", string(body))
 	if err != nil {
 		return nil, err
 	}
