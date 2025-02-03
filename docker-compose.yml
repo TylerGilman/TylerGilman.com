@@ -14,8 +14,8 @@ services:
       - "com.centurylinklabs.watchtower.scope=prod"
       - "traefik.http.routers.tyler.rule=Host(`tylergilman.com`)"
       - "traefik.http.routers.tyler.entrypoints=websecure"
-      - "traefik.http.routers.tyler.tls.certresolver=myresolver"
-      - "traefik.http.services.tyler.loadbalancer.server.port=home8080"
+      - "traefik.http.routers.tyler.tls.certresolver=leresolver"
+      - "traefik.http.services.tyler.loadbalancer.server.port=8080"
     volumes:
       - ./blog.db:/app/blog.db
       - ./.env:/app/.env:ro
