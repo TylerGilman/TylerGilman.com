@@ -21,7 +21,7 @@ type Article struct {
     ImageUrl    string
 }
 
-var db *sql.DB
+var DB *sql.DB
 
 const (
     selectAllColumns = `id, title, author, date, summary, category, content, html_content, image_url`
@@ -51,13 +51,19 @@ func InitDB() error {
     }
 
     // Open database
-    db, err := sql.Open("sqlite3", absPath+"?_journal_mode=WAL")
-    if err != nil {
-        return fmt.Errorf("database connection failed: %v", err)
+    var dbErr error
+    DB, dbErr = sql.Open("sqlite3", absPath+"?_journal_mode=WAL")
+    if dbErr != nil {
+        return fmt.Errorf("database connection failed: %v", dbErr)
+    }
+
+    // Test the connection
+    if err := DB.Ping(); err != nil {
+        return fmt.Errorf("database ping failed: %v", err)
     }
 
     // Create tables
-    _, err = db.Exec(`
+    _, err = DB.Exec(`
         CREATE TABLE IF NOT EXISTS articles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
@@ -78,13 +84,13 @@ func InitDB() error {
 }
 
 func CloseDB() {
-    if db != nil {
-        db.Close()
+    if DB != nil {
+        DB.Close()
     }
 }
 
 func UpdateArticle(article Article) error {
-    _, err := db.Exec(`
+    _, err := DB.Exec(`
         UPDATE articles 
         SET title = ?, author = ?, date = ?, summary = ?, 
             category = ?, content = ?, html_content = ?, image_url = ?
@@ -96,7 +102,7 @@ func UpdateArticle(article Article) error {
 }
 
 func DeleteArticle(id int) error {
-    _, err := db.Exec(`DELETE FROM articles WHERE id = ?`, id)
+    _, err := DB.Exec(`DELETE FROM articles WHERE id = ?`, id)
     return err
 }
 
@@ -157,7 +163,7 @@ func SaveArticle(article Article) (int64, error) {
     // Store date in RFC3339 format
     dateStr := article.Date.UTC().Format(time.RFC3339)
     
-    result, err := db.Exec(`
+    result, err := DB.Exec(`
         INSERT INTO articles (`+insertColumns+`)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `, article.Title, article.Author, dateStr, article.Summary, 
@@ -169,7 +175,7 @@ func SaveArticle(article Article) (int64, error) {
 }
 
 func GetAllArticles() ([]Article, error) {
-    rows, err := db.Query(`SELECT ` + selectAllColumns + ` FROM articles ORDER BY date DESC`)
+    rows, err := DB.Query(`SELECT ` + selectAllColumns + ` FROM articles ORDER BY date DESC`)
     if err != nil {
         return nil, err
     }
@@ -193,7 +199,7 @@ func SearchArticles(query string, category string) ([]Article, error) {
         AND (? = '' OR category = ?)
         ORDER BY date DESC
     `
-    rows, err := db.Query(sqlQuery, "%"+query+"%", "%"+query+"%", "%"+query+"%", category, category)
+    rows, err := DB.Query(sqlQuery, "%"+query+"%", "%"+query+"%", "%"+query+"%", category, category)
     if err != nil {
         return nil, err
     }
@@ -211,7 +217,7 @@ func SearchArticles(query string, category string) ([]Article, error) {
 }
 
 func GetRandomArticles(n int) ([]Article, error) {
-    rows, err := db.Query(`SELECT `+selectAllColumns+` FROM articles ORDER BY RANDOM() LIMIT ?`, n)
+    rows, err := DB.Query(`SELECT `+selectAllColumns+` FROM articles ORDER BY RANDOM() LIMIT ?`, n)
     if err != nil {
         return nil, err
     }
@@ -229,12 +235,12 @@ func GetRandomArticles(n int) ([]Article, error) {
 }
 
 func GetArticleByID(id int) (Article, error) {
-    row := db.QueryRow(`SELECT `+selectAllColumns+` FROM articles WHERE id = ?`, id)
+    row := DB.QueryRow(`SELECT `+selectAllColumns+` FROM articles WHERE id = ?`, id)
     return scanArticle(row)
 }
 
 func GetRelatedArticles(currentID int, category string, limit int) ([]Article, error) {
-    rows, err := db.Query(`
+    rows, err := DB.Query(`
         SELECT `+selectAllColumns+` FROM articles 
         WHERE id != ? AND category = ?
         ORDER BY RANDOM()

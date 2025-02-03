@@ -60,9 +60,13 @@ templ Partial() {
             <a href="/projects" hx-get="/projects" hx-target="#content" hx-swap="outerHTML" hx-push-url="true" class="primary-button">
                 View My Projects
             </a>
-            <a href="/modal/contact" hx-get="modal/contact" hx-target="#modal-container" hx-swap="innerHTML" class="secondary-button">
-                Contact Me
-            </a>
+          <a href="/modal/contact" 
+             hx-get="/modal/contact" 
+             hx-target="#modal-container" 
+             hx-swap="innerHTML"
+             class="secondary-button z-10">
+              Contact Me
+          </a>
         </div>
         <p class="footer-text">
             This Website is built for accessibility and speed using golang and hypermedia. It is fast and fully functional <span class="highlight">with javascript disabled</span> thanks to the power of HTMX

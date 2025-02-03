@@ -100,10 +100,10 @@ router.Route("/admin", func(r chi.Router) {
 		})
 
 		// Core pages
-		r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-			http.Redirect(w, r, "/home", http.StatusMovedPermanently)
-		})
-		r.Get("/home", handlers.Make(handlers.HandleHome))
+    r.Get("/", handlers.Make(handlers.HandleHome))
+    r.Get("/home", func(w http.ResponseWriter, r *http.Request) {
+        http.Redirect(w, r, "/", http.StatusMovedPermanently)
+    })
 		r.Get("/projects", handlers.Make(handlers.HandleProjects))
 	})
 

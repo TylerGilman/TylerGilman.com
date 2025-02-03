@@ -396,3 +396,100 @@ nav {
 .hidden {
     display: none;
 }
+
+/* Modal styles */
+#modal-container {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+}
+
+#modal-container:not(:empty) {
+    display: block;
+}
+
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 101;
+}
+
+.modal-wrapper {
+    position: fixed;
+    inset: 0;
+    z-index: 102;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.modal-content {
+    background: white;
+    width: 100%;
+    max-width: 42rem;
+    border-radius: 1.5rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    position: relative;
+    padding: 3rem 4rem;
+}
+
+.modal-close {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #6B7280;
+    background: #F3F4F6;
+    transition: all 0.15s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    background: #E5E7EB;
+    color: #1F2937;
+    transform: scale(1.1);
+}
+
+/* No-JS Modal Page Styles */
+.modal-page {
+    min-height: 100vh;
+    background: white;
+    padding: 4rem 2rem;
+}
+
+.modal-page-content {
+    width: 100%;
+    max-width: 42rem;
+    margin: 0 auto;
+    padding: 3rem 4rem;
+    background: white;
+    border-radius: 1.5rem;
+    box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.1);
+}
+
+.modal-page-back {
+    display: inline-flex;
+    align-items: center;
+    font-size: 1.125rem;
+    color: #4B5563;
+    text-decoration: none;
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 3rem;
+    border-radius: 0.75rem;
+    transition: all 0.15s ease;
+}
+
+.modal-page-back:hover {
+    background: #F9FAFB;
+    color: #111827;
+}

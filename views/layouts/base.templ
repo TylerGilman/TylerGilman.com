@@ -21,56 +21,25 @@ templ Base(page_mode string, isAdmin bool) {
       <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"/>
 		</head>
-		<body class="antialiased">
+        <body class="antialiased relative">
             @components.Navigation(page_mode, isAdmin)
-            <div id="modal-container"></div>
+            <div id="modal-container" class="relative z-50"></div>
             { children... }
 
+            <script>
+                htmx.on('htmx:afterSwap', function(evt) {
+                    if (evt.detail.target.id === 'modal-container') {
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
 
-    <script type="text/javascript">
-
-document.addEventListener('htmx:afterSettle', function(event) {
-    if (window.initializeNavBar) {
-        window.initializeNavBar();
-    }
-});
-
-    document.body.addEventListener('htmx:afterSwap', function(event) {
-        if (event.detail.target.id === 'modal-container') {
-            requestAnimationFrame(() => {
-                const overlay = document.getElementById('modal-overlay');
-                if (overlay) {
-                    overlay.classList.add('show');
-                }
-            });
-        }
-    });
-    document.body.addEventListener('htmx:afterOnLoad', function(event) {
-        if (event.detail.elt.id === 'modal-container') {
-            document.body.classList.add('modal-open');
-            setTimeout(function() {
-                const overlay = document.getElementById('modal-overlay');
-                if (overlay) {
-                    overlay.classList.add('show');
-                }
-            }, 50);
-        }
-    });
-
-    document.body.addEventListener('htmx:beforeOnLoad', function(event) {
-        if (event.detail.requestConfig.target === '#modal-container') {
-            const overlay = document.getElementById('modal-overlay');
-            if (overlay) {
-                overlay.classList.remove('show');
-                setTimeout(function() {
-                    document.body.classList.remove('modal-open');
-                }, 300);
-            }
-        }
-    });
-    </script>
-
-		</body>
+                htmx.on('htmx:beforeSwap', function(evt) {
+                    if (evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
+                        document.body.style.overflow = 'auto';
+                    }
+                });
+            </script>
+        </body>
 	</html>
 
 }
