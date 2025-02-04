@@ -94,8 +94,8 @@ templ MainNavBar(pageMode string) {
 	<div id="nav_wrapper" class="main-nav-wrapper">
 		<input type="hidden" id="page_mode_input" name="page_mode" value={ pageMode }/>
 		<div id="page_mode_menu" class="main-nav">
-			<a hx-get="/home" 
-               href="/home" 
+			<a hx-get="/" 
+               href="/" 
                hx-target="#content" 
                hx-push-url="true" 
                hx-swap="outerHTML" 

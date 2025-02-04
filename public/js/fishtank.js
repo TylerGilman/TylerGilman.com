@@ -416,27 +416,27 @@ setCanvasSize() {
         return Math.random() * (max - min) + min;
     }
 
-    initializeFishes() {
-        this.fishes = [];
-        const totalWidth = this.options.width + this.options.buffer * 2;
-        const totalHeight = this.options.height + this.options.buffer * 2;
+  initializeFishes() {
+    this.fishes = [];
+    const totalWidth = this.options.width + this.options.buffer * 2;
+    const totalHeight = this.options.height + this.options.buffer * 2;
+    
+    // Create fish in a distributed pattern outside the viewport
+    for (let i = 0; i < this.options.fishCount; i++) {
+        const segment = totalWidth / this.options.fishCount;
+        const x = (segment * i) - this.options.buffer;
+        const y = Math.random() * totalHeight - this.options.buffer;
+        const color = this.getRandomColor();
+        const speed = this.getRandomSpeed(this.options.minSpeed, this.options.maxSpeed);
         
-        // Create fish in a distributed pattern
-        for (let i = 0; i < this.options.fishCount; i++) {
-            const segment = totalWidth / this.options.fishCount;
-            const x = (segment * i) - this.options.buffer;
-            const y = Math.random() * totalHeight - this.options.buffer;
-            const color = this.getRandomColor();
-            const speed = this.getRandomSpeed(this.options.minSpeed, this.options.maxSpeed);
-            
-            this.fishes.push(new Fish(
-                x, y, color, speed,
-                this.options.width,
-                this.options.height,
-                this.options.buffer
-            ));
-        }
+        this.fishes.push(new Fish(
+            x, y, color, speed,
+            this.options.width,
+            this.options.height,
+            this.options.buffer
+        ));
     }
+}
 
     setupEventListeners() {
         // Drop food on click
