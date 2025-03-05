@@ -1,6 +1,6 @@
 networks:
   web:
-    external: true  # Use existing Traefik network
+    external: true
 
 services:
   web:
@@ -16,9 +16,15 @@ services:
       - "traefik.http.routers.tyler.entrypoints=websecure"
       - "traefik.http.routers.tyler.tls.certresolver=leresolver"
       - "traefik.http.services.tyler.loadbalancer.server.port=8080"
+      - "traefik.http.routers.tyler.middlewares=security-headers@file"
     volumes:
       - ./blog.db:/app/blog.db
       - ./.env:/app/.env:ro
     environment:
       - ENV=production
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

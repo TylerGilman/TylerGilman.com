@@ -362,9 +362,9 @@ class FishTank {
         this.options = {
             width: options.width || 600,
             height: options.height || 400,
-            fishCount: options.fishCount || 10,
-            minSpeed: options.minSpeed || 0.5,
-            maxSpeed: options.maxSpeed || 2.5,
+            fishCount: options.fishCount || 5,
+            minSpeed: options.minSpeed || 0.1,
+            maxSpeed: options.maxSpeed || 5,
             buffer: options.buffer || 30,
             isNavBar: options.isNavBar || false
         };
@@ -383,6 +383,7 @@ setCanvasSize() {
         this.canvas.height = navHeight;
         this.canvas.style.width = '100%';
         this.canvas.style.height = navHeight + 'px';
+        this.options.fishCount = 2;
         
         this.options.width = window.innerWidth;
         this.options.height = navHeight;
