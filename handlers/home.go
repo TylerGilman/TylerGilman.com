@@ -3,17 +3,36 @@ package handlers
 import (
 	"net/http"
 
-	"github.com/TylerGilman/TylerGilman.com/authpkg"
 	"github.com/TylerGilman/TylerGilman.com/views/home"
 )
 
+// HandleHome returns the home page.
 func HandleHome(w http.ResponseWriter, r *http.Request) error {
-    isAdmin := authpkg.IsAuthenticated(r)
+	isAdmin := isUserAdmin(r)
+	err := home.Index(isAdmin).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, "Failed to render home page", http.StatusInternalServerError)
+		return err
+	}
+	return nil
+}
 
-    renderer := NewPageRenderer(
-        home.Index(isAdmin),
-        home.Partial(),
-    )
+// HandleHomeFull returns the standalone home page with ThreeJS
+func HandleHomeFull(w http.ResponseWriter, r *http.Request) error {
+	isAdmin := isUserAdmin(r)
+	err := home.StandaloneFull(isAdmin).Render(r.Context(), w)
+	if err != nil {
+		http.Error(w, "Failed to render home page", http.StatusInternalServerError)
+		return err
+	}
+	return nil
+}
 
-    return renderer.Render(w, r)
+// isUserAdmin checks if the current user is an admin
+func isUserAdmin(r *http.Request) bool {
+	isAdmin, ok := r.Context().Value(UserIsAdminKey).(bool)
+	if !ok {
+		return false
+	}
+	return isAdmin
 }

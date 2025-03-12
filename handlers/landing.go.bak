@@ -1,0 +1,1109 @@
+package handlers
+
+import (
+	"fmt"
+	"net/http"
+)
+
+// HandleLanding serves a direct HTML file for the landing page with fish tank
+func HandleLanding(w http.ResponseWriter, r *http.Request) error {
+	// Set appropriate headers
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	
+	// Direct HTML landing page with 3D fish animation and 2D fallback
+	html := `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tyler Gilman | Software Developer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            color: #ffffff;
+            background-color: #002244; /* Match aquarium background */
+            overflow-x: hidden;
+            overflow-y: auto; /* Explicitly allow vertical scrolling */
+            height: 200vh; /* Make page scrollable (2x viewport height) */
+            margin: 0;
+            padding: 0;
+        }
+        
+        #aquarium-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            background-color: #002244;
+            display: block !important; /* Force display */
+        }
+        
+        #fallback-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: none;
+        }
+        
+        /* Landing page first section */
+        .hero-section {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            pointer-events: none;
+        }
+        
+        .hero-name {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: white;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease-out forwards;
+        }
+        
+        .hero-title {
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: rgba(255, 255, 255, 0.8);
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease-out 0.3s forwards;
+        }
+        
+        /* Navigation */
+        .nav-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 100;
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-button {
+            background-color: rgba(0, 0, 0, 0.3);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(5px);
+            pointer-events: auto;
+        }
+        
+        .nav-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* About section in first viewport */
+        .about-section {
+            position: absolute;
+            bottom: 2rem;
+            left: 0;
+            width: 100%;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 3;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 1s ease-out 1s forwards;
+        }
+        
+        .about-text {
+            font-size: 1.2rem;
+            max-width: 600px;
+            text-align: center;
+            margin-bottom: 2rem;
+            color: white;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .primary-button, .secondary-button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            pointer-events: auto;
+            text-decoration: none;
+        }
+        
+        .primary-button {
+            background-color: #0066cc;
+            color: white;
+        }
+        
+        .secondary-button {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+        
+        .primary-button:hover {
+            background-color: #004c99;
+            transform: translateY(-2px);
+        }
+        
+        .secondary-button:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* Ocean floor section */
+        .ocean-floor {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            z-index: 10; /* Ensure ocean floor appears above canvas */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto; /* Allow interaction */
+        }
+        
+        /* Sand at the bottom */
+        .sand-bottom {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40vh;
+            background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(255,223,158,0.1) 10%, rgba(255,223,158,0.3) 100%);
+            z-index: 2;
+        }
+        
+        /* Interactive items container */
+        .interactive-items {
+            position: relative;
+            width: 90%;
+            max-width: 1200px;
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-end;
+            z-index: 10;
+            margin-bottom: 5vh;
+            margin-top: auto; /* Push to bottom */
+        }
+        
+        /* Shared styles for interactive items */
+        .ocean-item {
+            position: relative;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 40%;
+            max-width: 300px;
+        }
+        
+        .ocean-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .ocean-item-label {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            color: white;
+            text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+        
+        /* Treasure chest specific styles */
+        .treasure-chest {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            display: block;
+            text-decoration: none;
+            perspective: 1000px; /* 3D perspective for better chest opening effect */
+        }
+        
+        .chest-base {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 70%;
+            background-color: #8B4513;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3), 
+                        inset 0 2px 5px rgba(255,223,158,0.2), 
+                        inset 0 -2px 5px rgba(0,0,0,0.2);
+            overflow: hidden;
+            transform-style: preserve-3d;
+        }
+        
+        /* Add wood grain texture to chest */
+        .chest-base::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 15px,
+                rgba(0,0,0,0.1) 15px,
+                rgba(0,0,0,0.1) 20px
+            );
+            border-radius: inherit;
+        }
+        
+        .chest-top {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 50%;
+            background-color: #A0522D;
+            border-radius: 10px 10px 0 0;
+            transform-origin: bottom;
+            transition: transform 0.4s ease;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.2), 
+                        inset 0 2px 5px rgba(255,223,158,0.2);
+            overflow: hidden;
+            transform: rotateX(0deg); /* Explicitly set initial state for transform */
+            transform-style: preserve-3d;
+            backface-visibility: visible;
+            z-index: 5;
+        }
+        
+        /* Add wood grain texture to chest top */
+        .chest-top::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 15px,
+                rgba(0,0,0,0.1) 15px,
+                rgba(0,0,0,0.1) 20px
+            );
+            border-radius: inherit;
+        }
+        
+        .chest-latch {
+            position: absolute;
+            width: 20%;
+            height: 15%;
+            background-color: #FFD700;
+            top: 50%;
+            left: 40%;
+            border-radius: 3px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* Add metal texture to latch */
+        .chest-latch::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                45deg,
+                rgba(255,255,255,0.5),
+                rgba(255,255,255,0.2) 20%,
+                rgba(255,215,0,0.2) 50%,
+                rgba(255,215,0,0.4) 80%
+            );
+            border-radius: inherit;
+        }
+        
+        /* Add metal bands to chest */
+        .chest-band {
+            position: absolute;
+            height: 10%;
+            width: 100%;
+            background-color: #B87333;
+            left: 0;
+        }
+        
+        .chest-band.top {
+            top: 20%;
+        }
+        
+        .chest-band.bottom {
+            bottom: 20%;
+        }
+        
+        .chest-band::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0.3),
+                rgba(0,0,0,0.2)
+            );
+        }
+        
+        /* Add treasure inside chest */
+        .chest-treasure {
+            position: absolute;
+            bottom: 20%;
+            left: 15%;
+            width: 70%;
+            height: 30%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            transform: scale(0);
+            transition: transform 0.4s ease;
+            z-index: 2;
+        }
+        
+        /* Gold bars in the treasure chest */
+        .gold-bar {
+            position: relative;
+            width: 15%;
+            height: 80%;
+            background: linear-gradient(
+                45deg,
+                #FFD700,
+                #FFC125,
+                #FFD700,
+                #FFC125
+            );
+            margin: 0 2%;
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(255,215,0,0.8);
+        }
+        
+        /* Add gold bar shine */
+        .gold-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                rgba(255,255,255,0.6) 0%,
+                rgba(255,255,255,0) 20%,
+                rgba(255,255,255,0.2) 50%,
+                rgba(255,255,255,0) 80%
+            );
+            border-radius: inherit;
+        }
+        
+        .bubbles-container {
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        
+        .bubble {
+            position: absolute;
+            background-color: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            animation: bubbleRise linear infinite;
+            opacity: 0;
+        }
+        
+        /* Bottle with scroll specific styles */
+        .bottle-scroll {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            display: block;
+            text-decoration: none;
+        }
+        
+        .bottle {
+            position: absolute;
+            bottom: 0;
+            width: 60%;
+            height: 90%;
+            margin: 0 auto;
+            left: 20%;
+            background-color: rgba(144, 238, 144, 0.3);
+            border-radius: 30% 30% 35% 35% / 12% 12% 30% 30%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            overflow: visible;
+            transition: transform 0.3s ease;
+        }
+        
+        /* Create bottle neck */
+        .bottle::after {
+            content: '';
+            position: absolute;
+            top: -25%;
+            left: 35%;
+            width: 30%;
+            height: 35%;
+            background-color: rgba(144, 238, 144, 0.3);
+            border-radius: 30% 30% 0 0 / 30% 30% 0 0;
+            box-shadow: inset 0 -5px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* Add glass texture to bottle */
+        .bottle::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                135deg,
+                rgba(255,255,255,0.4) 0%,
+                rgba(255,255,255,0) 50%,
+                rgba(255,255,255,0.1) 100%
+            );
+            border-radius: inherit;
+            z-index: 2;
+        }
+        
+        .bottle-top {
+            position: absolute;
+            top: -40%;
+            width: 20%;
+            height: 15%;
+            left: 40%;
+            background-color: #8B4513;
+            border-radius: 30% 30% 20% 20% / 50% 50% 30% 30%;
+            box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
+            z-index: 3;
+        }
+        
+        /* Add cork texture */
+        .bottle-top::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 5px,
+                rgba(0,0,0,0.1) 5px,
+                rgba(0,0,0,0.1) 10px
+            );
+            border-radius: inherit;
+        }
+        
+        .scroll {
+            position: absolute;
+            width: 40%;
+            height: 60%;
+            background-color: #F5E1B0;
+            border-radius: 5px;
+            top: 25%;
+            left: 30%;
+            transform-origin: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        /* Add parchment texture */
+        .scroll::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                90deg,
+                rgba(139,69,19,0.02),
+                rgba(139,69,19,0.01) 20%,
+                rgba(0,0,0,0.02) 50%,
+                rgba(139,69,19,0.01) 80%,
+                rgba(139,69,19,0.02) 100%
+            );
+            border-radius: inherit;
+        }
+        
+        .scroll-line {
+            position: absolute;
+            height: 2px;
+            width: 80%;
+            background-color: rgba(0, 0, 0, 0.2);
+            left: 10%;
+        }
+        
+        .scroll-line:nth-child(1) { top: 20%; }
+        .scroll-line:nth-child(2) { top: 40%; }
+        .scroll-line:nth-child(3) { top: 60%; }
+        .scroll-line:nth-child(4) { top: 80%; }
+        
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes bubbleRise {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-200px) translateX(var(--drift-x));
+                opacity: 0;
+            }
+        }
+        
+        @keyframes scrollShake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-10deg); }
+            75% { transform: rotate(10deg); }
+        }
+        
+        /* Hover effects */
+        .treasure-chest:hover .chest-top {
+            transform: rotateX(90deg);
+            animation: chestOpen 0.8s ease-in-out forwards;
+        }
+        
+        .treasure-chest:hover .bubbles-container .bubble {
+            animation-play-state: running;
+        }
+        
+        /* Show treasure when chest opens */
+        .treasure-chest:hover .chest-treasure {
+            transform: scale(1);
+            transition-delay: 0.2s;
+        }
+        
+        /* Create more bubbles on hover */
+        .treasure-chest:hover::after {
+            content: '';
+            animation: createMoreBubbles 0.2s ease-out forwards;
+        }
+        
+        .bottle-scroll:hover {
+            animation: bottleShake 0.7s ease-in-out;
+        }
+        
+        .bottle-scroll:hover .bottle {
+            animation: bottleRock 1.2s ease-in-out infinite;
+        }
+        
+        .bottle-scroll:hover .bottle-top {
+            animation: corkPop 0.5s ease-out forwards;
+        }
+        
+        .bottle-scroll:hover .scroll {
+            animation: scrollFloat 1.2s ease-out forwards;
+        }
+        
+        @keyframes chestOpen {
+            0% { transform: rotateX(0deg); }
+            60% { transform: rotateX(100deg); }
+            80% { transform: rotateX(85deg); }
+            100% { transform: rotateX(90deg); }
+        }
+        
+        @keyframes bottleShake {
+            0%, 100% { transform: rotate(0deg) translateY(0); }
+            20% { transform: rotate(-5deg) translateY(-3px); }
+            40% { transform: rotate(5deg) translateY(-5px); }
+            60% { transform: rotate(-3deg) translateY(-3px); }
+            80% { transform: rotate(3deg) translateY(-1px); }
+        }
+        
+        @keyframes bottleRock {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-2deg); }
+            75% { transform: rotate(2deg); }
+        }
+        
+        @keyframes scrollFloat {
+            0% { transform: translateY(0) rotate(0deg); }
+            30% { transform: translateY(-15px) rotate(-5deg); }
+            60% { transform: translateY(-30px) rotate(3deg); }
+            100% { transform: translateY(-60px) rotate(5deg); }
+        }
+        
+        @keyframes corkPop {
+            0% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-5px) rotate(15deg); }
+            100% { transform: translateY(-80px) rotate(45deg); opacity: 0; }
+        }
+        
+        @keyframes createMoreBubbles {
+            to { opacity: 0; }
+        }
+        
+        /* Make the bubbles rise with a slight drift */
+        @keyframes bubbleRise {
+            0% {
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-300px) translateX(var(--drift-x, 0px));
+                opacity: 0;
+            }
+        }
+        
+        /* Responsive styles */
+        @media (max-width: 768px) {
+            .hero-name {
+                font-size: 3rem;
+            }
+            
+            .hero-title {
+                font-size: 1.2rem;
+            }
+            
+            .about-text {
+                font-size: 1rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+            
+            .interactive-items {
+                flex-direction: column;
+                align-items: center;
+                gap: 4rem;
+            }
+            
+            .ocean-item {
+                width: 80%;
+            }
+            
+            .sand-bottom {
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Canvas for 3D -->
+    <canvas id="aquarium-canvas"></canvas>
+    
+    <!-- Fallback Canvas for 2D -->
+    <canvas id="fallback-canvas"></canvas>
+    
+    <!-- Hero Section (First Viewport) -->
+    <section class="hero-section">
+        <!-- Content Overlay -->
+        <div class="hero-overlay">
+            <h1 class="hero-name">Tyler Gilman</h1>
+            <p class="hero-title">Software Developer</p>
+        </div>
+        
+        <!-- Navigation -->
+        <div class="nav-container">
+            <a href="/projects" class="nav-button">Projects</a>
+            <a href="/blog" class="nav-button">Blog</a>
+        </div>
+        
+        <!-- About Section -->
+        <div class="about-section">
+            <p class="about-text">
+                I create software systems with a focus on performance, accessibility and simplicity.
+            </p>
+        </div>
+    </section>
+    
+    <!-- Ocean Floor Section (Second Viewport) -->
+    <section class="ocean-floor">
+        <!-- Sand gradient at bottom -->
+        <div class="sand-bottom"></div>
+        
+        <!-- Interactive Items -->
+        <div class="interactive-items">
+            <!-- Treasure Chest -->
+            <div class="ocean-item">
+                <a href="/projects" class="treasure-chest">
+                    <div class="bubbles-container" id="bubbles-container"></div>
+                    <div class="chest-base">
+                        <!-- Metal bands on chest base -->
+                        <div class="chest-band bottom"></div>
+                        <!-- Treasure that appears when opened -->
+                        <div class="chest-treasure">
+                            <div class="gold-bar"></div>
+                            <div class="gold-bar"></div>
+                            <div class="gold-bar"></div>
+                            <div class="gold-bar"></div>
+                        </div>
+                    </div>
+                    <div class="chest-top">
+                        <div class="chest-latch"></div>
+                        <!-- Metal band on chest top -->
+                        <div class="chest-band top"></div>
+                    </div>
+                </a>
+                <div class="ocean-item-label">Projects</div>
+            </div>
+            
+            <!-- Bottle with Scroll -->
+            <div class="ocean-item">
+                <a href="/blog" class="bottle-scroll">
+                    <div class="bottle">
+                        <div class="bottle-top"></div>
+                        <div class="scroll">
+                            <div class="scroll-line"></div>
+                            <div class="scroll-line"></div>
+                            <div class="scroll-line"></div>
+                            <div class="scroll-line"></div>
+                        </div>
+                    </div>
+                </a>
+                <div class="ocean-item-label">Blog</div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Load THREE.js and dependencies directly -->
+    <script src="/public/js/libs/three.min.js"></script>
+    <script src="/public/js/aquarium.js" data-auto-init="false"></script>
+    
+    <script>
+    // Wait for both scripts to load
+    function waitForDependencies(callback) {
+        if (typeof THREE !== 'undefined' && 
+            typeof window.Aquarium === 'function' && 
+            typeof window.Fish3D === 'function') {
+            callback();
+        } else {
+            setTimeout(() => waitForDependencies(callback), 100);
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("Waiting for dependencies to load...");
+        
+        waitForDependencies(() => {
+            console.log("All dependencies loaded, initializing 3D fish tank");
+            
+            try {
+                // Debug element
+                const canvas = document.getElementById('aquarium-canvas');
+                console.log("Canvas element:", canvas);
+                
+                // Check WebGL support first
+                let webglSupported = false;
+                try {
+                    const testCanvas = document.createElement('canvas');
+                    webglSupported = !!(window.WebGLRenderingContext && 
+                        (testCanvas.getContext('webgl') || testCanvas.getContext('experimental-webgl')));
+                    console.log("WebGL support detected:", webglSupported);
+                } catch (e) {
+                    console.error("Error checking WebGL support:", e);
+                }
+                
+                if (!webglSupported) {
+                    console.error("WebGL not supported in this browser!");
+                    document.body.classList.add('no-webgl');
+                    return;
+                }
+                
+                // Set canvas to full window size for proper rendering
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                console.log("Canvas dimensions set to:", canvas.width, canvas.height);
+                
+                // Create and initialize the 3D aquarium
+                const aquarium = new window.Aquarium('aquarium-canvas', {
+                    fishCount: 8,
+                    isFullscreen: true,
+                    isLandingPage: true,
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                });
+                
+                // Store for later use
+                window.aquariumInstance = aquarium;
+                
+                // Initialize
+                console.log("Initializing aquarium...");
+                const success = aquarium.initialize();
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                });
+                
+                // Store globally for later reference from lazy loading code
+                window.aquariumInstance = aquarium;
+                
+                console.log("Aquarium instance created");
+                console.log("Calling initialize...");
+                
+                // Initialize with fallback
+                const success = aquarium.initialize();
+                
+                // Add event to check visibility after slight delay
+                setTimeout(() => {
+                    const canvas = document.getElementById('aquarium-canvas');
+                    console.log("Canvas visibility after delay:", 
+                        window.getComputedStyle(canvas).visibility,
+                        window.getComputedStyle(canvas).display);
+                        
+                    // Force renderer display again after delay
+                    if (aquarium.renderer) {
+                        console.log("Forcing renderer visibility after delay");
+                        aquarium.renderer.domElement.style.display = 'block';
+                        aquarium.renderer.domElement.style.visibility = 'visible';
+                        aquarium.renderer.domElement.style.opacity = '1';
+                    }
+                }, 1000);
+                
+                // Log result
+                if (success) {
+                    console.log("3D fish tank initialized successfully");
+                    // Force renderer display
+                    if (aquarium.renderer) {
+                        console.log("Forcing initial renderer visibility");
+                        aquarium.renderer.domElement.style.display = 'block';
+                        aquarium.renderer.domElement.style.visibility = 'visible';
+                        aquarium.renderer.domElement.style.opacity = '1';
+                    }
+                } else {
+                    console.log("Using 2D fallback for fish tank");
+                }
+            }
+        } catch (error) {
+            console.error("Error initializing aquarium:", error);
+            console.error("Error stack:", error.stack);
+        }
+    });
+    </script>
+    
+    <!-- Custom scripts for interactive elements and lazy loading -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Create bubbles for the treasure chest
+        createBubbles();
+        
+        // Initialize scroll event listener for lazy loading fish
+        initLazyLoading();
+    });
+    
+    // Create bubbles for the treasure chest
+    function createBubbles() {
+        const container = document.getElementById('bubbles-container');
+        const bubbleCount = 25; // Normal state bubble count
+        
+        // Initially create the normal state bubbles
+        for (let i = 0; i < bubbleCount; i++) {
+            createBubble(container, false);
+        }
+        
+        // Add event listener for hover to create more bubbles
+        const chest = document.querySelector('.treasure-chest');
+        
+        // Add mouseover event to create lots of bubbles when chest opens
+        chest.addEventListener('mouseover', function() {
+            // Create a burst of bubbles when chest first opens
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    createBubble(container, true);
+                }, i * 30); // Stagger bubble creation for better effect
+            }
+            
+            // Then continue creating bubbles periodically while hovered
+            let burstInterval = setInterval(() => {
+                for (let i = 0; i < 3; i++) {
+                    createBubble(container, true);
+                }
+            }, 200);
+            
+            // Stop creating bubbles when no longer hovering
+            chest.addEventListener('mouseout', function() {
+                clearInterval(burstInterval);
+            }, { once: true });
+        });
+    }
+    
+    // Helper function to create individual bubbles
+    function createBubble(container, isHoverBubble) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble';
+        
+        // Random size
+        const size = isHoverBubble ? 
+            3 + Math.random() * 8 : // Larger bubbles on hover
+            2 + Math.random() * 5;  // Normal bubbles
+        
+        bubble.style.width = size + 'px';
+        bubble.style.height = size + 'px';
+        
+        // Random position - but concentrate in the middle of the chest
+        let leftPos;
+        if (isHoverBubble) {
+            // More concentrated in the middle for hover bubbles (from the treasure)
+            leftPos = 30 + Math.random() * 40; 
+        } else {
+            // More spread out for regular bubbles
+            leftPos = 10 + Math.random() * 80;
+        }
+        bubble.style.left = leftPos + '%';
+        
+        // Random horizontal drift
+        const driftX = (Math.random() - 0.5) * 50;
+        bubble.style.setProperty('--drift-x', driftX + 'px');
+        
+        // Add slight glow for some bubbles
+        if (Math.random() > 0.7) {
+            bubble.style.boxShadow = '0 0 ' + (size/2) + 'px rgba(255,255,255,0.5)';
+        }
+        
+        // Random animation duration based on size (smaller bubbles rise slower)
+        const duration = isHoverBubble ?
+            3 + Math.random() * 3 : // Faster for hover bubbles
+            6 + Math.random() * 6;  // Slower for normal bubbles
+        
+        bubble.style.animationDuration = duration + 's';
+        
+        // Random delay
+        const delay = Math.random() * (isHoverBubble ? 0.5 : 3);
+        bubble.style.animationDelay = delay + 's';
+        
+        // Start hover bubbles immediately, normal ones with delay
+        if (isHoverBubble) {
+            bubble.style.animationPlayState = 'running';
+            
+            // Remove hover bubbles after they complete animation
+            setTimeout(() => {
+                if (bubble.parentNode === container) {
+                    container.removeChild(bubble);
+                }
+            }, (duration + delay) * 1000);
+        } else {
+            // Loop the animation for normal bubbles
+            bubble.style.animationIterationCount = 'infinite';
+            // Paused initially, will start on hover
+            bubble.style.animationPlayState = 'paused';
+        }
+        
+        container.appendChild(bubble);
+        return bubble;
+    }
+    
+    // Initialize lazy loading for fish
+    function initLazyLoading() {
+        let fishSpawned = false;
+        
+        window.addEventListener('scroll', function() {
+            if (fishSpawned) return; // Only spawn fish once
+            
+            const scrollPosition = window.scrollY;
+            const windowHeight = window.innerHeight;
+            
+            // Spawn fish when user has scrolled down a bit (20% of viewport)
+            if (scrollPosition > windowHeight * 0.2) {
+                spawnFish();
+                fishSpawned = true;
+            }
+        });
+    }
+    
+    // Spawn fish near the bottom of the viewport
+    function spawnFish() {
+        // Get the aquarium instance
+        if (window.aquariumInstance && typeof window.aquariumInstance.addFish === 'function') {
+            console.log('Lazy loading fish...');
+            
+            // Create 3-5 fish 
+            const fishCount = 3 + Math.floor(Math.random() * 3);
+            for (let i = 0; i < fishCount; i++) {
+                try {
+                    // Calculate random position within the visible bounds - bottom area of the tank
+                    const xPos = (Math.random() - 0.5) * 20;  // -10 to 10
+                    const yPos = -5 + Math.random() * 3;      // -5 to -2 (bottom area)
+                    const zPos = (Math.random() - 0.5) * 16;  // -8 to 8
+                    
+                    // Create new fish with brighter colors for visibility
+                    const fish = window.aquariumInstance.addFish({
+                        position: new THREE.Vector3(xPos, yPos, zPos),
+                        color: new THREE.Color().setHSL(Math.random(), 0.9, 0.7),
+                        size: 4 + Math.random() * 2,  // Slightly larger
+                        speed: 0.15 + Math.random() * 0.1  // Slightly faster
+                    });
+                    
+                    console.log(`Spawned new fish at position: ${xPos.toFixed(2)}, ${yPos.toFixed(2)}, ${zPos.toFixed(2)}`);
+                } catch (err) {
+                    console.error('Error spawning lazy-loaded fish:', err);
+                }
+            }
+        } else {
+            console.warn('Aquarium instance not available for lazy loading fish');
+        }
+    }
+    </script>
+</body>
+</html>`
+	
+	// Write the HTML directly to the response
+	_, err := fmt.Fprint(w, html)
+	if err != nil {
+		http.Error(w, "Error writing response", http.StatusInternalServerError)
+		return err
+	}
+	
+	return nil
+}

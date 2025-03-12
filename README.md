@@ -82,19 +82,45 @@ GITHUB_TOKEN=your_github_token
 
 ### Running in Development Mode
 
-1. Start the Tailwind CSS compiler:
+There are several options for development mode, depending on your needs:
+
+1. **All-in-one development environment:**
 ```bash
-make css
+make dev-all
+```
+This will:
+- Watch and generate Templ templates
+- Watch and compile Tailwind CSS for all stylesheets
+- Run the server with live reload
+
+2. **Basic development mode (without CSS watching):**
+```bash
+make dev
+```
+This will:
+- Watch and generate Templ templates
+- Run the server
+
+3. **Manual setup for more control:**
+
+Start the Tailwind CSS compiler:
+```bash
+make css-watch
 ```
 
-2. Run the template watcher:
+Generate templates:
 ```bash
-templ generate --watch --proxy=http://localhost:4000
+templ generate
 ```
 
-3. Run the server:
+or watch for template changes:
 ```bash
-air
+templ generate --watch
+```
+
+Run the server:
+```bash
+make run
 ```
 
 ### Project Structure

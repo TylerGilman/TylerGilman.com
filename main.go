@@ -100,7 +100,8 @@ router.Route("/admin", func(r chi.Router) {
 		})
 
 		// Core pages
-    r.Get("/", handlers.Make(handlers.HandleHome))
+    r.Get("/", handlers.Make(handlers.HandleLanding)) // Direct HTML landing page
+    r.Get("/original", handlers.Make(handlers.HandleHome)) // Keep original version accessible
     r.Get("/home", func(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/", http.StatusMovedPermanently)
     })
@@ -108,7 +109,7 @@ router.Route("/admin", func(r chi.Router) {
 	})
 
 	// Static files
-  router.Handle("/public/*", Public())
+  router.Handle("/public/*", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 }
 
 func main() {
