@@ -3,40 +3,47 @@ package blog
 import (
     "github.com/TylerGilman/TylerGilman.com/views/layouts"
     "fmt"
+    "strings"
 )
 
-templ Blog(mainArticles []Article, sidebarArticles []Article, isAdmin bool) {
+templ Blog(mainArticles []Article, recentArticles []Article, categories []string, isAdmin bool) {
     @layouts.Base("blog", isAdmin) {
-        @Partial(mainArticles, sidebarArticles)
+        @Partial(mainArticles, recentArticles, categories, isAdmin)
     }
 }
 
-templ Partial(mainArticles []Article, sidebarArticles []Article) {
-    <div id="content" class="blog-container">
+templ Partial(mainArticles []Article, recentArticles []Article, categories []string, isAdmin bool) {
+    <div class="blog-container">
         <div class="blog-search-container">
-            <h2 class="search-heading">Search Posts</h2>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 class="search-heading">Search Posts</h2>
+                if isAdmin {
+                    <a href="/admin/blog" class="primary-button" style="margin-left: auto;">
+                        New Post
+                    </a>
+                }
+            </div>
             <form hx-boost="true" hx-target="#main-articles" hx-indicator="#search-indicator" action="/blog/search" method="get">
                 <div class="search-row">
-                    <div class="search-input-group">
-                        <input type="search" name="query" placeholder="Search..."
+                    <div class="search-input-group" style="flex: 2;">
+                        <input type="search" name="query" placeholder="Search titles, content..."
                                class="search-input"
                                hx-get="/blog/search"
                                hx-trigger="input changed delay:500ms, search"
-                               hx-target="#main-articles"
+                               hx-target="#main-content"
                                hx-indicator="#search-indicator"/>
                     </div>
-                    <div class="category-input-group">
+                    <div class="category-input-group" style="flex: 1;">
                         <select name="category"
                                 class="category-select"
                                 hx-get="/blog/search"
                                 hx-trigger="change"
-                                hx-target="#main-articles"
+                                hx-target="#main-content"
                                 hx-indicator="#search-indicator">
                             <option value="">All Categories</option>
-                            <option>Life</option>
-                            <option>Technology</option>
-                            <option>Philosophy</option>
-                            <option>Random</option>
+                            for _, category := range categories {
+                                <option value={category}>{category}</option>
+                            }
                         </select>
                     </div>
                     <noscript>
@@ -46,15 +53,27 @@ templ Partial(mainArticles []Article, sidebarArticles []Article) {
                     </noscript>
                 </div>
             </form>
-            <div id="search-indicator" class="search-indicator">Searching...</div>
+            <div id="search-indicator" class="search-indicator" style="display: none;">Searching...</div>
         </div>
 
         <div class="blog-main-layout">
             <div class="sidebar">
-                <h2 class="sidebar-heading">More Posts</h2>
+                <h2 class="sidebar-heading">Recent Posts</h2>
                 <div class="sidebar-article-list">
-                    for _, article := range sidebarArticles {
+                    for _, article := range recentArticles {
                         @smallArticle(article)
+                    }
+                </div>
+                
+                <h2 class="sidebar-heading" style="margin-top: 2rem;">Categories</h2>
+                <div class="categories-list">
+                    <a href="/blog" class="category-tag active">All</a>
+                    for _, category := range categories {
+                        <a href={templ.SafeURL("/blog/search?category=" + category)} 
+                           hx-get={string(templ.SafeURL("/blog/search?category=" + category))} 
+                           hx-target="#main-content"
+                           hx-push-url="true"
+                           class="category-tag">{category}</a>
                     }
                 </div>
             </div>
@@ -63,7 +82,62 @@ templ Partial(mainArticles []Article, sidebarArticles []Article) {
                 @MainArticles(mainArticles)
             </div>
         </div>
-      </div>
+    </div>
+}
+
+templ SearchResults(articles []Article, categories []string, selectedCategory string) {
+    <div class="blog-container">
+        <div class="blog-search-container">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 class="search-heading">Search Results</h2>
+                <a href="/blog" hx-get="/blog" hx-target="#main-content" hx-push-url="true" class="secondary-button">
+                    Clear Search
+                </a>
+            </div>
+            <form hx-boost="true" hx-target="#main-content" hx-indicator="#search-indicator" action="/blog/search" method="get">
+                <div class="search-row">
+                    <div class="search-input-group" style="flex: 2;">
+                        <input type="search" name="query" placeholder="Search titles, content..."
+                               class="search-input"
+                               hx-get="/blog/search"
+                               hx-trigger="input changed delay:500ms, search"
+                               hx-target="#main-content"
+                               hx-indicator="#search-indicator"/>
+                    </div>
+                    <div class="category-input-group" style="flex: 1;">
+                        <select name="category"
+                                class="category-select"
+                                hx-get="/blog/search"
+                                hx-trigger="change"
+                                hx-target="#main-content"
+                                hx-indicator="#search-indicator">
+                            <option value="">All Categories</option>
+                            for _, category := range categories {
+                                if category == selectedCategory {
+                                    <option value={category} selected>{category}</option>
+                                } else {
+                                    <option value={category}>{category}</option>
+                                }
+                            }
+                        </select>
+                    </div>
+                </div>
+            </form>
+            <div id="search-indicator" class="search-indicator" style="display: none;">Searching...</div>
+        </div>
+
+        if len(articles) > 0 {
+            <p>Found {templ.EscapeString(fmt.Sprintf("%d", len(articles)))} articles</p>
+            <div id="main-articles" class="article-list search-results">
+                @MainArticles(articles)
+            </div>
+        } else {
+            <div class="no-results">
+                <p>No articles found matching your search criteria.</p>
+                <p><a href="/blog" hx-get="/blog" hx-target="#main-content" hx-push-url="true">Return to all articles</a></p>
+            </div>
+        }
+    </div>
 }
 
 templ MainArticles(articles []Article) {
@@ -77,8 +151,27 @@ templ MainArticles(articles []Article) {
 templ smallArticle(article Article) {
     <article class="sidebar-article">
         <div class="sidebar-article-content">
-            <h3 class="sidebar-article-title">{article.Title}</h3>
-            <p class="sidebar-article-meta">{article.Category} • {article.Date.Format("Jan 2, 2006")}</p>
+            <a href={templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID))} 
+               hx-get={string(templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID)))} 
+               hx-target="#main-content"
+               hx-push-url="true"
+               class="sidebar-article-title-link">
+                <h3 class="sidebar-article-title">{article.Title}</h3>
+            </a>
+            <p class="sidebar-article-meta">{article.Date.Format("Jan 2, 2006")}</p>
+            
+            if article.Category != "" {
+                <div class="sidebar-article-categories">
+                    if len(strings.Split(article.Category, ",")) > 0 {
+                        if trimmedCategory := strings.TrimSpace(strings.Split(article.Category, ",")[0]); trimmedCategory != "" {
+                            <span class="category-mini-tag">{trimmedCategory}</span>
+                        }
+                        if len(strings.Split(article.Category, ",")) > 1 {
+                            <span class="category-count">+{fmt.Sprintf("%d", len(strings.Split(article.Category, ",")) - 1)}</span>
+                        }
+                    }
+                </div>
+            }
         </div>
     </article>
 }
@@ -91,11 +184,33 @@ templ largeArticle(article Article) {
         <div class="article-content">
             <h2 class="article-title">{article.Title}</h2>
             <p class="article-meta">By {article.Author} on {article.Date.Format("Jan 2, 2006")}</p>
+            
+            <div class="article-categories">
+                @articleCategories(article)
+            </div>
+            
             <p class="article-summary">{article.Summary}</p>
             <a href={templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID))} 
                hx-get={string(templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID)))} 
+               hx-target="#main-content"
                hx-push-url="true" 
                class="read-more-link">Read More</a>
         </div>
     </article>
+}
+
+templ articleCategories(article Article) {
+    if article.Category != "" {
+        <div class="article-category-tags">
+            for _, category := range strings.Split(article.Category, ",") {
+                if trimmedCategory := strings.TrimSpace(category); trimmedCategory != "" {
+                    <a href={templ.SafeURL("/blog/search?category=" + trimmedCategory)} 
+                       hx-get={string(templ.SafeURL("/blog/search?category=" + trimmedCategory))} 
+                       hx-target="#main-content"
+                       hx-push-url="true"
+                       class="category-tag">{trimmedCategory}</a>
+                }
+            }
+        </div>
+    }
 }

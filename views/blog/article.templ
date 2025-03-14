@@ -3,20 +3,20 @@ package blog
 import (
     "github.com/TylerGilman/TylerGilman.com/views/layouts"
     "fmt"
-    
+    "strings"
 )
 
 templ EditControls(article Article) {
     <div class="flex gap-4 mt-4">
         <a href={ templ.URL(fmt.Sprintf("/admin/blog/edit/%d", article.ID)) }
-           class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+           class="primary-button">
             Edit Article
         </a>
         <button 
             id="delete-btn"
             hx-delete={ fmt.Sprintf("/admin/blog/%d", article.ID) }
             hx-confirm="Are you sure you want to delete this article?"
-            class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600">
+            class="secondary-button" style="background-color: rgba(220, 38, 38, 0.1); border-color: rgba(220, 38, 38, 0.8); color: rgba(220, 38, 38, 0.8);">
             Delete Article
         </button>
     </div>
@@ -24,24 +24,83 @@ templ EditControls(article Article) {
 
 templ FullArticle(article Article, isAdmin bool) {
     @layouts.Base("blog", isAdmin) {
-        <div id="content" hx-swap-oob="true" class="container mx-auto px-4 py-8">
-            <article class="bg-white shadow-lg rounded-lg overflow-hidden">
+        <div class="article-container">
+            <article class="article-page">
                 if article.ImageUrl != "" {
-                    <img src={article.ImageUrl} alt={article.Title} class="w-full h-64 object-cover"/>
+                    <img src={article.ImageUrl} alt={article.Title} class="article-image"/>
                 }
-                <div class="p-6 border-t-2 shadow">
-                    <h1 class="text-3xl font-bold mb-2">{article.Title}</h1>
-                    <p class="text-gray-600 text-sm mb-4">By {article.Author} on {article.Date.Format("Jan 2, 2006")} | Category: {article.Category}</p>
-                    <div class="prose max-w-none">
+                <div class="article-page-content">
+                    <h1 class="article-page-title">{article.Title}</h1>
+                    <p class="article-page-meta">By {article.Author} on {article.Date.Format("Jan 2, 2006")}</p>
+                    
+                    <div class="article-categories">
+                        if article.Category != "" {
+                            <div class="article-category-tags">
+                                for _, category := range strings.Split(article.Category, ",") {
+                                    if trimmedCategory := strings.TrimSpace(category); trimmedCategory != "" {
+                                        <a href={templ.SafeURL("/blog/search?category=" + trimmedCategory)} 
+                                           hx-get={string(templ.SafeURL("/blog/search?category=" + trimmedCategory))} 
+                                           hx-target="#main-content"
+                                           hx-push-url="true"
+                                           class="category-tag">{trimmedCategory}</a>
+                                    }
+                                }
+                            </div>
+                        }
+                    </div>
+                    
+                    <div class="article-html" id="article-content">
                         @templ.Raw(article.HTMLContent)
                     </div>
+                    <script type="text/javascript">
+                        // This script triggers both on page load and HTMX swaps
+                        function renderMathAndCode() {
+                            const content = document.getElementById('article-content');
+                            if (!content) return;
+                            
+                            // Wait a moment for content to be fully available
+                            setTimeout(() => {
+                                try {
+                                    console.log("Rendering math in article content...");
+                                    // Render KaTeX math inside HTML elements with class math
+                                    renderMathInElement(content, {
+                                        delimiters: [
+                                            {left: "$$", right: "$$", display: true},
+                                            {left: "$", right: "$", display: false}
+                                        ],
+                                        throwOnError: false,
+                                        output: "html"
+                                    });
+                                    
+                                    // Highlight code blocks
+                                    content.querySelectorAll('pre code').forEach((block) => {
+                                        hljs.highlightElement(block);
+                                    });
+                                    
+                                    console.log("Math rendering completed successfully");
+                                } catch (e) {
+                                    console.error("Error rendering math:", e);
+                                }
+                            }, 50);
+                        }
+                        
+                        // Run on page load
+                        renderMathAndCode();
+                        
+                        // Listen for HTMX events
+                        document.addEventListener('htmx:afterSwap', function(evt) {
+                            if (evt.detail.target && evt.detail.target.id === 'main-content') {
+                                renderMathAndCode();
+                            }
+                        });
+                    </script>
                 </div>
                 if isAdmin {
                     @EditControls(article)
                 }
             </article>
             <div class="mt-8">
-                <a hx-get="/blog" href="/blog" hx-target="#content" hx-push-url="true" class="text-red-400 hover:underline">Back to Blog</a>
+                <a hx-get="/blog" href="/blog" hx-target="#main-content" hx-push-url="true" class="back-link">← Back to Blog</a>
             </div>
         </div>
     }

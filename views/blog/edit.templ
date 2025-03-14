@@ -33,17 +33,17 @@ templ EditPage(article Article) {
                     </div>
 
                     <div>
-                        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-                        <select id="category" 
+                        <label for="category" class="block text-sm font-medium text-gray-700">Categories</label>
+                        <input type="text" 
+                            id="category" 
                             name="category" 
+                            value={article.Category}
                             required 
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
-                            <option value="Life" selected?={article.Category == "Life"}>Life</option>
-                            <option value="Technology" selected?={article.Category == "Technology"}>Technology</option>
-                            <option value="Programming" selected?={article.Category == "Programming"}>Programming</option>
-                            <option value="Projects" selected?={article.Category == "Projects"}>Projects</option>
-                            <option value="Thoughts" selected?={article.Category == "Thoughts"}>Thoughts</option>
-                        </select>
+                            placeholder="Comma-separated categories (e.g. Programming, RL, NLP)"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+                        <div class="text-sm text-gray-500 mt-1">
+                            Enter categories separated by commas. Suggested categories: Programming, RL, NLP, WEB, Life
+                        </div>
                     </div>
 
                     <div>

@@ -100,7 +100,8 @@ router.Route("/admin", func(r chi.Router) {
 		})
 
 		// Core pages
-    r.Get("/", handlers.Make(handlers.HandleHome))
+    r.Get("/", handlers.Make(handlers.HandleHome)) // Static unscrollable landing page
+    r.Get("/standalone", handlers.Make(handlers.HandleHomeFull)) // Keep original version accessible
     r.Get("/home", func(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/", http.StatusMovedPermanently)
     })
@@ -108,7 +109,7 @@ router.Route("/admin", func(r chi.Router) {
 	})
 
 	// Static files
-  router.Handle("/public/*", Public())
+  router.Handle("/public/*", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 }
 
 func main() {
@@ -167,7 +168,7 @@ func main() {
     go func() {
         port := os.Getenv("DEV_PORT")
         if port == "" {
-            port = "8080"
+            port = "8002"
         }
         srv.Addr = ":" + port
         slog.Info("Starting server", "port", port)

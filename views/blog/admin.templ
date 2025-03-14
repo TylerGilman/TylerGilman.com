@@ -4,81 +4,74 @@ import "github.com/TylerGilman/TylerGilman.com/views/layouts"
 
 templ AdminPage(adminPass string) {
     @layouts.Base("admin", true) {
-        <div id="content" class="container mx-auto px-4 py-8">
-            <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
-                <h1 class="text-2xl font-bold mb-6">Create Blog Post</h1>
-                
-                <form hx-post="/admin/blog" class="space-y-6">
-                    <input type="hidden" name="admin_pass" value={adminPass}/>
+        <div class="form-container max-w-4xl mx-auto my-8 shadow-lg rounded-lg">
+            <h1 class="text-2xl font-bold mb-6">Create Blog Post</h1>
+            
+            <form hx-post="/admin/blog" class="space-y-6">
+                <input type="hidden" name="admin_pass" value={adminPass}/>
 
-                    <div>
-                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                        <input type="text" 
-                            id="title" 
-                            name="title" 
-                            required 
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
+                <div class="form-group">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" 
+                        id="title" 
+                        name="title" 
+                        required 
+                        class="form-input"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="author" class="form-label">Author</label>
+                    <input type="text" 
+                        id="author" 
+                        name="author" 
+                        required 
+                        class="form-input"/>
+                </div>
+
+                <div class="form-group">
+                    <label for="category" class="form-label">Categories</label>
+                    <input type="text" 
+                        id="category" 
+                        name="category" 
+                        placeholder="Programming, RL, NLP, WEB, Life"
+                        required 
+                        class="form-input"/>
+                    <p class="mt-1 text-sm">
+                        Enter categories separated by commas. Suggested: Programming, RL, NLP, WEB, Life
+                    </p>
+                </div>
+
+                <div class="form-group">
+                    <label for="summary" class="form-label">Summary</label>
+                    <textarea id="summary" 
+                        name="summary" 
+                        required 
+                        rows="3"
+                        class="form-textarea"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="markdownEditor" class="form-label">Content (Markdown with Math Support)</label>
+                    <div class="markdown-container">
+                        <textarea 
+                            id="markdownEditor" 
+                            name="content" 
+                            rows="20" 
+                            required
+                            oninput="updateMarkdownPreview()"
+                            class="markdown-editor"></textarea>
+                        <div id="markdownPreview" class="markdown-preview"></div>
                     </div>
+                </div>
 
-                    <div>
-                        <label for="author" class="block text-sm font-medium text-gray-700">Author</label>
-                        <input type="text" 
-                            id="author" 
-                            name="author" 
-                            required 
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
-                    </div>
+                <div class="form-group">
+                    <button type="submit" class="form-submit">
+                        Publish Post
+                    </button>
+                </div>
+            </form>
 
-                    <div>
-                        <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
-                        <select id="category" 
-                            name="category" 
-                            required 
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">
-                            <option value="Life">Life</option>
-                            <option value="Technology">Technology</option>
-                            <option value="Programming">Programming</option>
-                            <option value="Projects">Projects</option>
-                            <option value="Thoughts">Thoughts</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label for="summary" class="block text-sm font-medium text-gray-700">Summary</label>
-                        <textarea id="summary" 
-                            name="summary" 
-                            required 
-                            rows="3"
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"></textarea>
-                    </div>
-
-                    <div>
-                        <label for="markdownEditor" class="block text-sm font-medium text-gray-700">Content (Markdown)</label>
-                        <div class="mt-1 flex gap-4">
-                            <textarea 
-                                id="markdownEditor" 
-                                name="content" 
-                                rows="20" 
-                                required
-                                oninput="updateMarkdownPreview()"
-                                class="block w-1/2 border border-gray-300 rounded-md shadow-sm p-2 font-mono"></textarea>
-                            <div id="markdownPreview" 
-                                class="w-1/2 p-4 border border-gray-300 rounded-md prose prose-slate prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-a:text-blue-600 hover:prose-a:text-blue-500 max-w-none bg-white overflow-y-auto"
-                                style="height: 500px;">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <button type="submit" 
-                            class="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-colors">
-                            Publish Post
-                        </button>
-                    </div>
-                </form>
-
-                <div id="message" class="mt-4"></div>
-            </div>
+            <div id="message" class="mt-4"></div>
         </div>
 
         <script>
@@ -87,6 +80,14 @@ templ AdminPage(adminPass string) {
 ## This is a subtitle
 
 This is a paragraph with **bold** and *italic* text.
+
+### Math Example
+Inline math: $E = mc^2$
+
+Display math:
+$$
+\\frac{d}{dx}\\left( \\int_{a}^{x} f(u)\\,du\\right)=f(x)
+$$
 
 ### Code Example
 \`\`\`python
@@ -102,11 +103,38 @@ def hello_world():
 
 [Link Example](https://example.com)`;
 
+            // Set up marked.js with math support
+            marked.use({
+                renderer: {
+                    code(code, infostring) {
+                        const lang = (infostring || '').match(/\S*/)[0];
+                        if (lang && hljs.getLanguage(lang)) {
+                            try {
+                                const highlighted = hljs.highlight(code, { language: lang }).value;
+                                return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`;
+                            } catch (__) {}
+                        }
+                        return `<pre><code class="hljs">${code}</code></pre>`;
+                    }
+                }
+            });
+
             function updateMarkdownPreview() {
                 const editor = document.getElementById('markdownEditor');
                 const preview = document.getElementById('markdownPreview');
                 if (editor && preview) {
+                    // Parse markdown
                     preview.innerHTML = marked.parse(editor.value);
+                    
+                    // Process math with KaTeX
+                    renderMathInElement(preview, {
+                        delimiters: [
+                            {left: "$$", right: "$$", display: true},
+                            {left: "$", right: "$", display: false}
+                        ],
+                        throwOnError: false
+                    });
+                    
                     // Highlight code blocks
                     preview.querySelectorAll('pre code').forEach((block) => {
                         hljs.highlightElement(block);
@@ -127,8 +155,8 @@ def hello_world():
 }
 
 templ AdminSuccess() {
-    <div class="text-green-600 p-4 bg-green-50 rounded-md">
+    <div style="padding: 1rem; margin: 1rem 0; border-radius: 0.5rem; background-color: rgba(22, 163, 74, 0.1); color: rgba(22, 163, 74, 0.8);">
         Blog post published successfully!
-        <a href="/blog" class="text-blue-600 hover:underline ml-2">View Blog</a>
+        <a href="/blog" class="primary-button" style="margin-left: 1rem; padding: 0.25rem 0.75rem; font-size: 0.875rem;">View Blog</a>
     </div>
 }
