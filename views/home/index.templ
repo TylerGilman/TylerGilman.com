@@ -11,24 +11,30 @@ templ Index(isAdmin bool) {
 }
 
 templ Partial() {
-  <div id="content" class="content-container">
-    <div class="hero-container">
-      <div class="hero-overlay">
-        <h1 class="hero-name">Tyler Gilman</h1>
-        <p class="hero-title">Software Developer</p>
-      </div>
-      <div id="lazy-content" class="about-section">
-        <p class="about-text">
-          I create software systems with a focus on performance, accessibility and simplicity.
-        </p>
-        <div class="action-buttons">
-          <a href="/projects" hx-get="/projects" hx-target="#content" hx-swap="outerHTML" hx-push-url="true" class="primary-button">
-              View Projects
-          </a>
-          <a href="/blog" hx-get="/blog" hx-target="#content" hx-push-url="true" class="secondary-button">
-              Read Blog
-          </a>
-        </div>
+  <div class="content-container">
+    <div class="hero-content">
+      <h1 class="hero-name">Tyler Gilman</h1>
+      <p class="hero-title">Software Developer</p>
+      <p class="about-text">
+        Open Source Crusader | SUCKLESS Sisyphus
+      </p>
+      <div class="action-buttons">
+        <a href="/projects" 
+           hx-get="/projects" 
+           hx-target="#main-content" 
+           hx-swap="innerHTML" 
+           hx-push-url="true" 
+           class="primary-button">
+            Projects
+        </a>
+        <a href="/blog" 
+           hx-get="/blog" 
+           hx-target="#main-content" 
+           hx-swap="innerHTML" 
+           hx-push-url="true" 
+           class="secondary-button">
+            Blog
+        </a>
       </div>
     </div>
   </div>

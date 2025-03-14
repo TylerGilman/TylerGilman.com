@@ -100,8 +100,8 @@ router.Route("/admin", func(r chi.Router) {
 		})
 
 		// Core pages
-    r.Get("/", handlers.Make(handlers.HandleLanding)) // Direct HTML landing page
-    r.Get("/original", handlers.Make(handlers.HandleHome)) // Keep original version accessible
+    r.Get("/", handlers.Make(handlers.HandleHome)) // Static unscrollable landing page
+    r.Get("/standalone", handlers.Make(handlers.HandleHomeFull)) // Keep original version accessible
     r.Get("/home", func(w http.ResponseWriter, r *http.Request) {
         http.Redirect(w, r, "/", http.StatusMovedPermanently)
     })
@@ -168,7 +168,7 @@ func main() {
     go func() {
         port := os.Getenv("DEV_PORT")
         if port == "" {
-            port = "8080"
+            port = "8002"
         }
         srv.Addr = ":" + port
         slog.Info("Starting server", "port", port)

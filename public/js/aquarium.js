@@ -1,556 +1,581 @@
-// Ultra simple orbs - no escape sequences
+// Procedural fish simulation
 var Aquarium = function(canvasId, options) {
   this.options = options || {};
-  this.fishCount = this.options.fishCount || 20;
+  this.fishCount = this.options.fishCount || 5;
   this.canvas = document.getElementById(canvasId);
-  this.orbs = [];
+  this.fish = [];
+  this.elapsedTime = 0;
   
-  // Start with minimal orbs and lazy load more
-  this.initialOrbCount = this.options.initialOrbCount || Math.floor(this.fishCount * 0.3); // 30% to start
-  this.maxOrbCount = this.fishCount;
-  this.lazyLoadInterval = null;
-  
-  this.init = function() {
-    if (this.canvas == null) return false;
-    
-    console.log("Initializing aquarium with canvas:", this.canvas);
-    
-    // Make canvas actual size match its DOM size
-    this.canvas.width = this.canvas.clientWidth;
-    this.canvas.height = this.canvas.clientHeight;
-    
-    console.log("Canvas size:", this.canvas.width, "x", this.canvas.height);
-    
-    // Setup 3D scene with transparent background
-    this.scene = new THREE.Scene();
-    
-    // Setup camera to cover the whole canvas (which is now 200vh tall)
-    var aspectRatio = this.canvas.width / this.canvas.height;
-    this.camera = new THREE.PerspectiveCamera(75, aspectRatio, 0.1, 1000);
-    
-    // Position camera to see the entire canvas height
-    this.camera.position.z = 60; // Increased to see more of the canvas
-    
-    // Setup renderer with alpha enabled for transparency
-    this.renderer = new THREE.WebGLRenderer({
-        canvas: this.canvas,
-        alpha: true,  // Enable transparency
-        antialias: true
-    });
-    this.renderer.setSize(this.canvas.width, this.canvas.height, false);
-    this.renderer.setClearColor(0x000000, 0);  // Transparent background
-    
-    // Handle window resize
-    var self = this;
-    window.addEventListener('resize', function() {
-      // Update canvas dimensions
-      self.canvas.width = self.canvas.clientWidth;
-      self.canvas.height = self.canvas.clientHeight;
+  // ConstrainedPoint class for fish segments
+  class ConstrainedPoint {
+    constructor(x, y, z, constraintRadius, speed, isHead = false) {
+      this.position = new THREE.Vector3(x, y, z);
+      this.constraintRadius = constraintRadius;
+      this.previousPoint = null;
+      this.nextPoint = null;
+      this.isHead = isHead;
+      this.angle = Math.random() * Math.PI * 2;
+      this.speed = speed;
+      this.velocityMultiplier = 1.0;
       
-      // Update camera and renderer
-      self.camera.aspect = self.canvas.width / self.canvas.height;
-      self.camera.updateProjectionMatrix();
-      self.renderer.setSize(self.canvas.width, self.canvas.height, false);
+      // Random vertical movement factor
+      this.verticalFactor = Math.random() * 0.5 + 0.5;
       
-      console.log("Canvas resized:", self.canvas.width, "x", self.canvas.height);
-    });
-    
-    // Add lights
-    var light = new THREE.AmbientLight(0xffffff, 0.5);
-    this.scene.add(light);
-    
-    var pointLight = new THREE.PointLight(0xffffff, 1, 100);
-    pointLight.position.set(0, 0, 30);
-    this.scene.add(pointLight);
-    
-    var blueLight = new THREE.PointLight(0x0044ff, 1, 50);
-    blueLight.position.set(-20, 10, 0);
-    this.scene.add(blueLight);
-    
-    // Create orbs - they stay fixed in the viewport with position:fixed canvas
-    this.createOrbs();
-    
-    console.log("Starting animation loop with " + this.orbs.length + " total orbs");
-    
-    // Start animation
-    var self = this;
-    
-    // Define animation function
-    function animate() {
-      requestAnimationFrame(animate);
+      // Wandering parameters
+      this.wanderRadius = 0.5;
+      this.wanderDistance = 2.0;
+      this.wanderAngle = Math.random() * Math.PI * 2;
+      this.wanderChange = 0.1;
       
-      // Apply any camera adjustments from scroll position
-      self.updateCameraForScroll();
+      // Initialize velocity with slight Y component
+      this.velocity = new THREE.Vector3(
+        Math.cos(this.angle) * this.speed,
+        Math.sin(this.angle) * this.speed * 0.3, // Add slight vertical movement
+        Math.sin(this.angle) * this.speed
+      );
       
-      // Calculate world bounds 
-      var bounds = self.getWorldBounds();
+      // Time offset for swimming pattern
+      this.timeOffset = Math.random() * 1000;
+      this.swimCycleSpeed = Math.random() * 0.5 + 0.5; // Different speeds for each fish
+    }
+
+    move(time) {
+      if (!this.isHead) return;
       
-      // Current time for animations
-      var now = Date.now();
+      // Apply wander steering behavior
+      this.wanderAngle += (Math.random() - 0.5) * this.wanderChange;
       
-      // Move orbs - wrap in try/catch to ensure animation continues even if there's an error
-      try {
-        for(var i = 0; i < self.orbs.length; i++) {
-          var orb = self.orbs[i];
-          
-          // Skip if orb is invalid
-          if (!orb || !orb.position || !orb.velocity) continue;
-          
-          // Apply velocity normally - no scroll offset to worry about
-          orb.position.x += orb.velocity.x;
-          orb.position.y += orb.velocity.y;
-          orb.position.z += orb.velocity.z;
-          
-          // X-axis bounce or wraparound
-          if (orb.position.x < bounds.worldLeft) {
-            // Either bounce
-            orb.velocity.x *= -1; 
-            orb.position.x = bounds.worldLeft + 1;
-          } else if (orb.position.x > bounds.worldRight) {
-            // Or bounce
-            orb.velocity.x *= -1;
-            orb.position.x = bounds.worldRight - 1;
-          }
-          
-          // Y-axis bounce
-          if (orb.position.y < bounds.worldTop) {
-            orb.velocity.y *= -1;
-            orb.position.y = bounds.worldTop + 1;
-          } else if (orb.position.y > bounds.worldBottom) {
-            orb.velocity.y *= -1;
-            orb.position.y = bounds.worldBottom - 1;
-          }
-          
-          // Z-axis bounce
-          if (orb.position.z < -bounds.worldDepth/2 || orb.position.z > bounds.worldDepth/2) {
-            orb.velocity.z *= -1;
-          }
-          
-          // Special behavior for lazy-loaded orbs
-          if (orb.userData && orb.userData.isLazyLoaded) {
-            var ageInSeconds = (now - orb.userData.createdAt) / 1000;
-            
-            // For newly added orbs (first 3 seconds), apply special entrance behavior
-            if (ageInSeconds < 3) {
-              // Make them pulsate more dramatically and with more brightness
-              if (orb.material) {
-                orb.material.emissiveIntensity = 0.8 + Math.sin(now * 0.005 + i) * 0.6;
-                
-                // Slightly adjust color over time for shimmering effect
-                var hue = orb.userData.originalHue + Math.sin(now * 0.002) * 0.05;
-                orb.material.emissive.setHSL(hue, 0.9, 0.6);
-              }
-              
-              // Maintain directed movement toward center with slight variance
-              if (Math.random() < 0.1) {
-                // Get distance from center
-                var bounds = self.getWorldBounds();
-                var centerX = (bounds.worldLeft + bounds.worldRight) / 2;
-                var centerY = (bounds.worldTop + bounds.worldBottom) / 2;
-                
-                // Direction to center
-                var dirX = centerX - orb.position.x;
-                var dirY = centerY - orb.position.y;
-                
-                // Normalize
-                var length = Math.sqrt(dirX*dirX + dirY*dirY);
-                
-                // Only adjust if not too close to center
-                if (length > 5) {
-                  dirX /= length;
-                  dirY /= length;
-                  
-                  // Adjust velocity toward center with small random variance
-                  orb.velocity.x = dirX * 0.15 + (Math.random() - 0.5) * 0.05;
-                  orb.velocity.y = dirY * 0.15 + (Math.random() - 0.5) * 0.05;
-                }
-              }
-            } else {
-              // After 3 seconds, they behave like normal orbs
-              orb.userData.isLazyLoaded = false;
-            }
-          }
-          
-          // Random direction changes for all orbs
-          if (Math.random() < 0.02) {
-            // Apply small random direction changes
-            orb.velocity.x += (Math.random() - 0.5) * 0.05;
-            orb.velocity.y += (Math.random() - 0.5) * 0.05;
-            orb.velocity.z += (Math.random() - 0.5) * 0.03;
-            
-            // Ensure minimum speed
-            var speed = Math.sqrt(
-              orb.velocity.x * orb.velocity.x + 
-              orb.velocity.y * orb.velocity.y + 
-              orb.velocity.z * orb.velocity.z
-            );
-            
-            if (speed < 0.05) {
-              // Scale up to minimum speed
-              var factor = 0.05 / Math.max(speed, 0.001); // Avoid division by zero
-              orb.velocity.x *= factor;
-              orb.velocity.y *= factor;
-              orb.velocity.z *= factor;
-            }
-          }
-          
-          // Subtle pulsing effect for visual interest
-          if (orb.material) {
-            var pulseSpeed = 0.001;
-            var intensity = 0.7 + Math.sin(now * pulseSpeed + i) * 0.3;
-            orb.material.emissiveIntensity = intensity;
-          }
-          
-          // Occasionally log orb position for debugging
-          if (i === 0 && Math.random() < 0.001) {
-            console.log("Orb position:", orb.position.x, orb.position.y, orb.position.z);
-            console.log("Orb velocity:", orb.velocity.x, orb.velocity.y, orb.velocity.z);
-          }
+      const wanderX = Math.cos(this.wanderAngle) * this.wanderRadius;
+      const wanderY = Math.sin(this.wanderAngle) * this.wanderRadius * this.verticalFactor;
+      const wanderZ = Math.sin(this.wanderAngle) * this.wanderRadius;
+      
+      // Apply forces
+      this.velocity.x += wanderX * 0.05;
+      this.velocity.y += wanderY * 0.03;
+      this.velocity.z += wanderZ * 0.05;
+      
+      // Normalize and scale by speed
+      this.velocity.normalize().multiplyScalar(this.speed * this.velocityMultiplier);
+      
+      // Add a subtle swimming motion (up/down) based on time
+      const swimFactor = Math.sin((time + this.timeOffset) * this.swimCycleSpeed) * 0.02;
+      this.velocity.y += swimFactor;
+      
+      // Apply velocity
+      this.position.add(this.velocity);
+    }
+
+    constrain() {
+      if (this.previousPoint) {
+        const direction = new THREE.Vector3().subVectors(this.position, this.previousPoint.position);
+        const distance = direction.length();
+        if (distance > this.constraintRadius) {
+          direction.normalize();
+          this.position.copy(this.previousPoint.position).add(direction.multiplyScalar(this.constraintRadius));
         }
-      } catch (e) {
-        console.error("Error in orb animation:", e);
+      }
+    }
+  }
+
+  // Fish class
+  class Fish {
+    constructor(x, y, z, color, speed) {
+      this.color = color;
+      this.speed = speed;
+      this.group = new THREE.Group();
+      this.points = [];
+      this.meshes = [];
+      this.targetPosition = new THREE.Vector3();
+      this.avoidanceRadius = 10;
+      this.seekWeight = 0.02;
+      this.maxViewDistance = 15; // Maximum distance from camera where fish will try to stay visible
+      
+      // Unique behavior for each fish
+      this.personalityType = Math.floor(Math.random() * 3); // 0=explorer, 1=social, 2=shy
+      this.activityLevel = Math.random() * 0.5 + 0.75; // How active the fish is
+      
+      // Create tail fin geometry
+      this.tailFinGeometry = new THREE.BufferGeometry();
+      const tailVertices = new Float32Array([
+        0, 0, 0,    // center
+        0, 1.5, -1.2,  // top
+        0, -1.5, -1.2   // bottom
+      ]);
+      this.tailFinGeometry.setAttribute('position', new THREE.BufferAttribute(tailVertices, 3));
+      this.tailFinGeometry.setIndex([0, 1, 2]);
+      this.tailFinGeometry.computeVertexNormals();
+      
+      // Create side fins geometry
+      this.sideFinGeometry = new THREE.BufferGeometry();
+      const sideVertices = new Float32Array([
+        0, 0, 0,     // center
+        1.2, 0, -1,  // right
+        -1.2, 0, -1  // left
+      ]);
+      this.sideFinGeometry.setAttribute('position', new THREE.BufferAttribute(sideVertices, 3));
+      this.sideFinGeometry.setIndex([0, 1, 2]);
+      this.sideFinGeometry.computeVertexNormals();
+
+      // Create points
+      const numSegments = 8;
+      const segmentSpacing = 0.8;
+      
+      for (let i = 0; i < numSegments; i++) {
+        const point = new ConstrainedPoint(
+          x + (i * segmentSpacing),
+          y,
+          z,
+          segmentSpacing,
+          speed * this.activityLevel,
+          i === 0
+        );
+        this.points.push(point);
+      }
+
+      // Connect points
+      for (let i = 1; i < this.points.length; i++) {
+        this.points[i].previousPoint = this.points[i - 1];
+        this.points[i - 1].nextPoint = this.points[i];
+      }
+
+      // Head has different shape - ellipsoid for better hydrodynamics
+      const headGeometry = new THREE.SphereGeometry(1.0, 16, 16);
+      headGeometry.scale(1.2, 0.8, 1.0); // Make it slightly flattened and elongated
+      
+      // Create body segments
+      const sizes = [1.0, 0.9, 0.85, 0.8, 0.7, 0.6, 0.5, 0.4];
+      for (let i = 0; i < this.points.length; i++) {
+        const geometry = i === 0 ? headGeometry : new THREE.SphereGeometry(sizes[i], 16, 16);
+        
+        // Different material for head vs body
+        const material = new THREE.MeshPhongMaterial({
+          color: this.color,
+          emissive: this.color,
+          emissiveIntensity: 0.5,
+          transparent: true,
+          opacity: 0.92,
+          specular: new THREE.Color(0xffffff),
+          shininess: i === 0 ? 80 : 30 // Make head more shiny
+        });
+        
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.copy(this.points[i].position);
+        this.group.add(mesh);
+        this.meshes.push(mesh);
+        
+        // Add fins to the middle of the body
+        if (i === 2) {
+          const finMaterial = new THREE.MeshPhongMaterial({
+            color: this.color,
+            emissive: this.color,
+            emissiveIntensity: 0.3,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.85
+          });
+          
+          const rightFin = new THREE.Mesh(this.sideFinGeometry.clone(), finMaterial);
+          rightFin.rotation.y = Math.PI / 2;
+          rightFin.scale.set(0.5, 0.5, 0.5);
+          mesh.add(rightFin);
+          
+          const leftFin = new THREE.Mesh(this.sideFinGeometry.clone(), finMaterial);
+          leftFin.rotation.y = -Math.PI / 2;
+          leftFin.scale.set(0.5, 0.5, 0.5);
+          mesh.add(leftFin);
+        }
       }
       
-      // Render
-      self.renderer.render(self.scene, self.camera);
+      // Add tail fin to the last segment
+      const tailMaterial = new THREE.MeshPhongMaterial({
+        color: this.color,
+        emissive: this.color,
+        emissiveIntensity: 0.3,
+        side: THREE.DoubleSide,
+        transparent: true,
+        opacity: 0.85
+      });
+      
+      const tailFin = new THREE.Mesh(this.tailFinGeometry, tailMaterial);
+      tailFin.position.set(0, 0, 0);
+      tailFin.scale.set(0.7, 0.7, 0.7);
+      this.meshes[this.meshes.length - 1].add(tailFin);
+      
+      // Add eyes to the head
+      const eyeGeometry = new THREE.SphereGeometry(0.15, 8, 8);
+      const eyeMaterial = new THREE.MeshPhongMaterial({
+        color: 0xffffff,
+        emissive: 0xffffff,
+        emissiveIntensity: 0.5
+      });
+      
+      const rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+      rightEye.position.set(0.5, 0.3, 0.6);
+      this.meshes[0].add(rightEye);
+      
+      const leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
+      leftEye.position.set(-0.5, 0.3, 0.6);
+      this.meshes[0].add(leftEye);
+      
+      // Add pupil to each eye
+      const pupilGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+      const pupilMaterial = new THREE.MeshPhongMaterial({
+        color: 0x000000,
+        emissive: 0x000000
+      });
+      
+      const rightPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+      rightPupil.position.set(0, 0, 0.1);
+      rightEye.add(rightPupil);
+      
+      const leftPupil = new THREE.Mesh(pupilGeometry, pupilMaterial);
+      leftPupil.position.set(0, 0, 0.1);
+      leftEye.add(leftPupil);
+    }
+
+    update(time, allFish, camera) {
+      // Calculate a target position based on personality
+      this.calculateTargetPosition(camera);
+      
+      // Apply seeking behavior to head with personality-based weights
+      const head = this.points[0];
+      
+      // Direction to target
+      const toTarget = new THREE.Vector3().subVectors(this.targetPosition, head.position);
+      const distToTarget = toTarget.length();
+      
+      // Only seek if we're far from the target
+      if (distToTarget > 2) {
+        toTarget.normalize().multiplyScalar(this.seekWeight);
+        head.velocity.add(toTarget);
+        head.velocity.normalize().multiplyScalar(head.speed * head.velocityMultiplier);
+      }
+      
+      // Avoid other fish
+      this.avoidOtherFish(allFish);
+      
+      // Move fish with updated forces
+      head.move(time);
+      
+      // Update constraints for body segments
+      for (const point of this.points) {
+        point.constrain();
+      }
+
+      // Update the mesh positions and rotations
+      for (let i = 0; i < this.points.length; i++) {
+        this.meshes[i].position.copy(this.points[i].position);
+        
+        // Orient the fish in the direction of movement
+        if (i < this.points.length - 1) {
+          const direction = new THREE.Vector3().subVectors(
+            this.points[i].position,
+            this.points[i + 1].position
+          );
+          
+          if (direction.length() > 0.001) {
+            this.meshes[i].lookAt(this.points[i + 1].position);
+            // Rotate to align with movement direction
+            this.meshes[i].rotateX(Math.PI / 2);
+          }
+        } else {
+          // For the last segment, use the same orientation as the previous segment
+          this.meshes[i].quaternion.copy(this.meshes[i-1].quaternion);
+        }
+      }
+      
+      // Add swimming motion to tail and fins
+      if (this.meshes.length > 0) {
+        const tailSegment = this.meshes[this.meshes.length - 1];
+        if (tailSegment.children.length > 0) {
+          const tailFin = tailSegment.children[0];
+          tailFin.rotation.y = Math.sin(time * 5 * this.activityLevel) * 0.5;
+        }
+        
+        // Add subtle motion to side fins
+        if (this.meshes[2] && this.meshes[2].children.length >= 2) {
+          const rightFin = this.meshes[2].children[0];
+          const leftFin = this.meshes[2].children[1];
+          
+          rightFin.rotation.z = Math.sin(time * 3 * this.activityLevel) * 0.2;
+          leftFin.rotation.z = -Math.sin(time * 3 * this.activityLevel) * 0.2;
+        }
+      }
     }
     
-    // Start the animation loop
-    console.log("Calling animate() to start animation loop");
-    animate();
+    avoidOtherFish(allFish) {
+      const head = this.points[0];
+      const avoidanceForce = new THREE.Vector3();
+      
+      for (const otherFish of allFish) {
+        if (otherFish === this) continue;
+        
+        const otherHead = otherFish.points[0];
+        const toOther = new THREE.Vector3().subVectors(head.position, otherHead.position);
+        const distance = toOther.length();
+        
+        if (distance < this.avoidanceRadius) {
+          // Calculate avoidance force (stronger when closer)
+          const avoidStrength = 1 - Math.pow(distance / this.avoidanceRadius, 2);
+          toOther.normalize().multiplyScalar(avoidStrength * 0.03);
+          avoidanceForce.add(toOther);
+        }
+      }
+      
+      // Apply avoidance force
+      head.velocity.add(avoidanceForce);
+    }
     
+    calculateTargetPosition(camera) {
+      const head = this.points[0];
+      const cameraPosition = new THREE.Vector3();
+      camera.getWorldPosition(cameraPosition);
+      
+      // Calculate position relative to camera
+      const toCam = new THREE.Vector3().subVectors(head.position, cameraPosition);
+      const distanceFromCamera = toCam.length();
+      
+      // Determine if fish is visible
+      const tooFar = distanceFromCamera > this.maxViewDistance;
+      
+      // Base target on personality type
+      switch (this.personalityType) {
+        case 0: // Explorer - wanders more widely but stays in view
+          if (tooFar) {
+            // If too far from camera, set target to a random position in front of camera
+            this.targetPosition.set(
+              (Math.random() - 0.5) * 30,
+              (Math.random() - 0.5) * 20,
+              (Math.random() - 0.5) * 15
+            );
+            
+            // Increase speed to return to view
+            head.velocityMultiplier = 1.5;
+          } else {
+            // Random wandering, occasionally changing target
+            if (Math.random() < 0.01) {
+              this.targetPosition.set(
+                (Math.random() - 0.5) * 40,
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 20
+              );
+            }
+            head.velocityMultiplier = 1.0;
+          }
+          break;
+          
+        case 1: // Social - stays in the center but moves around moderately
+          if (tooFar) {
+            // Return to center, but with some variation
+            this.targetPosition.set(
+              (Math.random() - 0.5) * 20,
+              (Math.random() - 0.5) * 10,
+              (Math.random() - 0.5) * 10
+            );
+            head.velocityMultiplier = 1.3;
+          } else {
+            // Occasionally pick new positions near center
+            if (Math.random() < 0.02) {
+              this.targetPosition.set(
+                (Math.random() - 0.5) * 30,
+                (Math.random() - 0.5) * 15,
+                (Math.random() - 0.5) * 15
+              );
+            }
+            head.velocityMultiplier = 0.9;
+          }
+          break;
+          
+        case 2: // Shy - stays closer to center and moves more slowly
+          if (tooFar) {
+            // Return to center quickly
+            this.targetPosition.set(
+              (Math.random() - 0.5) * 15,
+              (Math.random() - 0.5) * 10,
+              (Math.random() - 0.5) * 5
+            );
+            head.velocityMultiplier = 1.2;
+          } else {
+            // Small, cautious movements
+            if (Math.random() < 0.03) {
+              this.targetPosition.set(
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 10,
+                (Math.random() - 0.5) * 10
+              );
+            }
+            head.velocityMultiplier = 0.8;
+          }
+          break;
+      }
+    }
+  }
+
+  this.init = function() {
+    if (!this.canvas) return false;
+
+    // Setup scene
+    this.scene = new THREE.Scene();
+    this.scene.background = new THREE.Color(0x000816);
+
+    // Setup camera (completely static)
+    const aspect = window.innerWidth / window.innerHeight;
+    this.camera = new THREE.PerspectiveCamera(75, aspect, 0.1, 1000);
+    this.camera.position.set(0, 0, 20);
+    
+    // Setup renderer
+    this.renderer = new THREE.WebGLRenderer({ canvas: this.canvas, antialias: true });
+    this.renderer.setSize(window.innerWidth, window.innerHeight);
+    this.renderer.setPixelRatio(window.devicePixelRatio);
+    
+    // Add environment
+    this.addEnvironment();
+
+    // Handle resize (only update renderer size)
+    window.addEventListener('resize', () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+
+      this.camera.aspect = width / height;
+      this.camera.updateProjectionMatrix();
+
+      this.renderer.setSize(width, height);
+    });
+
+    // Create fish with different colors
+    const fishColors = [
+      new THREE.Color(0x3498db), // blue
+      new THREE.Color(0x2ecc71), // green
+      new THREE.Color(0x9b59b6), // purple
+      new THREE.Color(0xe74c3c), // red
+      new THREE.Color(0xf1c40f), // yellow
+      new THREE.Color(0x1abc9c), // teal
+      new THREE.Color(0xe67e22), // orange
+    ];
+    
+    for (let i = 0; i < this.fishCount; i++) {
+      // Start fish in front of the camera but spread out
+      const x = (Math.random() - 0.5) * 30;
+      const y = (Math.random() - 0.5) * 20;
+      const z = (Math.random() - 0.5) * 15;
+      
+      // Select a color from the palette or slightly vary it
+      const baseColor = fishColors[i % fishColors.length];
+      const color = baseColor.clone().offsetHSL(
+        (Math.random() - 0.5) * 0.05, // slight hue variation
+        Math.random() * 0.1,          // slight saturation variation
+        (Math.random() - 0.5) * 0.1   // slight lightness variation
+      );
+      
+      const speed = 0.05 + Math.random() * 0.025;
+      
+      const fish = new Fish(x, y, z, color, speed);
+      this.fish.push(fish);
+      this.scene.add(fish.group);
+    }
+
+    this.animate();
     return true;
   };
   
-  // Get world bounds that match the canvas size (200vh tall)
-  this.getWorldBounds = function() {
-    // Calculate visible viewport area
-    // Handle the case where THREE.MathUtils might not be available
-    var vFOV = (THREE.MathUtils ? THREE.MathUtils.degToRad(this.camera.fov) : (this.camera.fov * Math.PI / 180));
-    var visibleHeight = 2 * Math.tan(vFOV / 2) * this.camera.position.z;
-    var visibleWidth = visibleHeight * this.camera.aspect;
-    
-    // The world should be the same size as the canvas: viewport width x 2*viewport height
-    var worldWidth = visibleWidth; 
-    var worldHeight = visibleHeight * 2; // Canvas is 200vh tall (2x viewport height)
-    var worldDepth = 60; 
-    
-    // Calculate the top/bottom of each viewport area
-    var firstViewportTop = -worldHeight/2;
-    var firstViewportBottom = firstViewportTop + visibleHeight;
-    var secondViewportTop = firstViewportBottom;
-    var secondViewportBottom = worldHeight/2;
-    
-    return {
-      // Visible viewport area (what's currently visible on screen)
-      visibleWidth: visibleWidth,
-      visibleHeight: visibleHeight,
-      visibleLeft: -visibleWidth/2,
-      visibleRight: visibleWidth/2,
-      visibleTop: -visibleHeight/2,
-      visibleBottom: visibleHeight/2,
-      
-      // Total world area (matches the 200vh canvas size)
-      worldWidth: worldWidth,
-      worldHeight: worldHeight,
-      worldDepth: worldDepth,
-      worldLeft: -worldWidth/2,
-      worldRight: worldWidth/2,
-      worldTop: -worldHeight/2, // Top of canvas
-      worldBottom: worldHeight/2, // Bottom of canvas
-      
-      // Viewport sections (for spawning)
-      firstViewportTop: firstViewportTop,
-      firstViewportBottom: firstViewportBottom,
-      secondViewportTop: secondViewportTop,
-      secondViewportBottom: secondViewportBottom
-    };
-  };
+  this.addEnvironment = function() {
+    // Add ambient light for base illumination
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    this.scene.add(ambientLight);
 
-  this.createOrbs = function() {
-    var bounds = this.getWorldBounds();
-    var count = this.initialOrbCount; // Start with fewer orbs for faster load
+    // Add directional light for main illumination and shadows
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    directionalLight.position.set(1, 2, 1);
+    this.scene.add(directionalLight);
     
-    console.log("Initial load with " + count + " orbs - all outside visible area");
+    // Add subtle point lights for water effect
+    const pointLight1 = new THREE.PointLight(0x3498db, 0.4, 20);
+    pointLight1.position.set(5, 5, 10);
+    this.scene.add(pointLight1);
     
-    // Create initial orbs OUTSIDE the visible viewport
-    // They'll move into view gradually
+    const pointLight2 = new THREE.PointLight(0x2980b9, 0.4, 20);
+    pointLight2.position.set(-5, -5, 10);
+    this.scene.add(pointLight2);
     
-    for (var i = 0; i < count; i++) {
-      // Create orb with varied sizes
-      var size = 1 + Math.random() * 3;
-      var geometry = new THREE.SphereGeometry(size, 16, 16);
+    // Add subtle particles for water effect
+    this.particles = new THREE.Group();
+    const particleGeometry = new THREE.BufferGeometry();
+    const particleCount = 200;
+    
+    const positions = new Float32Array(particleCount * 3);
+    const sizes = new Float32Array(particleCount);
+    
+    for (let i = 0; i < particleCount; i++) {
+      const i3 = i * 3;
+      // Position particles in a large cube
+      positions[i3] = (Math.random() - 0.5) * 40;
+      positions[i3 + 1] = (Math.random() - 0.5) * 30;
+      positions[i3 + 2] = (Math.random() - 0.5) * 20;
       
-      // Random color with more vibrant options
-      var hue = Math.random();
-      var saturation = 0.8 + Math.random() * 0.2; // High saturation
-      var lightness = 0.5 + Math.random() * 0.3;  // Brighter
-      var color = new THREE.Color().setHSL(hue, saturation, lightness);
-      
-      var material = new THREE.MeshPhongMaterial({
-        color: color,
-        emissive: color,
-        emissiveIntensity: 0.7, // More glow
-        shininess: 100,
-        transparent: true,
-        opacity: 0.9 // Slight transparency
-      });
-      
-      var orb = new THREE.Mesh(geometry, material);
-      
-      // Position outside the visible area
-      // Choose which side to spawn from
-      var side = Math.floor(Math.random() * 4); // 0-3 = left, right, top, bottom
-      
-      switch(side) {
-        case 0: // Left side
-          orb.position.set(
-            bounds.worldLeft - 10 - Math.random() * 30,  // Left of visible area
-            bounds.worldTop + Math.random() * bounds.worldHeight, // Any height
-            -bounds.worldDepth/2 + Math.random() * bounds.worldDepth // Any depth
-          );
-          break;
-          
-        case 1: // Right side
-          orb.position.set(
-            bounds.worldRight + 10 + Math.random() * 30, // Right of visible area
-            bounds.worldTop + Math.random() * bounds.worldHeight, // Any height
-            -bounds.worldDepth/2 + Math.random() * bounds.worldDepth // Any depth
-          );
-          break;
-          
-        case 2: // Top
-          orb.position.set(
-            bounds.worldLeft + Math.random() * bounds.worldWidth, // Any width
-            bounds.worldTop - 10 - Math.random() * 30, // Above visible area
-            -bounds.worldDepth/2 + Math.random() * bounds.worldDepth // Any depth
-          );
-          break;
-          
-        case 3: // Bottom
-          orb.position.set(
-            bounds.worldLeft + Math.random() * bounds.worldWidth, // Any width
-            bounds.worldBottom + 10 + Math.random() * 30, // Below visible area
-            -bounds.worldDepth/2 + Math.random() * bounds.worldDepth // Any depth
-          );
-          break;
-      }
-      
-      // Velocity directed toward center of viewport
-      var centerX = (bounds.worldLeft + bounds.worldRight) / 2;
-      var centerY = (bounds.worldTop + bounds.worldBottom) / 2;
-      
-      // Direction vector to center
-      var dirX = centerX - orb.position.x;
-      var dirY = centerY - orb.position.y;
-      
-      // Normalize direction vector
-      var length = Math.sqrt(dirX*dirX + dirY*dirY);
-      dirX /= length;
-      dirY /= length;
-      
-      // Apply velocity directed toward center with small random variance
-      var speedFactor = 0.1 + Math.random() * 0.1; // Slightly faster to ensure they enter view
-      orb.velocity = {
-        x: dirX * speedFactor + (Math.random() - 0.5) * 0.05,
-        y: dirY * speedFactor + (Math.random() - 0.5) * 0.05,
-        z: (Math.random() - 0.5) * 0.05 // Small Z velocity
-      };
-      
-      // Add metadata
-      orb.userData = {
-        size: size,
-        originalHue: hue,
-        createdAt: Date.now(),
-        isLazyLoaded: true // Mark as lazy loaded for special effects
-      };
-      
-      this.orbs.push(orb);
-      this.scene.add(orb);
+      // Random sizes
+      sizes[i] = Math.random() * 0.5 + 0.1;
     }
     
-    console.log("Created " + count + " initial orbs distributed across viewport");
+    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particleGeometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
     
-    // Setup lazy loading of additional orbs
-    this.setupLazyLoading();
-  };
-  
-  // No longer needed - lazy loading handles additional orbs
-  
-  // Lazy loading is used instead of loading all orbs at once
-  // Setup scroll tracking to move camera with scroll position
-  this.setupScrollTracking = function() {
-    // Track scroll position
-    this.scrollY = 0;
-    var self = this;
-    window.addEventListener('scroll', function() {
-      self.scrollY = window.scrollY;
+    // Use a soft particle texture
+    const particleMaterial = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.1,
+      transparent: true,
+      opacity: 0.3,
+      blending: THREE.AdditiveBlending,
+      sizeAttenuation: true
     });
     
-    // Initialize with current scroll position
-    this.scrollY = window.scrollY;
+    this.particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+    this.scene.add(this.particleSystem);
   };
   
-  // Setup lazy loading of orbs over time
-  this.setupLazyLoading = function() {
-    if (this.orbs.length >= this.maxOrbCount) {
-      console.log("Already at max orb count, no lazy loading needed");
-      return;
+  this.updateParticles = function(time) {
+    if (!this.particleSystem) return;
+    
+    const positions = this.particleSystem.geometry.attributes.position.array;
+    
+    // Slowly move particles
+    for (let i = 0; i < positions.length; i += 3) {
+      positions[i] += Math.sin(time * 0.01 + i * 0.1) * 0.01;
+      positions[i + 1] += Math.cos(time * 0.01 + i * 0.1) * 0.01;
+      
+      // Reset particles that drift too far
+      if (Math.abs(positions[i]) > 20) {
+        positions[i] = (Math.random() - 0.5) * 40;
+      }
+      if (Math.abs(positions[i + 1]) > 20) {
+        positions[i + 1] = (Math.random() - 0.5) * 30;
+      }
+      if (Math.abs(positions[i + 2]) > 10) {
+        positions[i + 2] = (Math.random() - 0.5) * 20;
+      }
     }
     
-    var self = this;
-    var bounds = this.getWorldBounds();
-    
-    // Clear any existing interval
-    if (this.lazyLoadInterval) {
-      clearInterval(this.lazyLoadInterval);
-    }
-    
-    // How many more orbs to add
-    var remainingOrbs = this.maxOrbCount - this.orbs.length;
-    
-    // Time period over which to add orbs (milliseconds)
-    var lazyLoadPeriod = 5000; // 5 seconds - spread out loading for better performance
-    
-    // How many batches to add
-    var batchCount = 10; // More smaller batches for smoother appearance
-    
-    // Calculate orbs per batch
-    var orbsPerBatch = Math.ceil(remainingOrbs / batchCount);
-    
-    // Time between batches
-    var batchInterval = lazyLoadPeriod / batchCount;
-    
-    console.log("Lazy loading " + remainingOrbs + " more orbs in " + batchCount + " batches over " + lazyLoadPeriod/1000 + " seconds");
-    
-    var batchesAdded = 0;
-    
-    // Start interval to add orbs over time
-    this.lazyLoadInterval = setInterval(function() {
-      // Stop if we're at max
-      if (self.orbs.length >= self.maxOrbCount) {
-        clearInterval(self.lazyLoadInterval);
-        console.log("Reached max orb count: " + self.orbs.length);
-        return;
-      }
-      
-      // Add a batch of orbs
-      var batchSize = Math.min(orbsPerBatch, self.maxOrbCount - self.orbs.length);
-      self.addOrbBatch(batchSize);
-      
-      batchesAdded++;
-      
-      // Stop after all batches
-      if (batchesAdded >= batchCount) {
-        clearInterval(self.lazyLoadInterval);
-        console.log("Lazy loading complete. Total orbs: " + self.orbs.length);
-      }
-    }, batchInterval);
+    this.particleSystem.geometry.attributes.position.needsUpdate = true;
   };
-  
-  // Add a batch of orbs - placed outside initial view for better performance
-  this.addOrbBatch = function(count) {
-    var bounds = this.getWorldBounds();
-    
-    for (var i = 0; i < count; i++) {
-      // Create orb with varied sizes
-      var size = 1 + Math.random() * 3;
-      var geometry = new THREE.SphereGeometry(size, 16, 16);
-      
-      // Random color with more vibrant options
-      var hue = Math.random();
-      var saturation = 0.8 + Math.random() * 0.2; // High saturation
-      var lightness = 0.5 + Math.random() * 0.3;  // Brighter
-      var color = new THREE.Color().setHSL(hue, saturation, lightness);
-      
-      var material = new THREE.MeshPhongMaterial({
-        color: color,
-        emissive: color,
-        emissiveIntensity: 0.7, // More glow
-        shininess: 100,
-        transparent: true,
-        opacity: 0.9 // Slight transparency
-      });
-      
-      var orb = new THREE.Mesh(geometry, material);
-      
-      // Place orbs well outside the visible area
-      // They'll move into view gradually with directed velocity
-      var side = Math.floor(Math.random() * 4); // 0, 1, 2, 3 = left, right, top, bottom
-      
-      switch(side) {
-        case 0: // Left side - far outside left edge
-          orb.position.set(
-            bounds.worldLeft - 20 - Math.random() * 40,  // Further outside left edge
-            bounds.worldTop + Math.random() * bounds.worldHeight, // Any height
-            -bounds.worldDepth/2 + Math.random() * bounds.worldDepth // Any depth
-          );
-          break;
-        case 1: // Right side - far outside right edge
-          orb.position.set(
-            bounds.worldRight + 20 + Math.random() * 40, // Further outside right edge
-            bounds.worldTop + Math.random() * bounds.worldHeight, // Any height
-            -bounds.worldDepth/2 + Math.random() * bounds.worldDepth // Any depth
-          );
-          break;
-        case 2: // Top - far above visible area
-          orb.position.set(
-            bounds.worldLeft + Math.random() * bounds.worldWidth, // Any width
-            bounds.worldTop - 20 - Math.random() * 40, // Far above visible area
-            -bounds.worldDepth/2 + Math.random() * bounds.worldDepth // Any depth
-          );
-          break;
-        case 3: // Bottom - far below visible area
-          orb.position.set(
-            bounds.worldLeft + Math.random() * bounds.worldWidth, // Any width
-            bounds.worldBottom + 20 + Math.random() * 40, // Far below visible area
-            -bounds.worldDepth/2 + Math.random() * bounds.worldDepth // Any depth
-          );
-          break;
-      }
-      
-      // Random velocity with moderate speed, directed toward center
-      var centerX = (bounds.worldLeft + bounds.worldRight) / 2;
-      var centerY = (bounds.worldTop + bounds.worldBottom) / 2;
-      
-      // Calculate direction toward center
-      var dirX = centerX - orb.position.x;
-      var dirY = centerY - orb.position.y;
-      
-      // Normalize direction
-      var length = Math.sqrt(dirX*dirX + dirY*dirY);
-      dirX /= length;
-      dirY /= length;
-      
-      // Apply velocity toward center with random variance
-      var speed = 0.1 + Math.random() * 0.1;
-      orb.velocity = {
-        x: dirX * speed + (Math.random() - 0.5) * 0.05,
-        y: dirY * speed + (Math.random() - 0.5) * 0.05,
-        z: (Math.random() - 0.5) * 0.05
-      };
-      
-      // Add metadata
-      orb.userData = {
-        size: size,
-        originalHue: hue,
-        createdAt: Date.now(),
-        isLazyLoaded: true
-      };
-      
-      this.orbs.push(orb);
-      this.scene.add(orb);
+
+  this.animate = function() {
+    requestAnimationFrame(this.animate.bind(this));
+    this.elapsedTime += 0.01;
+
+    // Update fish
+    for (const fish of this.fish) {
+      fish.update(this.elapsedTime, this.fish, this.camera);
     }
     
-    console.log("Lazy loaded " + count + " additional orbs, total: " + this.orbs.length);
-  };
-  
-  // This function is intentionally empty - no scroll tracking needed
-  // The canvas has position:fixed so it stays in place independent of scroll
-  this.updateCameraForScroll = function() {
-    // Intentionally empty - orbs are fixed in viewport
+    // Update water particles
+    this.updateParticles(this.elapsedTime);
+
+    // Keep camera static at its initial position
+    this.camera.position.set(0, 0, 20);
+    this.camera.lookAt(0, 0, 0);
+
+    this.renderer.render(this.scene, this.camera);
   };
 };
 
-// Global var for use in HTML
 window.Aquarium = Aquarium;

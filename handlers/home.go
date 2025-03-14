@@ -8,7 +8,14 @@ import (
 
 // HandleHome returns the home page.
 func HandleHome(w http.ResponseWriter, r *http.Request) error {
+	r = setHtmxContext(r)
 	isAdmin := isUserAdmin(r)
+	isHtmxRequest := r.Header.Get("HX-Request") == "true"
+	
+	if isHtmxRequest {
+		return home.Partial().Render(r.Context(), w)
+	}
+	
 	err := home.Index(isAdmin).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, "Failed to render home page", http.StatusInternalServerError)

@@ -7,1690 +7,285 @@ templ StandaloneFull(isAdmin bool) {
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Tyler Gilman | Software Developer</title>
+		<script src="https://unpkg.com/htmx.org@2.0.4"></script>
 		<style>
-			/* Reset and base styles */
 			* {
 				margin: 0;
 				padding: 0;
 				box-sizing: border-box;
 			}
 			
-			body {
-				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-				color: #333;
+			html, body {
+				width: 100%;
+				height: 100%;
+				background-color: #000816;
+				color: white;
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 				overflow: hidden;
-				position: relative;
-				width: 100vw;
-				height: 100vh;
 			}
 			
-			/* Aquarium */
 			#aquarium-canvas {
-				position: absolute;
+				position: fixed;
 				top: 0;
 				left: 0;
 				width: 100%;
 				height: 100%;
 				z-index: 1;
-				background-color: #000816;
 			}
 			
-			/* Content overlay */
-			.hero-overlay {
-				position: absolute;
+			.content {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				text-align: center;
+				z-index: 2;
+			}
+			
+			.content h1 {
+				font-size: 3rem;
+				margin-bottom: 1rem;
+				text-shadow: 0 0 10px rgba(0,0,0,0.5);
+			}
+			
+			.content p {
+				font-size: 1.5rem;
+				opacity: 0.9;
+				margin-bottom: 2rem;
+				text-shadow: 0 0 10px rgba(0,0,0,0.5);
+			}
+			
+			.nav-container {
+				position: fixed;
 				top: 0;
 				left: 0;
-				width: 100%;
-				height: 100%;
+				right: 0;
+				z-index: 10;
+				background-color: rgba(0, 8, 22, 0.7);
+				backdrop-filter: blur(5px);
+				padding: 15px 0;
+			}
+			
+			.nav-content {
 				display: flex;
-				flex-direction: column;
+				justify-content: space-between;
 				align-items: center;
-				justify-content: center;
-				z-index: 2;
-				pointer-events: none;
+				max-width: 1200px;
+				margin: 0 auto;
+				padding: 0 20px;
 			}
 			
-			.hero-name {
-				font-size: 4rem;
-				font-weight: 700;
-				margin-bottom: 0.5rem;
+			.nav-title {
 				color: white;
-				text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-				opacity: 0;
-				transform: translateY(20px);
-				animation: fadeInUp 1s ease-out forwards;
-			}
-			
-			.hero-title {
+				margin: 0;
 				font-size: 1.5rem;
-				font-weight: 400;
-				color: rgba(255, 255, 255, 0.8);
-				text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-				opacity: 0;
-				transform: translateY(20px);
-				animation: fadeInUp 1s ease-out 0.3s forwards;
+				margin-right: 30px;
 			}
 			
-			/* Bottom content that appears after loading */
-			.about-section {
+			.nav-links {
+				display: flex;
+				gap: 30px;
+			}
+			
+			.nav-link {
+				color: white;
+				text-decoration: none;
+				position: relative;
+				padding: 5px 0;
+			}
+			
+			.nav-underline {
 				position: absolute;
-				bottom: 2rem;
+				bottom: 0;
 				left: 0;
 				width: 100%;
-				padding: 0 2rem;
+				height: 2px;
+				background-color: white;
+				transform: scaleX(0);
+				transition: transform 0.3s;
+			}
+			
+			.nav-link:hover .nav-underline {
+				transform: scaleX(1);
+			}
+			
+			.nav-link.active .nav-underline {
+				transform: scaleX(1);
+				background-color: #38bdf8;
+			}
+			
+			.nav-link.active {
+				color: #38bdf8;
+			}
+            
+            /* Styles for HTMX-swapped content */
+            #main-content {
+                min-height: calc(100vh - 60px);
+                width: 100%;
+                color: white;
+            }
+            
+            /* Dark styles for content sections */
+            .content-container, .blog-container, .projects-container {
+                background-color: transparent !important;
+            }
+            
+            /* Force dark theme for all content */
+            .card, .article-card, .project-card, 
+            .blog-search-container, .sidebar, .article-content {
+                background-color: rgba(0, 8, 22, 0.7) !important;
+                backdrop-filter: blur(5px);
+                color: white !important;
+                border: none !important;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1) !important;
+            }
+			
+			.buttons-container {
 				display: flex;
-				flex-direction: column;
-				align-items: center;
+				gap: 20px;
 				justify-content: center;
-				z-index: 3;
-				opacity: 0;
-				transform: translateY(20px);
-				animation: fadeInUp 1s ease-out forwards;
-			}
-			
-			.about-text {
-				font-size: 1.2rem;
-				max-width: 600px;
-				text-align: center;
-				margin-bottom: 2rem;
-				color: white;
-				text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-			}
-			
-			.action-buttons {
-				display: flex;
-				gap: 1rem;
-				margin-top: 1rem;
-			}
-			
-			.primary-button, .secondary-button {
-				padding: 0.75rem 1.5rem;
-				border-radius: 0.5rem;
-				font-weight: 600;
-				transition: all 0.2s ease;
-				cursor: pointer;
-				pointer-events: auto;
-				text-decoration: none;
 			}
 			
 			.primary-button {
-				background-color: #0066cc;
-				color: white;
+				background-color: #38bdf8;
+				color: white; 
+				padding: 10px 20px;
+				border-radius: 5px;
+				text-decoration: none;
+				font-weight: bold;
+				transition: background-color 0.3s;
 			}
 			
 			.secondary-button {
 				background-color: transparent;
 				color: white;
+				padding: 10px 20px;
 				border: 2px solid white;
-			}
-			
-			.primary-button:hover {
-				background-color: #004c99;
-				transform: translateY(-2px);
-			}
-			
-			.secondary-button:hover {
-				background-color: rgba(255, 255, 255, 0.1);
-				transform: translateY(-2px);
-			}
-			
-			.hidden {
-				display: none;
-			}
-			
-			@keyframes fadeInUp {
-				from {
-					opacity: 0;
-					transform: translateY(20px);
-				}
-				to {
-					opacity: 1;
-					transform: translateY(0);
-				}
-			}
-			
-			/* Navigation */
-			.nav-container {
-				position: fixed;
-				top: 1rem;
-				right: 1rem;
-				z-index: 100;
-				display: flex;
-				gap: 1rem;
-			}
-			
-			.nav-button {
-				background-color: rgba(0, 0, 0, 0.3);
-				color: white;
-				border: 1px solid rgba(255, 255, 255, 0.2);
-				padding: 0.5rem 1rem;
-				border-radius: 2rem;
+				border-radius: 5px;
 				text-decoration: none;
-				font-size: 0.9rem;
-				transition: all 0.2s ease;
-				backdrop-filter: blur(5px);
+				font-weight: bold;
+				transition: background-color 0.3s;
 			}
 			
-			.nav-button:hover {
-				background-color: rgba(255, 255, 255, 0.1);
-			}
-			
-			/* Responsive adjustments */
-			@media (max-width: 768px) {
-				.hero-name {
-					font-size: 3rem;
-				}
-				
-				.hero-title {
-					font-size: 1.2rem;
-				}
-				
-				.about-text {
-					font-size: 1rem;
-				}
-			}
-			
-			@media (max-width: 480px) {
-				.hero-name {
-					font-size: 2.5rem;
-				}
-				
-				.hero-title {
-					font-size: 1rem;
-				}
-				
-				.action-buttons {
-					flex-direction: column;
-					gap: 0.75rem;
-				}
+			noscript {
+				position: fixed;
+				top: 50%;
+				left: 50%;
+				transform: translate(-50%, -50%);
+				text-align: center;
+				color: white;
+				background: rgba(0, 0, 0, 0.8);
+				padding: 2rem;
+				border-radius: 1rem;
+				z-index: 3;
 			}
 		</style>
-		<script>
-// Inline minimal Three.js implementation
-window.THREE = {
-  // Core classes
-  Vector3: class Vector3 {
-    constructor(x = 0, y = 0, z = 0) {
-      this.x = x;
-      this.y = y;
-      this.z = z;
-    }
-    
-    set(x, y, z) {
-      this.x = x;
-      this.y = y;
-      this.z = z;
-      return this;
-    }
-    
-    copy(v) {
-      this.x = v.x;
-      this.y = v.y;
-      this.z = v.z;
-      return this;
-    }
-    
-    clone() {
-      return new THREE.Vector3(this.x, this.y, this.z);
-    }
-    
-    add(v) {
-      this.x += v.x;
-      this.y += v.y;
-      this.z += v.z;
-      return this;
-    }
-    
-    addVectors(a, b) {
-      this.x = a.x + b.x;
-      this.y = a.y + b.y;
-      this.z = a.z + b.z;
-      return this;
-    }
-    
-    subVectors(a, b) {
-      this.x = a.x - b.x;
-      this.y = a.y - b.y;
-      this.z = a.z - b.z;
-      return this;
-    }
-    
-    multiplyScalar(s) {
-      this.x *= s;
-      this.y *= s;
-      this.z *= s;
-      return this;
-    }
-    
-    distanceToSquared(v) {
-      const dx = this.x - v.x;
-      const dy = this.y - v.y;
-      const dz = this.z - v.z;
-      return dx * dx + dy * dy + dz * dz;
-    }
-    
-    normalize() {
-      const l = Math.sqrt(this.x * this.x + this.y * this.y + this.z * this.z);
-      if (l > 0) {
-        this.x /= l;
-        this.y /= l;
-        this.z /= l;
-      }
-      return this;
-    }
-    
-    lerp(v, alpha) {
-      this.x += (v.x - this.x) * alpha;
-      this.y += (v.y - this.y) * alpha;
-      this.z += (v.z - this.z) * alpha;
-      return this;
-    }
-  },
-  
-  Vector2: class Vector2 {
-    constructor(x = 0, y = 0) {
-      this.x = x;
-      this.y = y;
-    }
-  },
-  
-  Euler: class Euler {
-    constructor(x = 0, y = 0, z = 0, order = 'XYZ') {
-      this.x = x;
-      this.y = y;
-      this.z = z;
-      this.order = order;
-    }
-  },
-  
-  Color: class Color {
-    constructor(color) {
-      this.color = color;
-      this.r = 1;
-      this.g = 1;
-      this.b = 1;
-    }
-  },
-  
-  // Core objects
-  Group: class Group {
-    constructor() {
-      this.children = [];
-      this.position = new THREE.Vector3();
-      this.rotation = new THREE.Euler();
-      this.scale = new THREE.Vector3(1, 1, 1);
-      this.userData = {};
-    }
-    
-    add(obj) {
-      this.children.push(obj);
-      obj.parent = this;
-      return this;
-    }
-    
-    remove(obj) {
-      const index = this.children.indexOf(obj);
-      if (index !== -1) {
-        this.children.splice(index, 1);
-        obj.parent = null;
-      }
-      return this;
-    }
-    
-    lookAt(x, y, z) {
-      // Simple lookAt implementation just stores the rotation
-      if (x instanceof THREE.Vector3) {
-        this.rotation.y = Math.atan2(this.position.x - x.x, this.position.z - x.z);
-        return this;
-      }
-      this.rotation.y = Math.atan2(this.position.x - x, this.position.z - z);
-      return this;
-    }
-  },
-  
-  // Geometries
-  BufferGeometry: class BufferGeometry {
-    constructor() {
-      this.attributes = {};
-      this.index = null;
-    }
-    
-    setAttribute(name, attribute) {
-      this.attributes[name] = attribute;
-      return this;
-    }
-    
-    setIndex(indices) {
-      this.index = indices;
-      return this;
-    }
-    
-    computeVertexNormals() {
-      // Simplified - would compute normals in real Three.js
-      return this;
-    }
-  },
-  
-  Float32BufferAttribute: class Float32BufferAttribute {
-    constructor(array, itemSize) {
-      this.array = array;
-      this.itemSize = itemSize;
-    }
-  },
-  
-  SphereGeometry: class SphereGeometry {
-    constructor(radius, widthSegments, heightSegments) {
-      this.parameters = {
-        radius: radius,
-        widthSegments: widthSegments,
-        heightSegments: heightSegments
-      };
-    }
-  },
-  
-  PlaneGeometry: class PlaneGeometry {
-    constructor(width, height, widthSegments, heightSegments) {
-      this.parameters = {
-        width: width,
-        height: height,
-        widthSegments: widthSegments,
-        heightSegments: heightSegments
-      };
-    }
-  },
-  
-  CylinderGeometry: class CylinderGeometry {
-    constructor(radiusTop, radiusBottom, height, radialSegments) {
-      this.parameters = {
-        radiusTop: radiusTop,
-        radiusBottom: radiusBottom,
-        height: height,
-        radialSegments: radialSegments
-      };
-    }
-  },
-  
-  // Materials
-  Material: class Material {
-    constructor() {
-      this.side = THREE.DoubleSide;
-      this.transparent = false;
-      this.opacity = 1;
-    }
-  },
-  
-  MeshBasicMaterial: class MeshBasicMaterial {
-    constructor(params = {}) {
-      this.color = params.color || 0xffffff;
-      this.transparent = params.transparent || false;
-      this.opacity = params.opacity || 1;
-      this.side = THREE.DoubleSide;
-    }
-  },
-  
-  MeshStandardMaterial: class MeshStandardMaterial {
-    constructor(params = {}) {
-      this.color = params.color || 0xffffff;
-      this.roughness = params.roughness || 0.5;
-      this.metalness = params.metalness || 0.5;
-      this.transparent = params.transparent || false;
-      this.opacity = params.opacity || 1;
-      this.side = params.side || THREE.DoubleSide;
-    }
-  },
-  
-  MeshPhysicalMaterial: class MeshPhysicalMaterial {
-    constructor(params = {}) {
-      this.color = params.color || 0xffffff;
-      this.roughness = params.roughness || 0.5;
-      this.metalness = params.metalness || 0.5;
-      this.clearcoat = params.clearcoat || 0;
-      this.clearcoatRoughness = params.clearcoatRoughness || 0;
-      this.transmission = params.transmission || 0;
-      this.thickness = params.thickness || 0;
-      this.ior = params.ior || 1.5;
-      this.transparent = params.transparent || false;
-      this.opacity = params.opacity || 1;
-      this.side = params.side || THREE.DoubleSide;
-    }
-  },
-  
-  LineBasicMaterial: class LineBasicMaterial {
-    constructor(params = {}) {
-      this.color = params.color || 0xffffff;
-      this.linewidth = params.linewidth || 1;
-    }
-  },
-  
-  // Object3D classes
-  Mesh: class Mesh {
-    constructor(geometry, material) {
-      this.geometry = geometry;
-      this.material = material;
-      this.position = new THREE.Vector3();
-      this.rotation = new THREE.Euler();
-      this.scale = new THREE.Vector3(1, 1, 1);
-      this.userData = {};
-    }
-  },
-  
-  Line: class Line {
-    constructor(geometry, material) {
-      this.geometry = geometry;
-      this.material = material;
-      this.position = new THREE.Vector3();
-      this.rotation = new THREE.Euler();
-    }
-  },
-  
-  PointLight: class PointLight {
-    constructor(color, intensity, distance) {
-      this.color = color;
-      this.intensity = intensity;
-      this.distance = distance;
-      this.position = new THREE.Vector3();
-    }
-  },
-  
-  DirectionalLight: class DirectionalLight {
-    constructor(color, intensity) {
-      this.color = color;
-      this.intensity = intensity;
-      this.position = new THREE.Vector3();
-      this.castShadow = false;
-    }
-  },
-  
-  AmbientLight: class AmbientLight {
-    constructor(color, intensity) {
-      this.color = color;
-      this.intensity = intensity;
-    }
-  },
-  
-  // Curves
-  CubicBezierCurve3: class CubicBezierCurve3 {
-    constructor(v0, v1, v2, v3) {
-      this.v0 = v0;
-      this.v1 = v1;
-      this.v2 = v2;
-      this.v3 = v3;
-    }
-    
-    getPoints(divisions) {
-      const points = [];
-      for (let i = 0; i <= divisions; i++) {
-        points.push(this.getPoint(i / divisions));
-      }
-      return points;
-    }
-    
-    getPoint(t) {
-      const t1 = 1 - t;
-      return new THREE.Vector3(
-        t1*t1*t1 * this.v0.x + 3*t1*t1*t * this.v1.x + 3*t1*t*t * this.v2.x + t*t*t * this.v3.x,
-        t1*t1*t1 * this.v0.y + 3*t1*t1*t * this.v1.y + 3*t1*t*t * this.v2.y + t*t*t * this.v3.y,
-        t1*t1*t1 * this.v0.z + 3*t1*t1*t * this.v1.z + 3*t1*t*t * this.v2.z + t*t*t * this.v3.z
-      );
-    }
-    
-    getPointAt(t) {
-      return this.getPoint(t);
-    }
-  },
-  
-  // Constants
-  DoubleSide: 0,
-  FrontSide: 1,
-  BackSide: 2,
-  
-  // Core components
-  Clock: class Clock {
-    constructor() {
-      this.startTime = Date.now() / 1000;
-      this.oldTime = this.startTime;
-      this.elapsedTime = 0;
-    }
-    
-    getDelta() {
-      const newTime = Date.now() / 1000;
-      const delta = newTime - this.oldTime;
-      this.oldTime = newTime;
-      this.elapsedTime += delta;
-      return delta;
-    }
-    
-    getElapsedTime() {
-      return this.elapsedTime;
-    }
-  },
-  
-  Raycaster: class Raycaster {
-    constructor() {
-      this.ray = {
-        origin: new THREE.Vector3(),
-        direction: new THREE.Vector3()
-      };
-    }
-    
-    setFromCamera(mouseCoords, camera) {
-      // Simple implementation just stores the mouse coordinates
-      this.ray.direction.set(mouseCoords.x, mouseCoords.y, -1).normalize();
-    }
-    
-    intersectPlane(plane, target) {
-      // Simplified plane intersection
-      if (target) {
-        target.set(this.ray.direction.x * 10, this.ray.direction.y * 10, 0);
-        return target;
-      }
-      return new THREE.Vector3(this.ray.direction.x * 10, this.ray.direction.y * 10, 0);
-    }
-  },
-  
-  Plane: class Plane {
-    constructor(normal, constant) {
-      this.normal = normal || new THREE.Vector3(0, 1, 0);
-      this.constant = constant || 0;
-    }
-  },
-  
-  FogExp2: class FogExp2 {
-    constructor(color, density) {
-      this.color = color;
-      this.density = density;
-    }
-  },
-  
-  // Main components
-  Scene: class Scene {
-    constructor() {
-      this.children = [];
-      this.fog = null;
-    }
-    
-    add(object) {
-      this.children.push(object);
-      return this;
-    }
-    
-    remove(object) {
-      const index = this.children.indexOf(object);
-      if (index !== -1) {
-        this.children.splice(index, 1);
-      }
-      return this;
-    }
-  },
-  
-  PerspectiveCamera: class PerspectiveCamera {
-    constructor(fov, aspect, near, far) {
-      this.fov = fov;
-      this.aspect = aspect;
-      this.near = near;
-      this.far = far;
-      this.position = new THREE.Vector3();
-      this.rotation = new THREE.Euler();
-    }
-    
-    lookAt(x, y, z) {
-      // For simplicity, we'll just store the target
-      if (x instanceof THREE.Vector3) {
-        this.target = x.clone();
-      } else {
-        this.target = new THREE.Vector3(x, y, z);
-      }
-      return this;
-    }
-    
-    updateProjectionMatrix() {
-      // Would update projection matrix in real Three.js
-    }
-  },
-  
-  WebGLRenderer: class WebGLRenderer {
-    constructor(params = {}) {
-      this.domElement = params.canvas || document.createElement('canvas');
-      this.context = this.domElement.getContext('2d');
-      this.shadowMap = {
-        enabled: false,
-        type: null
-      };
-      this._width = 300;
-      this._height = 150;
-      this._clearColor = '#000816';
-      this._clearAlpha = 1;
-      this._pixelRatio = 1;
-    }
-    
-    setSize(width, height) {
-      this._width = width;
-      this._height = height;
-      this.domElement.width = width * this._pixelRatio;
-      this.domElement.height = height * this._pixelRatio;
-      this.domElement.style.width = width + 'px';
-      this.domElement.style.height = height + 'px';
-    }
-    
-    setPixelRatio(ratio) {
-      this._pixelRatio = ratio;
-    }
-    
-    setClearColor(color, alpha) {
-      this._clearColor = color;
-      if (alpha !== undefined) this._clearAlpha = alpha;
-    }
-    
-    render(scene, camera) {
-      const ctx = this.context;
-      
-      // Clear canvas
-      ctx.fillStyle = this._clearColor;
-      ctx.fillRect(0, 0, this.domElement.width, this.domElement.height);
-      
-      // Draw fish
-      this.drawFish(scene, ctx);
-    }
-    
-    drawFish(scene, ctx) {
-      // Center coordinates
-      const centerX = this.domElement.width / 2;
-      const centerY = this.domElement.height / 2;
-      
-      // Find all fish in the scene
-      scene.children.forEach(obj => {
-        if (obj.userData && obj.userData.isFish) {
-          // Calculate position on screen
-          const screenX = centerX + obj.position.x * 30;
-          const screenY = centerY + obj.position.y * 30;
-          
-          // Get rotation (simplified)
-          const rotation = obj.rotation.y;
-          
-          ctx.save();
-          ctx.translate(screenX, screenY);
-          ctx.rotate(rotation);
-          
-          // Draw fish
-          const size = 20;
-          
-          // Body
-          ctx.fillStyle = '#55AAFF';
-          ctx.beginPath();
-          ctx.ellipse(0, 0, size, size/2, 0, 0, Math.PI * 2);
-          ctx.fill();
-          
-          // Tail
-          ctx.fillStyle = '#4499EE';
-          ctx.beginPath();
-          ctx.moveTo(-size, 0);
-          ctx.lineTo(-size*1.5, -size/2);
-          ctx.lineTo(-size*1.5, size/2);
-          ctx.closePath();
-          ctx.fill();
-          
-          // Eye
-          ctx.fillStyle = 'white';
-          ctx.beginPath();
-          ctx.arc(size/2, -size/4, size/5, 0, Math.PI * 2);
-          ctx.fill();
-          
-          ctx.fillStyle = 'black';
-          ctx.beginPath();
-          ctx.arc(size/2 + 2, -size/4, size/10, 0, Math.PI * 2);
-          ctx.fill();
-          
-          ctx.restore();
-        }
-      });
-    }
-  }
-};
-</script>
 	</head>
 	<body>
-		<!-- Main canvas for ThreeJS -->
 		<canvas id="aquarium-canvas"></canvas>
 		
-		<!-- Content overlay -->
-		<div class="hero-overlay">
-			<h1 class="hero-name">Tyler Gilman</h1>
-			<p class="hero-title">Software Developer</p>
-		</div>
+		<nav class="nav-container">
+			<div class="nav-content">
+				<div style="display: flex; align-items: center;">
+					<h1 class="nav-title">Tyler Gilman</h1>
+					<div class="nav-links">
+						<a href="/" class="nav-link active">
+							Home
+							<span class="nav-underline"></span>
+						</a>
+						<a href="/projects" 
+                           hx-get="/projects" 
+                           hx-target="#main-content" 
+                           hx-push-url="true"
+                           class="nav-link">
+							Projects
+							<span class="nav-underline"></span>
+						</a>
+						<a href="/blog" 
+                           hx-get="/blog" 
+                           hx-target="#main-content" 
+                           hx-push-url="true"
+                           class="nav-link">
+							Blog
+							<span class="nav-underline"></span>
+						</a>
+					</div>
+				</div>
+				<div>
+					if isAdmin {
+						<a href="/logout" style="color: white; text-decoration: none; padding: 5px 10px; border: 1px solid white; border-radius: 4px;">
+							Logout
+						</a>
+					}
+				</div>
+			</div>
+		</nav>
 		
-		<!-- Navigation -->
-		<div class="nav-container">
-			<a href="/projects" class="nav-button">Projects</a>
-			<a href="/blog" class="nav-button">Blog</a>
-			if isAdmin {
-				<a href="/logout" class="nav-button">Logout</a>
-			}
-		</div>
-		
-		<!-- Lazy loaded content -->
-		<div id="lazy-content" class="hidden">
-			<div class="about-section">
-				<p class="about-text">
-					I create software systems with a focus on performance, accessibility and simplicity.
-				</p>
-				<div class="action-buttons">
-					<a href="/projects" class="primary-button">View Projects</a>
-					<a href="/blog" class="secondary-button">Read Blog</a>
+		<div id="main-content">
+			<div class="content">
+				<h1>Tyler Gilman</h1>
+				<p>Software Developer</p>
+				<div class="buttons-container">
+					<a href="/projects" 
+					   hx-get="/projects" 
+					   hx-target="#main-content" 
+					   hx-push-url="true" 
+					   class="primary-button">View Projects</a>
+					<a href="/blog" 
+					   hx-get="/blog" 
+					   hx-target="#main-content" 
+					   hx-push-url="true" 
+					   class="secondary-button">Read Blog</a>
 				</div>
 			</div>
 		</div>
 		
+		<noscript>
+			<h1>Tyler Gilman</h1>
+			<p>Software Developer</p>
+			<p>Please enable JavaScript to experience the interactive aquarium.</p>
+		</noscript>
+		
+		<script src="/public/js/libs/three.min.js"></script>
+		<script src="/public/js/aquarium.js"></script>
 		<script>
-			// Custom aquarium implementation using ThreeJS
-			// Fish3D class implementation moved to aquarium.js to avoid duplication
-			/* class Fish3D would be here - removed to prevent duplication */
-				constructor(options = {}) {
-					// Default options
-					this.options = {
-						color: options.color || new THREE.Color(`hsl(${Math.floor(Math.random() * 360)}, 80%, 50%)`),
-						size: options.size || (Math.random() * 0.5 + 0.5),
-						speed: options.speed || (Math.random() * 0.01 + 0.005),
-						position: options.position || new THREE.Vector3(
-							(Math.random() - 0.5) * 10,
-							(Math.random() - 0.5) * 5,
-							(Math.random() - 0.5) * 5
-						),
-						isFish: true,
-						turnRate: options.turnRate || (0.02 + Math.random() * 0.03),
-						tailSpeed: options.tailSpeed || (0.1 + Math.random() * 0.1)
-					};
-
-					this.isDead = false;
-					this.eatenCount = 0;
-					this.velocity = new THREE.Vector3(
-						(Math.random() - 0.5) * 0.02,
-						(Math.random() - 0.5) * 0.01,
-						(Math.random() - 0.5) * 0.01
-					);
-					this.tailAngle = 0;
-					this.finAngle = 0;
-					this.group = new THREE.Group();
-					
-					// Create the fish mesh components
-					this.createFishMesh();
-				}
-
-				createFishMesh() {
-					// Create fish body using custom geometry
-					const bodyLength = 2 * this.options.size;
-					const bodyHeight = 0.8 * this.options.size;
-					const bodyWidth = 0.4 * this.options.size;
-					
-					// Create body using BufferGeometry for better performance
-					const bodyGeometry = new THREE.BufferGeometry();
-					
-					// Define body shape vertices
-					const bodyVertices = [
-						// Top vertices (from tail to head)
-						-bodyLength/2, bodyHeight/2, 0,          // 0: tail top
-						-bodyLength/4, bodyHeight/2, 0,          // 1: middle top
-						bodyLength/2, 0, 0,                      // 2: nose
-						
-						// Bottom vertices (from tail to head)
-						-bodyLength/2, -bodyHeight/2, 0,         // 3: tail bottom
-						-bodyLength/4, -bodyHeight/2, 0,         // 4: middle bottom
-						
-						// Side vertices for width
-						-bodyLength/4, 0, bodyWidth/2,           // 5: middle right
-						-bodyLength/4, 0, -bodyWidth/2           // 6: middle left
-					];
-					
-					// Define faces using indices (triangles)
-					const bodyIndices = [
-						// Top face
-						0, 1, 2,
-						
-						// Bottom face
-						3, 4, 2,
-						
-						// Left side
-						0, 2, 6,
-						0, 6, 3,
-						3, 6, 4,
-						4, 6, 2,
-						
-						// Right side
-						0, 5, 2,
-						0, 3, 5,
-						3, 4, 5,
-						4, 2, 5
-					];
-					
-					// Create buffer attributes
-					bodyGeometry.setAttribute('position', new THREE.Float32BufferAttribute(bodyVertices, 3));
-					bodyGeometry.setIndex(bodyIndices);
-					bodyGeometry.computeVertexNormals();
-					
-					// Create material with custom shader for iridescent fish effect
-					const bodyMaterial = new THREE.MeshPhysicalMaterial({
-						color: this.options.color,
-						roughness: 0.3,
-						metalness: 0.8,
-						clearcoat: 0.8,
-						clearcoatRoughness: 0.2,
-						side: THREE.DoubleSide
-					});
-					
-					this.body = new THREE.Mesh(bodyGeometry, bodyMaterial);
-					
-					// Create tail
-					const tailGeometry = new THREE.PlaneGeometry(this.options.size * 0.8, this.options.size);
-					const tailMaterial = new THREE.MeshStandardMaterial({
-						color: this.options.color,
-						roughness: 0.6,
-						transparent: true,
-						opacity: 0.9,
-						side: THREE.DoubleSide
-					});
-					this.tail = new THREE.Mesh(tailGeometry, tailMaterial);
-					this.tail.position.set(-this.options.size * 1.2, 0, 0);
-					
-					// Create fins
-					const finGeometry = new THREE.PlaneGeometry(this.options.size * 0.6, this.options.size * 0.4);
-					const finMaterial = new THREE.MeshStandardMaterial({
-						color: this.options.color,
-						roughness: 0.6,
-						transparent: true,
-						opacity: 0.9,
-						side: THREE.DoubleSide
-					});
-					
-					this.topFin = new THREE.Mesh(finGeometry, finMaterial);
-					this.topFin.rotation.z = Math.PI / 2;
-					this.topFin.position.set(-this.options.size * 0.2, this.options.size * 0.6, 0);
-					
-					this.leftFin = new THREE.Mesh(finGeometry, finMaterial);
-					this.leftFin.rotation.set(Math.PI / 2, 0, Math.PI / 4);
-					this.leftFin.position.set(0, 0, this.options.size * 0.3);
-					
-					this.rightFin = new THREE.Mesh(finGeometry, finMaterial);
-					this.rightFin.rotation.set(Math.PI / 2, 0, -Math.PI / 4);
-					this.rightFin.position.set(0, 0, -this.options.size * 0.3);
-					
-					// Create eyes
-					const eyeGeometry = new THREE.SphereGeometry(this.options.size * 0.15, 10, 10);
-					const eyeMaterial = new THREE.MeshBasicMaterial({color: 0xffffff});
-					const pupilMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
-					
-					this.leftEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-					this.leftEye.position.set(this.options.size * 0.5, this.options.size * 0.1, this.options.size * 0.3);
-					
-					const leftPupil = new THREE.Mesh(
-						new THREE.SphereGeometry(this.options.size * 0.08, 8, 8),
-						pupilMaterial
-					);
-					leftPupil.position.set(this.options.size * 0.05, 0, 0);
-					this.leftEye.add(leftPupil);
-					
-					this.rightEye = new THREE.Mesh(eyeGeometry, eyeMaterial);
-					this.rightEye.position.set(this.options.size * 0.5, this.options.size * 0.1, -this.options.size * 0.3);
-					
-					const rightPupil = new THREE.Mesh(
-						new THREE.SphereGeometry(this.options.size * 0.08, 8, 8),
-						pupilMaterial
-					);
-					rightPupil.position.set(this.options.size * 0.05, 0, 0);
-					this.rightEye.add(rightPupil);
-					
-					// Assemble fish
-					this.group.add(this.body);
-					this.group.add(this.tail);
-					this.group.add(this.topFin);
-					this.group.add(this.leftFin);
-					this.group.add(this.rightFin);
-					this.group.add(this.leftEye);
-					this.group.add(this.rightEye);
-					
-					// Initial position
-					this.group.position.copy(this.options.position);
-					// Mark this as a fish for the renderer
-					this.group.userData = { isFish: true };
-				}
-
-				update(deltaTime, bounds, foods = []) {
-					const { minX, maxX, minY, maxY, minZ, maxZ } = bounds;
-					
-					if (this.isDead) {
-						// Dead fish float to the top
-						if (this.group.position.y < maxY - 1) {
-							this.group.position.y += 0.02;
-						}
-						
-						// Bob at the surface
-						this.tailAngle += this.options.tailSpeed * 0.2;
-						this.group.rotation.z = Math.sin(this.tailAngle * 0.5) * 0.2;
-						
-						// X eyes when dead
-						if (!this.hasXEyes) {
-							this.hasXEyes = true;
-							this.leftEye.children[0].rotation.z = Math.PI / 4;
-							this.rightEye.children[0].rotation.z = Math.PI / 4;
-						}
-						
-						return;
-					}
-					
-					// Animate tail and fins
-					this.tailAngle += this.options.tailSpeed;
-					this.tail.rotation.y = Math.sin(this.tailAngle) * 0.4;
-					this.leftFin.rotation.z = Math.PI / 4 + Math.sin(this.tailAngle * 0.8) * 0.2;
-					this.rightFin.rotation.z = -Math.PI / 4 - Math.sin(this.tailAngle * 0.8) * 0.2;
-
-					// Check for food
-					let closestFood = null;
-					let closestDistSq = Infinity;
-					
-					for (const food of foods) {
-						if (food.isEaten) continue;
-						
-						const distSq = this.group.position.distanceToSquared(food.group.position);
-						if (distSq < closestDistSq) {
-							closestDistSq = distSq;
-							closestFood = food;
-						}
-						
-						// Eat food if close enough
-						if (distSq < this.options.size * this.options.size) {
-							food.isEaten = true;
-							this.eatenCount++;
-							
-							// Fish dies if it eats too much
-							if (this.eatenCount >= 3) {
-								this.isDead = true;
-							}
-						}
-					}
-					
-					// Update movement
-					if (closestFood && !closestFood.isEaten) {
-						// Seek food
-						const direction = new THREE.Vector3()
-							.subVectors(closestFood.group.position, this.group.position)
-							.normalize();
-						
-						this.velocity.lerp(direction.multiplyScalar(this.options.speed * 2), 0.05);
-					} else {
-						// Random movement when no food
-						if (Math.random() < 0.02) {
-							this.velocity.x += (Math.random() - 0.5) * 0.01;
-							this.velocity.y += (Math.random() - 0.5) * 0.005;
-							this.velocity.z += (Math.random() - 0.5) * 0.005;
-						}
-					}
-					
-					// Apply velocity
-					this.group.position.add(this.velocity);
-					
-					// Make fish face the direction it's moving
-					const targetRotation = new THREE.Euler();
-					const lookAtVector = new THREE.Vector3()
-						.addVectors(this.group.position, this.velocity.clone().normalize().multiplyScalar(1));
-					
-					this.group.lookAt(lookAtVector);
-					
-					// Boundary checks - bounce off walls
-					if (this.group.position.x < minX || this.group.position.x > maxX) {
-						this.velocity.x *= -1;
-					}
-					if (this.group.position.y < minY || this.group.position.y > maxY) {
-						this.velocity.y *= -1;
-					}
-					if (this.group.position.z < minZ || this.group.position.z > maxZ) {
-						this.velocity.z *= -1;
-					}
-					
-					// Keep within bounds
-					this.group.position.x = Math.max(minX, Math.min(maxX, this.group.position.x));
-					this.group.position.y = Math.max(minY, Math.min(maxY, this.group.position.y));
-					this.group.position.z = Math.max(minZ, Math.min(maxZ, this.group.position.z));
-					
-					// Apply some drag
-					this.velocity.multiplyScalar(0.99);
-				}
-
-				getMesh() {
-					return this.group;
-				}
-			}
-
-			class Food {
-				constructor(position) {
-					this.position = position || new THREE.Vector3(0, 0, 0);
-					this.isEaten = false;
-					this.group = new THREE.Group();
-					
-					const geometry = new THREE.SphereGeometry(0.2, 12, 12);
-					const material = new THREE.MeshStandardMaterial({
-						color: 0x8B4513, // Brown color
-						roughness: 0.8,
-						metalness: 0.1
-					});
-					
-					this.mesh = new THREE.Mesh(geometry, material);
-					this.group.add(this.mesh);
-					this.group.position.copy(this.position);
-				}
-
-				update() {
-					// Slowly sink
-					this.group.position.y -= 0.01;
-					
-					return !this.isEaten;
-				}
-
-				getMesh() {
-					return this.group;
-				}
-			}
-
-			class Aquarium {
-				constructor(canvasId, options = {}) {
-					this.canvasId = canvasId;
-					this.options = {
-						fishCount: options.fishCount || 15,
-						width: options.width || window.innerWidth,
-						height: options.height || window.innerHeight
-					};
-					
-					this.fishes = [];
-					this.foods = [];
-					this.clock = new THREE.Clock();
-					this.isInitialized = false;
-					
-					this.bounds = {
-						minX: -12,
-						maxX: 12,
-						minY: -8,
-						maxY: 8,
-						minZ: -10,
-						maxZ: 10
-					};
-				}
-
-				initialize() {
-					console.log("Initializing ThreeJS aquarium");
-					
-					// Find the canvas element
-					this.canvas = document.getElementById(this.canvasId);
-					if (!this.canvas) {
-						console.error(`Canvas #${this.canvasId} not found!`);
-						return;
-					}
-					
-					// Setup renderer
-					this.renderer = new THREE.WebGLRenderer({
-						canvas: this.canvas,
-						antialias: true
-					});
-					this.renderer.setSize(window.innerWidth, window.innerHeight);
-					this.renderer.setPixelRatio(window.devicePixelRatio);
-					this.renderer.setClearColor(0x000816, 1); // Deep blue
-					
-					// Setup scene
-					this.scene = new THREE.Scene();
-					this.scene.fog = new THREE.FogExp2(0x000816, 0.035);
-					
-					// Setup camera
-					this.camera = new THREE.PerspectiveCamera(
-						60,
-						window.innerWidth / window.innerHeight,
-						0.1,
-						1000
-					);
-					this.camera.position.set(0, 0, 16);
-					this.camera.lookAt(0, 0, 0);
-					
-					// Add ambient and directional light
-					const ambientLight = new THREE.AmbientLight(0x606060, 0.5);
-					this.scene.add(ambientLight);
-					
-					const mainLight = new THREE.DirectionalLight(0xffffff, 0.8);
-					mainLight.position.set(5, 10, 7);
-					this.scene.add(mainLight);
-					
-					// Add point lights for better underwater effects
-					const blueLight = new THREE.PointLight(0x0077ff, 0.5, 20);
-					blueLight.position.set(-5, 8, -5);
-					this.scene.add(blueLight);
-					
-					const greenLight = new THREE.PointLight(0x00ff77, 0.5, 20);
-					greenLight.position.set(8, -5, 3);
-					this.scene.add(greenLight);
-					
-					// Create and add fish
-					for (let i = 0; i < this.options.fishCount; i++) {
-						const fish = new Fish3D({
-							position: new THREE.Vector3(
-								(Math.random() - 0.5) * this.bounds.maxX * 1.5,
-								(Math.random() - 0.5) * this.bounds.maxY * 1.5,
-								(Math.random() - 0.5) * this.bounds.maxZ * 1.5
-							)
-						});
-						this.fishes.push(fish);
-						this.scene.add(fish.getMesh());
-					}
-					
-					// Create bubbles
-					this.bubbles = [];
-					for (let i = 0; i < 30; i++) {
-						const geometry = new THREE.SphereGeometry(0.05 + Math.random() * 0.1, 8, 8);
-						const material = new THREE.MeshPhysicalMaterial({
-							color: 0xffffff,
-							transparent: true,
-							opacity: 0.2,
-							transmission: 0.9
-						});
-						
-						const bubble = new THREE.Mesh(geometry, material);
-						bubble.position.set(
-							(Math.random() * 2 - 1) * this.bounds.maxX,
-							this.bounds.minY,
-							(Math.random() * 2 - 1) * this.bounds.maxZ
-						);
-						
-						bubble.userData = {
-							speed: 0.01 + Math.random() * 0.03,
-							wobble: Math.random() * Math.PI * 2,
-							wobbleSpeed: 0.01 + Math.random() * 0.02
-						};
-						
-						this.bubbles.push(bubble);
-						this.scene.add(bubble);
-					}
-					
-					// Setup event listeners
-					window.addEventListener('resize', this.handleResize.bind(this));
-					this.canvas.addEventListener('click', this.handleClick.bind(this));
-					
-					// Start animation loop
-					this.isInitialized = true;
-					this.animate();
-					
-					// Show lazy-loaded content after a delay
-					setTimeout(() => {
-						const lazyContent = document.getElementById('lazy-content');
-						if (lazyContent) {
-							lazyContent.classList.remove('hidden');
-						}
-					}, 2000);
-					
-					console.log("ThreeJS aquarium initialized successfully");
-				}
-
-				handleResize() {
-					if (!this.isInitialized) return;
-					
-					this.camera.aspect = window.innerWidth / window.innerHeight;
-					this.camera.updateProjectionMatrix();
-					this.renderer.setSize(window.innerWidth, window.innerHeight);
-				}
-
-				handleClick(event) {
-					if (!this.isInitialized) return;
-					
-					// Calculate mouse position in normalized device coordinates (-1 to +1)
-					const rect = this.canvas.getBoundingClientRect();
-					const x = ((event.clientX - rect.left) / this.canvas.width) * 2 - 1;
-					const y = -((event.clientY - rect.top) / this.canvas.height) * 2 + 1;
-					
-					// Create a ray from the camera and through the mouse position
-					const raycaster = new THREE.Raycaster();
-					raycaster.setFromCamera(new THREE.Vector2(x, y), this.camera);
-					
-					// Get the intersection point with the z=0 plane
-					const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1));
-					const intersectPoint = new THREE.Vector3();
-					raycaster.ray.intersectPlane(plane, intersectPoint);
-					
-					// Add food at the intersection point
-					const food = new Food(intersectPoint);
-					this.foods.push(food);
-					this.scene.add(food.getMesh());
-				}
-
-				animate() {
-					if (!this.isInitialized) return;
-					
-					requestAnimationFrame(this.animate.bind(this));
-					
-					const delta = this.clock.getDelta();
-					const time = this.clock.getElapsedTime();
-					
-					// Update camera position with gentle movement for immersive feel
-					this.camera.position.x = Math.sin(time * 0.1) * 1;
-					this.camera.position.y = Math.sin(time * 0.08) * 0.5;
-					this.camera.lookAt(0, 0, 0);
-					
-					// Update fish
-					for (const fish of this.fishes) {
-						fish.update(delta, this.bounds, this.foods);
-					}
-					
-					// Update bubbles
-					for (const bubble of this.bubbles) {
-						// Move up
-						bubble.position.y += bubble.userData.speed;
-						
-						// Add wobble motion
-						bubble.userData.wobble += bubble.userData.wobbleSpeed;
-						bubble.position.x += Math.sin(bubble.userData.wobble) * 0.005;
-						bubble.position.z += Math.cos(bubble.userData.wobble) * 0.005;
-						
-						// Reset if reached the top
-						if (bubble.position.y > this.bounds.maxY) {
-							bubble.position.y = this.bounds.minY;
-							bubble.position.x = (Math.random() * 2 - 1) * this.bounds.maxX;
-							bubble.position.z = (Math.random() * 2 - 1) * this.bounds.maxZ;
-						}
-					}
-					
-					// Update food and remove eaten/sunk ones
-					for (let i = this.foods.length - 1; i >= 0; i--) {
-						const food = this.foods[i];
-						const stillActive = food.update();
-						
-						if (!stillActive || food.group.position.y < this.bounds.minY) {
-							this.scene.remove(food.getMesh());
-							this.foods.splice(i, 1);
-						}
-					}
-					
-					// Render scene
-					this.renderer.render(this.scene, this.camera);
-				}
-			}
-
-			// Initialize when document is ready
-			// Wait for page load, then initialize canvas fish
-			document.addEventListener('DOMContentLoaded', () => {
-				console.log("DOM loaded - creating canvas fish");
-				
-				// Get the canvas
-				const canvas = document.getElementById('aquarium-canvas');
-				if (!canvas) {
-					console.error("Canvas not found!");
-					return;
-				}
-				
-				// Set up canvas size
-				const resizeCanvas = () => {
-					canvas.width = window.innerWidth;
-					canvas.height = window.innerHeight;
-				};
-				
-				resizeCanvas();
-				window.addEventListener('resize', resizeCanvas);
-				
-				// Get 2D context
-				const ctx = canvas.getContext('2d');
-				if (!ctx) {
-					console.error("Could not get 2D context");
-					return;
-				}
-				
-				// Fish class definition
-				class Fish {
-					constructor() {
-						// Position in 3D space
-						this.x = (Math.random() - 0.5) * canvas.width;
-						this.y = (Math.random() - 0.5) * canvas.height / 2;
-						this.z = Math.random() * 5 - 2.5; // -2.5 to 2.5
-						
-						// Motion parameters
-						this.angle = Math.random() * Math.PI * 2;
-						this.speed = 0.5 + Math.random() * 1.5;
-						this.turnRate = 0.02 + Math.random() * 0.03;
-						this.targetZ = Math.random() * 5 - 2.5;
-						this.zSpeed = 0.01 + Math.random() * 0.02;
-						
-						// Visual parameters
-						this.size = 15 + Math.random() * 20;
-						this.color = `hsl(${Math.floor(Math.random() * 60) + 190}, 80%, 50%)`;
-						this.tailAngle = 0;
-						this.tailSpeed = 0.1 + Math.random() * 0.1;
-						
-						// State
-						this.foodTarget = null;
-					}
-					
-					update(foods) {
-						// Tail wiggle animation
-						this.tailAngle += this.tailSpeed;
-						
-						// Find closest food
-						let closestFood = null;
-						let closestDist = Infinity;
-						
-						foods.forEach(food => {
-							if (!food.eaten) {
-								const dx = food.x - this.x;
-								const dy = food.y - this.y;
-								const dz = food.z - this.z;
-								const dist = Math.sqrt(dx*dx + dy*dy + dz*dz);
-								
-								if (dist < closestDist) {
-									closestDist = dist;
-									closestFood = food;
-								}
-								
-								// Eat food if close enough
-								if (dist < this.size / 2) {
-									food.eaten = true;
-								}
-							}
-						});
-						
-						// Update movement based on food or random swimming
-						if (closestFood && !closestFood.eaten && closestDist < 300) {
-							// Chase food
-							const targetAngle = Math.atan2(closestFood.y - this.y, closestFood.x - this.x);
-							let angleDiff = targetAngle - this.angle;
-							
-							// Normalize angle difference
-							while (angleDiff > Math.PI) angleDiff -= Math.PI * 2;
-							while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
-							
-							// Turn towards food
-							this.angle += Math.sign(angleDiff) * Math.min(Math.abs(angleDiff), this.turnRate);
-							
-							// Move towards food's Z position
-							this.z += Math.sign(closestFood.z - this.z) * this.zSpeed;
-						} else {
-							// Random movement
-							if (Math.random() < 0.01) {
-								this.angle += (Math.random() - 0.5) * 0.2;
-								this.targetZ = Math.random() * 5 - 2.5;
-							}
-							
-							// Move towards target Z
-							this.z += Math.sign(this.targetZ - this.z) * this.zSpeed;
-						}
-						
-						// Move fish
-						this.x += Math.cos(this.angle) * this.speed;
-						this.y += Math.sin(this.angle) * this.speed;
-						
-						// Contain within boundaries with padding
-						const padding = this.size * 2;
-						
-						if (this.x < -canvas.width/2 - padding) this.x = canvas.width/2 + padding;
-						if (this.x > canvas.width/2 + padding) this.x = -canvas.width/2 - padding;
-						if (this.y < -canvas.height/2 - padding) this.y = canvas.height/2 + padding;
-						if (this.y > canvas.height/2 + padding) this.y = -canvas.height/2 - padding;
-						
-						// Constrain Z depth
-						this.z = Math.max(-5, Math.min(5, this.z));
-					}
-					
-					draw(ctx) {
-						// Calculate display size based on Z depth (perspective)
-						const perspectiveScale = 1 + this.z * 0.1; // -5 to 5 -> 0.5 to 1.5
-						const displaySize = this.size * perspectiveScale;
-						
-						// Calculate screen position
-						const screenX = canvas.width/2 + this.x * perspectiveScale;
-						const screenY = canvas.height/2 + this.y * perspectiveScale;
-						
-						// Opacity based on depth
-						const opacity = 0.4 + (this.z + 5) / 10 * 0.6; // -5 to 5 -> 0.4 to 1.0
-						
-						ctx.save();
-						ctx.translate(screenX, screenY);
-						ctx.rotate(this.angle);
-						
-						// Fish body (more detailed)
-						const colorParts = this.color.match(/hsl\((\d+),\s*(\d+)%,\s*(\d+)%\)/);
-						let h = 0, s = 0, l = 0;
-						if (colorParts) {
-							h = parseInt(colorParts[1]);
-							s = parseInt(colorParts[2]);
-							l = parseInt(colorParts[3]);
-						}
-						
-						// Body
-						ctx.fillStyle = `hsla(${h}, ${s}%, ${l}%, ${opacity})`;
-						ctx.beginPath();
-						ctx.ellipse(0, 0, displaySize, displaySize/2, 0, 0, Math.PI * 2);
-						ctx.fill();
-						
-						// Tail
-						ctx.fillStyle = `hsla(${h-10}, ${s}%, ${l-10}%, ${opacity})`;
-						ctx.beginPath();
-						
-						// Animated tail
-						const tailWiggle = Math.sin(this.tailAngle) * 0.3;
-						ctx.moveTo(-displaySize * 0.8, 0);
-						ctx.lineTo(-displaySize * 1.6, -displaySize * 0.6 * (1 + tailWiggle));
-						ctx.lineTo(-displaySize * 1.6, displaySize * 0.6 * (1 - tailWiggle));
-						ctx.closePath();
-						ctx.fill();
-						
-						// Top fin
-						ctx.fillStyle = `hsla(${h+5}, ${s}%, ${l-5}%, ${opacity*0.9})`;
-						ctx.beginPath();
-						ctx.moveTo(0, -displaySize * 0.5);
-						ctx.lineTo(-displaySize * 0.3, -displaySize * 1.2);
-						ctx.lineTo(-displaySize * 0.8, -displaySize * 0.5);
-						ctx.closePath();
-						ctx.fill();
-						
-						// Side fins
-						ctx.fillStyle = `hsla(${h+5}, ${s}%, ${l-5}%, ${opacity*0.9})`;
-						ctx.beginPath();
-						ctx.moveTo(0, displaySize * 0.3);
-						ctx.lineTo(-displaySize * 0.2, displaySize * 0.8);
-						ctx.lineTo(-displaySize * 0.5, displaySize * 0.3);
-						ctx.closePath();
-						ctx.fill();
-						
-						ctx.beginPath();
-						ctx.moveTo(0, -displaySize * 0.3);
-						ctx.lineTo(-displaySize * 0.2, -displaySize * 0.8);
-						ctx.lineTo(-displaySize * 0.5, -displaySize * 0.3);
-						ctx.closePath();
-						ctx.fill();
-						
-						// Eyes
-						ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-						ctx.beginPath();
-						ctx.arc(displaySize * 0.6, -displaySize * 0.15, displaySize * 0.15, 0, Math.PI * 2);
-						ctx.fill();
-						
-						ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
-						ctx.beginPath();
-						ctx.arc(displaySize * 0.65, -displaySize * 0.15, displaySize * 0.07, 0, Math.PI * 2);
-						ctx.fill();
-						
-						ctx.restore();
-					}
-				}
-				
-				// Food class
-				class Food {
-					constructor(x, y) {
-						this.x = x - canvas.width/2;
-						this.y = y - canvas.height/2;
-						this.z = 0;
-						this.size = 5 + Math.random() * 3;
-						this.eaten = false;
-						this.age = 0;
-					}
-					
-					update() {
-						// Sink slowly
-						this.y += 0.5;
-						this.age += 0.01;
-						
-						// Remove if too old or out of bounds
-						return !this.eaten && this.age < 10 && 
-							Math.abs(this.y) < canvas.height/2 + 100;
-					}
-					
-					draw(ctx) {
-						// Only draw if not eaten
-						if (!this.eaten) {
-							const screenX = canvas.width/2 + this.x;
-							const screenY = canvas.height/2 + this.y;
-							
-							ctx.fillStyle = '#8B4513';
-							ctx.beginPath();
-							ctx.arc(screenX, screenY, this.size, 0, Math.PI * 2);
-							ctx.fill();
-						}
-					}
-				}
-				
-				// Water effects class
-				class WaterEffects {
-					constructor() {
-						// Bubbles
-						this.bubbles = [];
-						for (let i = 0; i < 50; i++) {
-							this.bubbles.push({
-								x: Math.random() * canvas.width - canvas.width/2,
-								y: Math.random() * canvas.height - canvas.height/2,
-								z: Math.random() * 5 - 2.5,
-								size: 1 + Math.random() * 3,
-								speed: 0.5 + Math.random() * 1.5
-							});
-						}
-						
-						// Light rays
-						this.rays = [];
-						for (let i = 0; i < 8; i++) {
-							this.rays.push({
-								x: Math.random() * canvas.width - canvas.width/2,
-								y: -canvas.height/2 - 100,
-								width: 20 + Math.random() * 40,
-								height: 100 + Math.random() * 300,
-								angle: Math.random() * 0.2 - 0.1,
-								opacity: 0.05 + Math.random() * 0.1
-							});
-						}
-						
-						// Caustics animation frame
-						this.causticFrame = 0;
-					}
-					
-					update() {
-						// Update bubbles
-						this.bubbles.forEach(bubble => {
-							bubble.y -= bubble.speed;
-							
-							// Reset if out of bounds
-							if (bubble.y < -canvas.height/2 - 50) {
-								bubble.y = canvas.height/2 + 50;
-								bubble.x = Math.random() * canvas.width - canvas.width/2;
-							}
-						});
-						
-						// Update light rays
-						this.rays.forEach(ray => {
-							ray.opacity = 0.05 + Math.sin(Date.now() / 1000 * 0.5) * 0.03;
-						});
-						
-						// Update caustics frame
-						this.causticFrame = (this.causticFrame + 0.01) % 1;
-					}
-					
-					draw(ctx) {
-						// Draw light rays first (background)
-						ctx.save();
-						this.rays.forEach(ray => {
-							const screenX = canvas.width/2 + ray.x;
-							const screenY = canvas.height/2 + ray.y;
-							
-							ctx.save();
-							ctx.translate(screenX, screenY);
-							ctx.rotate(ray.angle);
-							
-							const gradient = ctx.createLinearGradient(0, 0, 0, ray.height);
-							gradient.addColorStop(0, `rgba(255, 255, 255, ${ray.opacity})`);
-							gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-							
-							ctx.fillStyle = gradient;
-							ctx.fillRect(-ray.width/2, 0, ray.width, ray.height);
-							ctx.restore();
-						});
-						ctx.restore();
-						
-						// Draw bubbles
-						ctx.save();
-						this.bubbles.forEach(bubble => {
-							const perspectiveScale = 1 + bubble.z * 0.1;
-							const screenX = canvas.width/2 + bubble.x * perspectiveScale;
-							const screenY = canvas.height/2 + bubble.y * perspectiveScale;
-							const displaySize = bubble.size * perspectiveScale;
-							
-							const opacity = 0.3 + (bubble.z + 5) / 10 * 0.3;
-							
-							// Bubble outer
-							ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.5})`;
-							ctx.beginPath();
-							ctx.arc(screenX, screenY, displaySize, 0, Math.PI * 2);
-							ctx.fill();
-							
-							// Bubble highlight
-							ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
-							ctx.beginPath();
-							ctx.arc(screenX - displaySize * 0.3, screenY - displaySize * 0.3, displaySize * 0.2, 0, Math.PI * 2);
-							ctx.fill();
-						});
-						ctx.restore();
-					}
-				}
-				
-				// Initialize fish, food, and water effects
-				const fishes = Array.from({length: 20}, () => new Fish());
-				const foods = [];
-				const waterEffects = new WaterEffects();
-				
-				// Handle clicks to add food
-				canvas.addEventListener('click', (e) => {
-					foods.push(new Food(e.clientX, e.clientY));
+			document.addEventListener('DOMContentLoaded', function() {
+				// Initialize aquarium
+				const aquarium = new Aquarium('aquarium-canvas', {
+					fishCount: 5
 				});
 				
-				// Animation loop
-				function animate() {
-					// Clear canvas
-					ctx.fillStyle = '#000816';
-					ctx.fillRect(0, 0, canvas.width, canvas.height);
-					
-					// Update and draw water effects
-					waterEffects.update();
-					waterEffects.draw(ctx);
-					
-					// Update and draw fish
-					fishes.forEach(fish => {
-						fish.update(foods);
-						fish.draw(ctx);
-					});
-					
-					// Update and draw food, remove consumed/old food
-					for (let i = foods.length - 1; i >= 0; i--) {
-						if (!foods[i].update()) {
-							foods.splice(i, 1);
-						} else {
-							foods[i].draw(ctx);
-						}
-					}
-					
-					// Continue animation
-					requestAnimationFrame(animate);
+				if (!aquarium.init()) {
+					console.error('Aquarium initialization failed');
+					document.body.innerHTML = document.querySelector('noscript').innerHTML;
 				}
 				
-				// Start animation
-				animate();
+				// Navigation active state handling
+				function updateActiveLinks() {
+					const currentPath = window.location.pathname;
+					const navLinks = document.querySelectorAll('.nav-link');
+					
+					navLinks.forEach(link => {
+						const linkPath = link.getAttribute('href');
+						const underline = link.querySelector('.nav-underline');
+						
+						if (currentPath === linkPath) {
+							link.classList.add('active');
+							if (underline) underline.style.transform = 'scaleX(1)';
+						} else {
+							link.classList.remove('active');
+							if (underline) underline.style.transform = 'scaleX(0)';
+						}
+					});
+				}
 				
-				// Show content after initial animation is running
-				setTimeout(() => {
-					document.getElementById('lazy-content').classList.remove('hidden');
-				}, 2000);
+				// Initialize on page load
+				updateActiveLinks();
+				
+				// Add HTMX event listener for navigation
+				document.body.addEventListener('htmx:afterSettle', function(event) {
+					updateActiveLinks();
+				});
 			});
 		</script>
 	</body>
