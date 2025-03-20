@@ -1,0 +1,85 @@
+version: '3'
+
+networks:
+  traefik-net:
+    name: tylergilman_traefik
+  backend:
+    name: tylergilman_backend
+
+volumes:
+  traefik-certificates:
+    name: tylergilman_certs
+  prometheus_data:
+    name: tylergilman_prometheus_data
+  grafana_data:
+    name: tylergilman_grafana_data
+
+services:
+  # Traefik reverse proxy
+  traefik:
+    image: traefik:v2.10
+    container_name: tylergilman_traefik
+    restart: unless-stopped
+    networks:
+      - traefik-net
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik-certificates:/letsencrypt
+      - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
+      - ./traefik/config:/etc/traefik/config:ro
+    labels:
+      - "traefik.enable=true"
+      # Dashboard
+      - "traefik.http.routers.traefik-dashboard.rule=Host(`traefik.tylergilman.com`)"
+      - "traefik.http.routers.traefik-dashboard.entrypoints=websecure"
+      - "traefik.http.routers.traefik-dashboard.tls=true"
+      - "traefik.http.routers.traefik-dashboard.tls.certresolver=leresolver"
+      - "traefik.http.routers.traefik-dashboard.service=api@internal"
+      - "traefik.http.routers.traefik-dashboard.middlewares=traefik-auth@file"
+
+  # Application service - primary
+  web:
+    image: tylergilman/tylergilman:prod
+    container_name: tylergilman_web
+    user: "1001:1001"
+    networks:
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "com.centurylinklabs.watchtower.enable=true"
+      - "com.centurylinklabs.watchtower.scope=tylergilman_prod"
+      - "traefik.http.routers.tyler.rule=Host(`tylergilman.com`)"
+      - "traefik.http.routers.tyler.entrypoints=websecure"
+      - "traefik.http.routers.tyler.tls=true"
+      - "traefik.http.routers.tyler.tls.certresolver=leresolver"
+      - "traefik.http.services.tyler.loadbalancer.server.port=8080"
+      - "traefik.http.routers.tyler.middlewares=security-headers@file"
+    volumes:
+      - ./data:/app/data
+      - ./.env:/app/.env:ro
+    environment:
+      - ENV=production
+      - DEV_PORT=8080
+      - DB_PATH=/app/data/blog.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Watchtower for automatic updates
+  watchtower:
+    image: containrrr/watchtower
+    container_name: tylergilman_watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --interval 300 --scope tylergilman_prod
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_LABEL_ENABLE=true
+      - TZ=America/Los_Angeles

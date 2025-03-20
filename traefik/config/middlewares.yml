@@ -1,0 +1,48 @@
+http:
+  middlewares:
+    # Authentication middleware for sensitive dashboards
+    traefik-auth:
+      basicAuth:
+        users:
+          - "admin:$2y$05$flFpNO8eP/ILFHYpVOe9.OqfNsIUcoBFUxzGJgGXrB/m1tQRhPRyS" # admin/password - replace with your own hashed credentials
+    
+    # Security headers for all services
+    security-headers:
+      headers:
+        frameDeny: true
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 31536000
+        customFrameOptionsValue: "SAMEORIGIN"
+        contentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self';"
+        referrerPolicy: "strict-origin-when-cross-origin"
+        permissionsPolicy: "camera=(), microphone=(), geolocation=(), payment=()"
+    
+    # Rate limiting to prevent abuse
+    rate-limit:
+      rateLimit:
+        average: 100
+        burst: 50
+        period: 1m
+        
+    # IP whitelist for admin services
+    ip-whitelist:
+      ipWhiteList:
+        sourceRange:
+          - "127.0.0.1/32"
+          - "10.0.0.0/8"
+          # Add your IP addresses here
+    
+    # Compress responses
+    compress:
+      compress:
+        excludedContentTypes:
+          - "image/png"
+          - "image/jpeg"
+          - "image/gif"
+          - "image/webp"
+          - "audio/mpeg"
+          - "video/mp4"

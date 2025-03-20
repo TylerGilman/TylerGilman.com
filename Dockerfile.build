@@ -1,0 +1,49 @@
+# Multi-stage build for Go application with templ
+FROM golang:1.23-rc-bullseye AS builder
+
+# Set working directory
+WORKDIR /app
+
+# Copy go mod files
+COPY go.mod go.sum ./
+
+# Set DNS explicitly for better connectivity
+ENV GODEBUG="netdns=go"
+ENV GOPROXY="https://proxy.golang.org,direct"
+
+# Install templ from source
+RUN go install github.com/a-h/templ/cmd/templ@latest
+
+# Copy source code
+COPY . .
+
+# Generate templates
+RUN templ generate
+
+# Build the application
+RUN go build -o app .
+
+# Final stage
+FROM busybox:stable
+
+WORKDIR /app
+
+# Create data directory
+RUN mkdir -p /app/data
+
+# Copy the binary and static files from builder
+COPY --from=builder /app/app /app/main
+COPY --from=builder /app/public /app/public
+COPY --from=builder /app/views /app/views
+
+# Make the binary executable
+RUN chmod +x /app/main
+
+# Create a non-root user
+RUN adduser -D -u 1001 appuser && \
+    chown -R appuser:appuser /app
+
+USER appuser
+
+EXPOSE 8080
+CMD ["/app/main"]

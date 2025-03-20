@@ -8,7 +8,7 @@ BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== TylerGilman.com Deployment Script ===${NC}"
+echo -e "${BLUE}=== TylerGilman.com VPS Deployment Script ===${NC}"
 
 # Check if Docker is running
 if ! docker info > /dev/null 2>&1; then
@@ -16,20 +16,9 @@ if ! docker info > /dev/null 2>&1; then
     exit 1
 fi
 
-# Check if docker-compose is available
-if command -v docker-compose &> /dev/null; then
-    COMPOSE_CMD="docker-compose"
-elif docker compose version &> /dev/null; then
-    COMPOSE_CMD="docker compose"
-else
-    echo -e "${RED}Error: Neither docker-compose nor Docker Compose plugin found.${NC}"
-    echo -e "${YELLOW}Please install Docker Compose before continuing.${NC}"
-    exit 1
-fi
-
 # Check if docker-compose.prod.yml exists
 if [ ! -f docker-compose.prod.yml ]; then
-    echo -e "${RED}Error: docker-compose.prod.yml not found.${NC}"
+    echo -e "${RED}Error: docker-compose.prod.yml not found. Please run this script from the project root.${NC}"
     exit 1
 fi
 
@@ -43,13 +32,10 @@ fi
 # Check if SSL email is configured
 if grep -q "your-email@example.com" traefik/traefik.yml 2>/dev/null; then
     echo -e "${YELLOW}Warning: Let's Encrypt email not configured${NC}"
-    read -p "Enter your email for Let's Encrypt: " letsencrypt_email
+    read -p "Enter your email for Let's Encrypt (or press Enter to skip): " letsencrypt_email
     if [ ! -z "$letsencrypt_email" ]; then
         sed -i "s/your-email@example.com/$letsencrypt_email/g" traefik/traefik.yml
         echo -e "${GREEN}Email updated in Traefik configuration${NC}"
-    else
-        echo -e "${RED}Email is required for Let's Encrypt. Exiting.${NC}"
-        exit 1
     fi
 fi
 
@@ -63,16 +49,17 @@ if [ ! -f "traefik/config/middlewares.yml" ]; then
         echo -e "${YELLOW}Setting up Traefik dashboard authentication${NC}"
         read -p "Enter username for Traefik dashboard (default: admin): " traefik_user
         traefik_user=${traefik_user:-admin}
-        read -s -p "Enter password for Traefik dashboard: " traefik_password
+        read -s -p "Enter password for Traefik dashboard (or press Enter for random): " traefik_password
         echo ""
         
         if [ -z "$traefik_password" ]; then
+            # Generate random password if openssl is available
             if command -v openssl > /dev/null; then
                 traefik_password=$(openssl rand -base64 12)
-                echo -e "${YELLOW}Generated password: ${GREEN}$traefik_password${NC}"
             else
                 traefik_password="password"
             fi
+            echo -e "${YELLOW}Generated password: ${GREEN}$traefik_password${NC}"
         fi
         
         ADMIN_AUTH=$(htpasswd -nb $traefik_user $traefik_password)
@@ -127,85 +114,82 @@ mkdir -p data
 touch data/.keep
 chmod -R 755 data
 
-# Create .env file if it doesn't exist
-if [ ! -f ".env" ]; then
-    echo -e "${YELLOW}Creating .env file...${NC}"
-    
-    # Generate random session key if possible
-    SESSION_KEY="change_me_please"
-    if command -v openssl &> /dev/null; then
-        SESSION_KEY=$(openssl rand -base64 32)
-    fi
-    
-    cat > .env << EOL
-# Server Configuration
-ENV=production
-DEV_PORT=8080
-
-# Security
-ADMIN_PASSWORD=change_me_please
-SESSION_KEY=$SESSION_KEY
-
-# Logging
-LOG_LEVEL=INFO
-
-# Database
-DB_PATH=/app/data/blog.db
-
-# GitHub Integration (optional)
-GITHUB_TOKEN=your_github_token
-EOL
-    echo -e "${GREEN}.env file created. Please edit it with your actual values.${NC}"
-    echo -e "${YELLOW}Especially the ADMIN_PASSWORD which is currently set to 'change_me_please'${NC}"
-fi
-
 # Ask for deployment option
 echo -e "${YELLOW}Select deployment option:${NC}"
-echo "1) Pull from Docker Hub and deploy"
-echo "2) Load from local image file"
-echo "3) Stop all services"
-read -p "Enter your choice [1-3]: " deployment_option
+echo "1) Build and deploy locally"
+echo "2) Pull from Docker Hub and deploy"
+echo "3) Load from local tarball (for offline deployment)"
+echo "4) Stop all services"
+read -p "Enter your choice [1-4]: " deployment_option
 
 case $deployment_option in
     1)
+        echo -e "${BLUE}Building Docker image...${NC}"
+        
+        # Check if there's a local build script
+        if [ -f "scripts/local_build.sh" ]; then
+            echo -e "${YELLOW}Using local build script...${NC}"
+            bash scripts/local_build.sh
+        else
+            # If no local build script, try to build using Dockerfile
+            if [ -f "Dockerfile.static" ]; then
+                echo -e "${YELLOW}Using Dockerfile.static for better offline compatibility...${NC}"
+                docker build -t tylergilman/tylergilman:prod -f Dockerfile.static .
+            else
+                echo -e "${YELLOW}Using standard Dockerfile...${NC}"
+                docker build -t tylergilman/tylergilman:prod .
+            fi
+        fi
+        
+        echo -e "${BLUE}Deploying with docker-compose...${NC}"
+        docker-compose -f docker-compose.prod.yml up -d
+        ;;
+    2)
         echo -e "${BLUE}Pulling latest image from Docker Hub...${NC}"
         if docker pull tylergilman/tylergilman:prod; then
             echo -e "${GREEN}Image pulled successfully${NC}"
         else
             echo -e "${RED}Failed to pull image from Docker Hub.${NC}"
-            exit 1
-        fi
-        ;;
-    2)
-        echo -e "${BLUE}Loading image from local file...${NC}"
-        
-        # Check for .tar or .tar.gz file
-        if [ -f "tylergilman_prod.tar.gz" ]; then
-            echo -e "${BLUE}Found tylergilman_prod.tar.gz file${NC}"
-            gunzip -c tylergilman_prod.tar.gz | docker load
-        elif [ -f "tylergilman_prod.tar" ]; then
-            echo -e "${BLUE}Found tylergilman_prod.tar file${NC}"
-            docker load -i tylergilman_prod.tar
-        else
-            echo -e "${RED}No image file found. Please provide the path to the image file:${NC}"
-            read -p "Enter path to image file: " image_path
-            
-            if [ ! -f "$image_path" ]; then
-                echo -e "${RED}Error: File not found at $image_path${NC}"
+            echo -e "${YELLOW}Would you like to try building locally instead?${NC}"
+            read -p "Build locally? (y/n): " build_locally
+            if [[ "$build_locally" == "y" ]]; then
+                echo -e "${BLUE}Building Docker image locally...${NC}"
+                if [ -f "scripts/local_build.sh" ]; then
+                    bash scripts/local_build.sh
+                else
+                    if [ -f "Dockerfile.static" ]; then
+                        docker build -t tylergilman/tylergilman:prod -f Dockerfile.static .
+                    else
+                        docker build -t tylergilman/tylergilman:prod .
+                    fi
+                fi
+            else
+                echo -e "${RED}Deployment aborted.${NC}"
                 exit 1
             fi
-            
-            if [[ "$image_path" == *.tar.gz ]]; then
-                gunzip -c "$image_path" | docker load
-            else
-                docker load -i "$image_path"
-            fi
         fi
-        echo -e "${GREEN}Image loaded successfully${NC}"
+        
+        echo -e "${BLUE}Deploying with docker-compose...${NC}"
+        docker-compose -f docker-compose.prod.yml up -d
         ;;
     3)
+        echo -e "${BLUE}Loading image from local tarball...${NC}"
+        read -p "Enter path to Docker image tarball: " tarball_path
+        
+        if [ ! -f "$tarball_path" ]; then
+            echo -e "${RED}Error: Tarball not found at $tarball_path${NC}"
+            exit 1
+        fi
+        
+        echo -e "${BLUE}Loading Docker image...${NC}"
+        docker load -i "$tarball_path"
+        
+        echo -e "${BLUE}Deploying with docker-compose...${NC}"
+        docker-compose -f docker-compose.prod.yml up -d
+        ;;
+    4)
         echo -e "${BLUE}Stopping all services...${NC}"
-        $COMPOSE_CMD -f docker-compose.prod.yml down
+        docker-compose -f docker-compose.prod.yml down
         echo -e "${GREEN}All services stopped.${NC}"
         exit 0
         ;;
@@ -215,13 +199,9 @@ case $deployment_option in
         ;;
 esac
 
-# Deploy
-echo -e "${BLUE}Deploying with docker-compose...${NC}"
-$COMPOSE_CMD -f docker-compose.prod.yml up -d
-
 # Check if services are running
 echo -e "${BLUE}Checking service status...${NC}"
-$COMPOSE_CMD -f docker-compose.prod.yml ps
+docker-compose -f docker-compose.prod.yml ps
 
 # Display access information
 echo -e "\n${GREEN}Deployment Complete!${NC}"
@@ -232,13 +212,13 @@ echo -e "- Traefik Dashboard: https://traefik.tylergilman.com"
 echo -e "\n${YELLOW}Notes:${NC}"
 echo -e "- SSL certificates will be automatically provisioned by Let's Encrypt"
 echo -e "- Ensure your DNS records are properly configured for all domains"
-echo -e "- Traefik dashboard is password protected with the credentials you provided"
+echo -e "- Watchtower will automatically update containers when new images are pushed"
 
 # View logs if requested
 echo -e "\n${YELLOW}Do you want to view the logs?${NC}"
 read -p "View logs? (y/n): " view_logs
 if [[ "$view_logs" == "y" ]]; then
-    $COMPOSE_CMD -f docker-compose.prod.yml logs -f
+    docker-compose -f docker-compose.prod.yml logs -f
 fi
 
 exit 0

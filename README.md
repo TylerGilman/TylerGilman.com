@@ -17,13 +17,14 @@ A modern, high-performance personal website built with Go, HTMX, and Tailwind CS
 - **Frontend**: HTMX, Tailwind CSS
 - **Template Engine**: Templ
 - **Database**: SQLite
-- **Deployment**: Amazon EC2
+- **Deployment**: Containerized with Docker, Traefik, and automated deployments
 
 ## 📋 Prerequisites
 
 - Go 1.21 or higher
 - Node.js and npm (for Tailwind CSS)
 - Make
+- Docker and Docker Compose (for deployment)
 
 ## 🔧 Installation
 
@@ -67,15 +68,14 @@ DEV_PORT=8080
 # Security
 ADMIN_PASSWORD=your_secure_password_here
 
-# SSL Configuration (Production)
-SSL_CERT_PATH=/path/to/cert
-SSL_KEY_PATH=/path/to/key
-
 # Logging
 LOG_LEVEL=INFO
 
 # GitHub Integration
 GITHUB_TOKEN=your_github_token
+
+# Database
+DB_PATH=./data/blog.db
 ```
 
 ## 🛠️ Development
@@ -123,46 +123,43 @@ Run the server:
 make run
 ```
 
-### Project Structure
-
-```
-.
-├── handlers/          # HTTP request handlers
-├── public/           # Static assets
-├── views/            # Templates and views
-│   ├── auth/        # Authentication templates
-│   ├── blog/        # Blog-related templates
-│   ├── components/  # Reusable components
-│   ├── layouts/     # Layout templates
-│   └── projects/    # Project showcase templates
-├── main.go          # Application entry point
-└── Makefile         # Build and run commands
-```
-
 ## 🚀 Deployment
 
-### Amazon EC2 Deployment
+### Quick Production Deployment
 
-1. Set up an EC2 instance with Ubuntu
-2. Install required dependencies
-3. Set up SSL certificates
-4. Configure environment variables
-5. Build and run the application
+For a quick production deployment, use the provided scripts:
 
+1. **Build the Docker image locally (recommended for development):**
 ```bash
-# On your EC2 instance
-git clone https://github.com/yourusername/nereus_main_site.git
-cd nereus_main_site
-make build
-./bin/app
+./scripts/build_docker.sh
 ```
+This script will:
+- Generate Templ templates
+- Build the Docker image
+- Optionally push to Docker Hub
 
-### SSL Configuration
+2. **Deploy on your VPS:**
+```bash
+./scripts/vps_deploy.sh
+```
+This script will:
+- Set up Traefik configuration
+- Deploy the application with SSL
+- Configure automatic certificate renewal
+- Set up automatic updates
 
-Make sure to set up SSL certificates for HTTPS:
-1. Obtain SSL certificates (e.g., using Let's Encrypt)
-2. Update SSL_CERT_PATH and SSL_KEY_PATH in your environment variables
-3. The server will automatically use HTTPS in production mode
+### DNS Configuration
+
+Make sure to set up these DNS records pointing to your VPS:
+- `tylergilman.com` - Main website
+- `traefik.tylergilman.com` - Traefik dashboard (password protected)
+
+### Troubleshooting Deployment
+
+If you encounter network issues during deployment:
+1. Try building the image locally and pushing to Docker Hub
+2. On your VPS, use option 2 in the deploy script to pull from Docker Hub
+3. Check the logs with `docker-compose -f docker-compose.prod.yml logs -f`
 
 ## 💻 Usage
 
@@ -203,3 +200,4 @@ Tyler Gilman
 - [HTMX](https://htmx.org/) for the excellent hypermedia system
 - [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
 - [Chi Router](https://github.com/go-chi/chi) for the lightweight Go router
+- [Traefik](https://traefik.io/) for the powerful edge router

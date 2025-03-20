@@ -1,5 +1,8 @@
-# Build stage using Golang RC
-FROM golang:rc-bullseye AS builder
+# Build stage using Golang with Debian
+FROM golang:1.21-bullseye AS builder
+
+# Set GOTOOLCHAIN to auto to override the version requirement in go.mod
+ENV GOTOOLCHAIN=auto
 
 # Set working directory
 WORKDIR /app

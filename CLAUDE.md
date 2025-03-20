@@ -4,9 +4,17 @@
 - Build app: `make build` or `go build -o bin/app .`
 - Run locally: `make run` or `./bin/app`
 - Build Docker: `docker build -t tylergilman/tylergilman:prod .`
-- Run in Docker: `docker-compose up`
+- Run in Docker: `docker-compose up -d`
 - Generate CSS: `make css`
-- Deploy: `./scripts/deploy.sh`
+- Deploy with options: `./scripts/deploy.sh`
+
+## Deployment & Infrastructure
+- Traefik configuration in: `./traefik/`
+- Monitoring setup in: `./monitoring/`
+- Multiple instances for high availability
+- Automated updates via Watchtower
+- SSL certificate handling with Let's Encrypt
+- Metrics with Prometheus and Grafana
 
 ## Code Style Guidelines
 - **Naming**: camelCase for variables, CamelCase for functions, UPPERCASE for constants
@@ -22,6 +30,8 @@
 - `public/`: Static assets (JS, CSS, images)
 - `pkg/`: Shared utilities
 - `authpkg/`: Authentication utilities
+- `traefik/`: Reverse proxy configuration
+- `monitoring/`: Prometheus and Grafana configuration
 
 ## ThreeJS Implementation Notes
 - Lazy load ThreeJS for fish tank component
