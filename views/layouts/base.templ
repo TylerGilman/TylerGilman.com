@@ -19,8 +19,8 @@ templ Base(page_mode string, isAdmin bool) {
             <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-            <script src="/public/js/libs/three.min.js"></script>
-            <script src="/public/js/aquarium.js"></script>
+            <script src="https://tylergilman.com/public/js/libs/three.min.js"></script>
+            <script src="https://tylergilman.com/public/js/aquarium.js"></script>
             <!-- Unified CSS for all pages -->
 			<style>
                 /* Global reset and base styles */
@@ -841,46 +841,61 @@ templ Base(page_mode string, isAdmin bool) {
                 }
                 
                 function setupHtmxEvents() {
-                    // Make sure htmx is available
-                    if (typeof htmx === 'undefined') {
+                    // Make sure htmx is loaded and available
+                    if (typeof window.htmx === 'undefined') {
                         console.error("HTMX not loaded");
                         return;
                     }
                     
-                    // Update navigation on HTMX navigation
-                    document.body.addEventListener('htmx:afterSettle', function(event) {
-                        updateActiveLinks();
-                    });
-                    
-                    // Execute scripts in swapped content
-                    document.body.addEventListener('htmx:afterSwap', function(event) {
-                        if (event.detail && event.detail.target) {
-                            executeScripts(event.detail.target);
-                        }
-                    });
-                    
-                    // Modal handling
-                    htmx.on('htmx:afterSwap', function(evt) {
-                        if (evt.detail.target.id === 'modal-container') {
-                            document.body.style.overflow = 'hidden';
-                            const modalContainer = document.querySelector('#modal-container');
-                            if (modalContainer) {
-                                modalContainer.classList.add('active');
+                    try {
+                        // Update navigation on HTMX navigation
+                        document.body.addEventListener('htmx:afterSettle', function(event) {
+                            updateActiveLinks();
+                        });
+                        
+                        // Execute scripts in swapped content
+                        document.body.addEventListener('htmx:afterSwap', function(event) {
+                            if (event.detail && event.detail.target) {
+                                executeScripts(event.detail.target);
                             }
-                        }
-                    });
-
-                    htmx.on('htmx:beforeSwap', function(evt) {
-                        if (evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
-                            document.body.style.overflow = 'auto';
-                            const modalContainer = document.querySelector('#modal-container');
-                            if (modalContainer) {
-                                modalContainer.classList.remove('active');
+                        });
+                        
+                        // Modal handling
+                        window.htmx.on('htmx:afterSwap', function(evt) {
+                            if (evt.detail.target.id === 'modal-container') {
+                                document.body.style.overflow = 'hidden';
+                                const modalContainer = document.querySelector('#modal-container');
+                                if (modalContainer) {
+                                    modalContainer.classList.add('active');
+                                }
                             }
+                        });
+    
+                        window.htmx.on('htmx:beforeSwap', function(evt) {
+                            if (evt.detail.target.id === 'modal-container' && !evt.detail.xhr.response) {
+                                document.body.style.overflow = 'auto';
+                                const modalContainer = document.querySelector('#modal-container');
+                                if (modalContainer) {
+                                    modalContainer.classList.remove('active');
+                                }
+                            }
+                        });
+                        
+                        // Initialize HTMX extensions
+                        if (window.htmx.createExtension) {
+                            window.htmx.defineExtension && window.htmx.defineExtension('preload', function() {
+                                return {
+                                    onEvent: function(name, evt) {
+                                        // Simple preload extension if the main one fails
+                                    }
+                                };
+                            });
                         }
-                    });
-                    
-                    console.log("HTMX events initialized");
+                        
+                        console.log("HTMX events initialized");
+                    } catch (err) {
+                        console.error("Error initializing HTMX events:", err);
+                    }
                 }
                 
                 // Helper function to execute scripts in swapped content
