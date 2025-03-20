@@ -8,6 +8,9 @@
 *.out
 /bin/
 TylerGilman.com
+*@*.*.*.*
+tmp/main
+*.tar.gz
 
 # Generated templ files
 **/*_templ.go
@@ -27,19 +30,35 @@ blog.db
 
 # Temporary files
 /tmp
-go.sum.backup
-go.mod.backup
+*.tmp
+*.backup
+*.bak
+*.swp
+*.swo
+.DS_Store
 
 # Environment and secret files
 .env
+.env.*
+!.env.example
 .null_ls
 *.pem
+*_rsa
+*_dsa
+*.key
+*.crt
+*.cert
 
 # IDE specific files
 .idea/
 .vscode/
 *.swp
 *.swo
+.vim/
+
+# Misc
+.keep
+.gitkeep
 
 # Logs
 *.log
