@@ -1,20 +1,48 @@
-node_modules
-package-lock.json
-package.json
-blog.db
-.env
-*.pem
-/tmp
+# Go binaries and build outputs
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/bin/
+TylerGilman.com
 
+# Generated templ files
 **/*_templ.go
 *_templ.go
 
+# Dependencies
+/vendor/
+node_modules
+package-lock.json
+package.json
+
+# Database files
 *.db
+*.db-shm
+*.db-wal
+blog.db
 
-# Binary files
-/bin/
-/nereus_main_site
+# Temporary files
+/tmp
+go.sum.backup
+go.mod.backup
 
-# Environment files
+# Environment and secret files
 .env
 .null_ls
+*.pem
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+
+# Local configuration file
+CLAUDE.md

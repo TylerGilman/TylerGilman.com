@@ -1,4 +1,4 @@
-# Nereus Tech Personal Website
+# TylerGilman.com - Personal Website
 
 A modern, high-performance personal website built with Go, HTMX, and Tailwind CSS. Features a blog system, project showcase, and real-time GitHub contribution tracking.
 
@@ -30,8 +30,8 @@ A modern, high-performance personal website built with Go, HTMX, and Tailwind CS
 
 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/nereus_main_site.git
-cd nereus_main_site
+git clone https://github.com/TylerGilman/TylerGilman.com.git
+cd TylerGilman.com
 ```
 
 2. Create and configure your `.env` file
@@ -191,7 +191,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👤 Author
 
 Tyler Gilman
-- Website: [nereustech.net](https://nereustech.net)
+- Website: [tylergilman.com](https://tylergilman.com)
 - GitHub: [@TylerGilman](https://github.com/TylerGilman)
 - LinkedIn: [Tyler Gilman](https://www.linkedin.com/in/tyler-gilman-991b84223/)
 
