@@ -29,9 +29,25 @@ echo -e "${BLUE}Generating templ files...${NC}"
 templ generate
 echo -e "${GREEN}Templates generated successfully${NC}"
 
-# Build Docker image
-echo -e "${BLUE}Building Docker image...${NC}"
-docker build -t tylergilman/tylergilman:prod .
+# Ask which Dockerfile to use
+echo -e "${YELLOW}Which Dockerfile would you like to use?${NC}"
+echo "1) Dockerfile.go121 (builds Go app inside Docker)"
+echo "2) Dockerfile.offline (uses pre-built binary)"
+read -p "Enter choice [1-2]: " dockerfile_choice
+
+if [[ "$dockerfile_choice" == "2" ]]; then
+    # Build the app locally first
+    echo -e "${BLUE}Building Go app locally...${NC}"
+    go build -o bin/app .
+    
+    # Then build Docker image with pre-built binary
+    echo -e "${BLUE}Building Docker image using Dockerfile.offline...${NC}"
+    docker build -f Dockerfile.offline -t tylergilman/tylergilman:prod .
+else
+    # Build Docker image using Go 1.21
+    echo -e "${BLUE}Building Docker image using Dockerfile.go121...${NC}"
+    docker build -f Dockerfile.go121 -t tylergilman/tylergilman:prod .
+fi
 
 echo -e "${GREEN}Docker image built successfully: tylergilman/tylergilman:prod${NC}"
 

@@ -1,21 +1,13 @@
-# Multi-stage build for Go application with templ
+# Builder stage
 FROM golang:1.23-rc-bullseye AS builder
 
-# Set working directory
 WORKDIR /app
-
-# Copy go mod files
-COPY go.mod go.sum ./
-
-# Set DNS explicitly for better connectivity
-ENV GODEBUG="netdns=go"
-ENV GOPROXY="https://proxy.golang.org,direct"
-
-# Install templ from source
-RUN go install github.com/a-h/templ/cmd/templ@latest
 
 # Copy source code
 COPY . .
+
+# Install templ
+RUN go install github.com/a-h/templ/cmd/templ@v0.3.833
 
 # Generate templates
 RUN templ generate
