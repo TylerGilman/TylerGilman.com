@@ -1,5 +1,5 @@
-# Build stage using Golang RC
-FROM golang:rc-bullseye AS builder
+# Development Dockerfile
+FROM golang:1.21-bullseye AS builder
 
 # Set working directory
 WORKDIR /app
@@ -8,9 +8,8 @@ WORKDIR /app
 COPY . .
 
 # Generate templ files
-# Instead of installing templ from the internet, use the pre-generated templates
-# that are already in the repository
-# Note: Make sure to run `templ generate` locally before building
+RUN go install github.com/a-h/templ/cmd/templ@latest
+RUN templ generate
 
 # Build application
 RUN go build -o main .

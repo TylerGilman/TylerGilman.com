@@ -64,7 +64,6 @@ services:
       - ENV=production
       - DEV_PORT=8080
       - DB_PATH=/app/data/blog.db
-      - GITHUB_TOKEN=${GITHUB_TOKEN}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "8080"]

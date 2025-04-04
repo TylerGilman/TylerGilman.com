@@ -1,232 +1,90 @@
-# TylerGilman.com - Personal Website
+# TylerGilman.com
 
-A modern, high-performance personal website built with Go, HTMX, and Tailwind CSS. Features a blog system, project showcase, and real-time GitHub contribution tracking.
+Personal website and blog built with Go, HTMX, and ThreeJS.
 
-## 🌟 Features
+## Development Setup
 
-- **Blog System**: Write and manage blog posts with markdown support
-- **Project Showcase**: Display personal projects with live demos
-- **GitHub Integration**: Real-time contribution graph
-- **Interactive Fish Tank**: Creative JavaScript animation
-- **HTMX Integration**: Dynamic content without complex JavaScript
-- **Mobile Responsive**: Fully responsive design with mobile-first approach
+1. Clone the repository:
+   ```
+   git clone https://github.com/TylerGilman/TylerGilman.com.git
+   cd TylerGilman.com
+   ```
 
-## 🚀 Tech Stack
+2. Create `.env` file with the following contents:
+   ```
+   ENV=development
+   DEV_PORT=8002
+   ADMIN_PASSWORD=admin
+   SESSION_KEY=your_session_key
+   DB_PATH=./data/blog.db
+   LOG_LEVEL=DEBUG
+   GITHUB_TOKEN=your_github_personal_access_token
+   ```
 
-- **Backend**: Go (Chi Router)
-- **Frontend**: HTMX, Tailwind CSS
-- **Template Engine**: Templ
-- **Database**: SQLite
-- **Deployment**: Containerized with Docker, Traefik, and automated deployments
+3. Build and run locally:
+   ```
+   go mod download
+   go run .
+   ```
 
-## 📋 Prerequisites
+4. Or use Docker for development:
+   ```
+   docker-compose -f docker-compose.dev.yml up
+   ```
 
-- Go 1.21 or higher
-- Node.js and npm (for Tailwind CSS)
-- Make
-- Docker and Docker Compose (for deployment)
+## Docker Setup
 
-## 🔧 Installation
+We use two Dockerfiles:
+- `Dockerfile` - For development
+- `Dockerfile.prod` - For production (minimal image using pre-built binary)
 
-1. Clone the repository
+### Building for Production
+
 ```bash
-git clone https://github.com/TylerGilman/TylerGilman.com.git
-cd TylerGilman.com
+# Build production image
+./scripts/build_docker.sh --type prod --tag prod
+
+# For automatic deployment with Watchtower:
+./scripts/build_docker.sh --type prod --tag prod --push
 ```
 
-2. Create and configure your `.env` file
-```bash
-cp .env.example .env
-# Edit .env with your settings
-```
+## Deployment
 
-3. Install dependencies
-```bash
-go mod download
-npm install
-```
+### Using Watchtower (Recommended)
 
-4. Build the CSS
-```bash
-make css
-```
+1. Deploy with:
+   ```
+   ./scripts/deploy.sh
+   ```
 
-5. Run the development server
-```bash
-make run
-```
+2. For updates, push to Docker Hub:
+   ```
+   ./scripts/build_docker.sh --type prod --tag prod --push
+   ```
+   
+   Watchtower will automatically detect and deploy the new image.
 
-## 🔐 Environment Variables
+### Manual Deployment
 
-Create a `.env` file in the root directory with the following variables:
+1. Build the production image:
+   ```
+   ./scripts/build_docker.sh --type prod --tag prod
+   ```
 
-```env
-# Server Configuration
-ENV=development
-DEV_PORT=8080
+2. Transfer the image to your server:
+   ```
+   scp tylergilman-app.tar user@your-server:/tmp/
+   ```
 
-# Security
-ADMIN_PASSWORD=your_secure_password_here
+3. On the server:
+   ```
+   docker load -i /tmp/tylergilman-app.tar
+   docker-compose up -d
+   ```
 
-# Logging
-LOG_LEVEL=INFO
+## Important Notes
 
-# GitHub Integration
-GITHUB_TOKEN=your_github_token
-
-# Database
-DB_PATH=./data/blog.db
-```
-
-## 🛠️ Development
-
-### Running in Development Mode
-
-There are several options for development mode, depending on your needs:
-
-1. **All-in-one development environment:**
-```bash
-make dev-all
-```
-This will:
-- Watch and generate Templ templates
-- Watch and compile Tailwind CSS for all stylesheets
-- Run the server with live reload
-
-2. **Basic development mode (without CSS watching):**
-```bash
-make dev
-```
-This will:
-- Watch and generate Templ templates
-- Run the server
-
-3. **Manual setup for more control:**
-
-Start the Tailwind CSS compiler:
-```bash
-make css-watch
-```
-
-Generate templates:
-```bash
-templ generate
-```
-
-or watch for template changes:
-```bash
-templ generate --watch
-```
-
-Run the server:
-```bash
-make run
-```
-
-## 🚀 Deployment
-
-### Automated Deployment with Watchtower
-
-The production setup uses Watchtower for automatic deployment. This means any changes pushed to Docker Hub are automatically deployed:
-
-1. **Build and push the Docker image:**
-```bash
-# Build the image locally
-docker build -f Dockerfile.offline -t tylergilman/tylergilman:prod .
-
-# Push to Docker Hub
-docker push tylergilman/tylergilman:prod
-```
-
-Watchtower will detect the new image within 5 minutes and automatically update the container on your server.
-
-### Alternative Deployment Methods
-
-Several deployment scripts are provided for different scenarios:
-
-1. **Direct deployment to a server by IP:**
-```bash
-./scripts/deploy_to_ip.sh <server-ip> [ssh-user] [ssh-port]
-```
-This script builds, transfers, and deploys the app to a specified server.
-
-2. **Standard VPS deployment:**
-```bash
-./scripts/vps_deploy.sh
-```
-This script will:
-- Set up Traefik configuration
-- Deploy the application with SSL
-- Configure automatic certificate renewal
-- Set up automatic updates
-
-3. **Build Docker image only:**
-```bash
-./scripts/build_docker.sh
-```
-This script will:
-- Generate Templ templates
-- Build the Docker image
-- Optionally push to Docker Hub
-
-### DNS Configuration
-
-Make sure to set up these DNS records pointing to your VPS:
-- `tylergilman.com` - Main website
-- `traefik.tylergilman.com` - Traefik dashboard (password protected)
-
-### Troubleshooting Deployment
-
-If you encounter network issues during deployment:
-1. Try building the image locally and pushing to Docker Hub
-2. On your VPS, use option 2 in the deploy script to pull from Docker Hub
-3. Check the logs with `docker-compose -f docker-compose.prod.yml logs -f`
-
-### Deployment Architecture
-
-The production setup includes:
-- **Traefik**: Acts as a reverse proxy and handles SSL certificates
-- **Watchtower**: Monitors Docker Hub for new images and updates containers automatically
-- **Application Container**: Runs the website itself
-- **Monitoring**: Optional Prometheus and Grafana for monitoring
-
-## 💻 Usage
-
-### Managing Blog Posts
-
-1. Access the admin interface at `/admin/blog`
-2. Use your admin password to authenticate
-3. Create, edit, or delete blog posts
-4. Posts support markdown formatting
-
-### Project Showcase
-
-1. Projects are displayed at `/projects`
-2. Features GitHub contribution tracking
-3. Interactive fish tank demonstration
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
-
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
-
-## 👤 Author
-
-Tyler Gilman
-- Website: [tylergilman.com](https://tylergilman.com)
-- GitHub: [@TylerGilman](https://github.com/TylerGilman)
-- LinkedIn: [Tyler Gilman](https://www.linkedin.com/in/tyler-gilman-991b84223/)
-
-## 🙏 Acknowledgments
-
-- [HTMX](https://htmx.org/) for the excellent hypermedia system
-- [Tailwind CSS](https://tailwindcss.com/) for the utility-first CSS framework
-- [Chi Router](https://github.com/go-chi/chi) for the lightweight Go router
-- [Traefik](https://traefik.io/) for the powerful edge router
+- The `.env` file is mounted at runtime, not build time
+- Make sure your production server has a valid GITHUB_TOKEN in its .env file
+- The GitHub token is necessary for the contribution chart to work
+- Traefik is used for reverse proxying and automatic SSL

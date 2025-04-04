@@ -27,9 +27,9 @@ else
     exit 1
 fi
 
-# Check if docker-compose.prod.yml exists
-if [ ! -f docker-compose.prod.yml ]; then
-    echo -e "${RED}Error: docker-compose.prod.yml not found.${NC}"
+# Check if docker-compose.yml exists
+if [ ! -f docker-compose.yml ]; then
+    echo -e "${RED}Error: docker-compose.yml not found.${NC}"
     exit 1
 fi
 
@@ -152,11 +152,11 @@ LOG_LEVEL=INFO
 # Database
 DB_PATH=/app/data/blog.db
 
-# GitHub Integration (optional)
+# GitHub Integration (required for contribution chart)
 GITHUB_TOKEN=your_github_token
 EOL
     echo -e "${GREEN}.env file created. Please edit it with your actual values.${NC}"
-    echo -e "${YELLOW}Especially the ADMIN_PASSWORD which is currently set to 'change_me_please'${NC}"
+    echo -e "${YELLOW}Especially the ADMIN_PASSWORD and GITHUB_TOKEN which are crucial for functionality${NC}"
 fi
 
 # Ask for deployment option
@@ -180,12 +180,12 @@ case $deployment_option in
         echo -e "${BLUE}Loading image from local file...${NC}"
         
         # Check for .tar or .tar.gz file
-        if [ -f "tylergilman_prod.tar.gz" ]; then
-            echo -e "${BLUE}Found tylergilman_prod.tar.gz file${NC}"
-            gunzip -c tylergilman_prod.tar.gz | docker load
-        elif [ -f "tylergilman_prod.tar" ]; then
-            echo -e "${BLUE}Found tylergilman_prod.tar file${NC}"
-            docker load -i tylergilman_prod.tar
+        if [ -f "tylergilman-app.tar.gz" ]; then
+            echo -e "${BLUE}Found tylergilman-app.tar.gz file${NC}"
+            gunzip -c tylergilman-app.tar.gz | docker load
+        elif [ -f "tylergilman-app.tar" ]; then
+            echo -e "${BLUE}Found tylergilman-app.tar file${NC}"
+            docker load -i tylergilman-app.tar
         else
             echo -e "${RED}No image file found. Please provide the path to the image file:${NC}"
             read -p "Enter path to image file: " image_path
@@ -205,7 +205,7 @@ case $deployment_option in
         ;;
     3)
         echo -e "${BLUE}Stopping all services...${NC}"
-        $COMPOSE_CMD -f docker-compose.prod.yml down
+        $COMPOSE_CMD -f docker-compose.yml down
         echo -e "${GREEN}All services stopped.${NC}"
         exit 0
         ;;
@@ -217,28 +217,31 @@ esac
 
 # Deploy
 echo -e "${BLUE}Deploying with docker-compose...${NC}"
-$COMPOSE_CMD -f docker-compose.prod.yml up -d
+$COMPOSE_CMD -f docker-compose.yml up -d
 
 # Check if services are running
 echo -e "${BLUE}Checking service status...${NC}"
-$COMPOSE_CMD -f docker-compose.prod.yml ps
+$COMPOSE_CMD -f docker-compose.yml ps
 
 # Display access information
 echo -e "\n${GREEN}Deployment Complete!${NC}"
 echo -e "${YELLOW}Services:${NC}"
 echo -e "- Website: https://tylergilman.com"
 echo -e "- Traefik Dashboard: https://traefik.tylergilman.com"
+echo -e "- Prometheus: https://prometheus.tylergilman.com"
+echo -e "- Grafana: https://grafana.tylergilman.com"
 
 echo -e "\n${YELLOW}Notes:${NC}"
 echo -e "- SSL certificates will be automatically provisioned by Let's Encrypt"
 echo -e "- Ensure your DNS records are properly configured for all domains"
 echo -e "- Traefik dashboard is password protected with the credentials you provided"
+echo -e "- IMPORTANT: Check that your GITHUB_TOKEN is set in the .env file for GitHub contributions"
 
 # View logs if requested
 echo -e "\n${YELLOW}Do you want to view the logs?${NC}"
 read -p "View logs? (y/n): " view_logs
 if [[ "$view_logs" == "y" ]]; then
-    $COMPOSE_CMD -f docker-compose.prod.yml logs -f
+    $COMPOSE_CMD -f docker-compose.yml logs -f
 fi
 
 exit 0

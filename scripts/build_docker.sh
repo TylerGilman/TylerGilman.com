@@ -4,49 +4,97 @@ set -e
 # Colors for output
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
 RED='\033[0;31m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== TylerGilman.com Docker Build Script ===${NC}"
+echo -e "${YELLOW}Building Docker image for TylerGilman.com${NC}"
 
-# Check if templ is installed
-if ! command -v templ &> /dev/null; then
-    echo -e "${YELLOW}The templ CLI is not installed. Would you like to install it now?${NC}"
-    read -p "Install templ? (y/n): " install_templ
-    if [[ "$install_templ" == "y" ]]; then
-        echo -e "${BLUE}Installing templ...${NC}"
-        go install github.com/a-h/templ/cmd/templ@latest
-        echo -e "${GREEN}templ installed successfully${NC}"
-    else
-        echo -e "${RED}templ is required to generate templates. Exiting.${NC}"
-        exit 1
-    fi
+# Default values
+BUILD_TYPE="prod"
+TAG="latest"
+PUSH_IMAGE=false
+
+# Process command line arguments
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    --type)
+      BUILD_TYPE="$2"
+      shift 2
+      ;;
+    --tag)
+      TAG="$2"
+      shift 2
+      ;;
+    --push)
+      PUSH_IMAGE=true
+      shift
+      ;;
+    *)
+      echo -e "${RED}Unknown option: $1${NC}"
+      echo "Usage: $0 [--type dev|prod|build] [--tag TAG] [--push]"
+      exit 1
+      ;;
+  esac
+done
+
+# Validate build type
+if [[ ! "$BUILD_TYPE" =~ ^(dev|prod)$ ]]; then
+  echo -e "${RED}Invalid build type: $BUILD_TYPE${NC}"
+  echo "Valid types: dev, prod"
+  exit 1
 fi
 
-# Generate templ files
-echo -e "${BLUE}Generating templ files...${NC}"
-templ generate
-echo -e "${GREEN}Templates generated successfully${NC}"
+# Select Dockerfile based on build type
+case $BUILD_TYPE in
+  dev)
+    DOCKERFILE="Dockerfile"
+    IMAGE_NAME="tylergilman/tylergilman:$TAG"
+    BUILD_METHOD="standard"
+    ;;
+  prod)
+    DOCKERFILE="Dockerfile.prod"
+    IMAGE_NAME="tylergilman/tylergilman:$TAG"
+    BUILD_METHOD="offline"
+    ;;
+esac
 
-# Build the app locally first
-echo -e "${BLUE}Building Go app locally...${NC}"
-go build -o bin/app .
-
-# Then build Docker image with pre-built binary
-echo -e "${BLUE}Building Docker image using Dockerfile.offline...${NC}"
-docker build -f Dockerfile.offline -t tylergilman/tylergilman:prod .
-
-echo -e "${GREEN}Docker image built successfully: tylergilman/tylergilman:prod${NC}"
-
-# Ask if user wants to push the image
-echo -e "${YELLOW}Do you want to push the image to Docker Hub?${NC}"
-read -p "Push to Docker Hub? (y/n): " push_image
-if [[ "$push_image" == "y" ]]; then
-    echo -e "${BLUE}Pushing image to Docker Hub...${NC}"
-    docker push tylergilman/tylergilman:prod
-    echo -e "${GREEN}Image pushed successfully${NC}"
+# Build approach based on method
+if [[ "$BUILD_METHOD" == "offline" ]]; then
+  echo -e "${YELLOW}Building with offline approach (pre-built binary)${NC}"
+  
+  # Ensure bin directory exists
+  mkdir -p bin
+  
+  # Build locally
+  echo -e "${YELLOW}Building Go binary...${NC}"
+  go build -o bin/app .
+  
+  # Build Docker image
+  echo -e "${YELLOW}Building Docker image from pre-built binary...${NC}"
+  docker build -t $IMAGE_NAME -f $DOCKERFILE .
+else
+  echo -e "${YELLOW}Building with standard Docker build...${NC}"
+  docker build -t $IMAGE_NAME -f $DOCKERFILE .
 fi
 
-echo -e "${GREEN}Build process complete!${NC}"
-exit 0
+echo -e "${GREEN}Image built successfully: $IMAGE_NAME${NC}"
+
+# Push image if requested
+if [[ "$PUSH_IMAGE" == true ]]; then
+  echo -e "${YELLOW}Pushing image to Docker Hub...${NC}"
+  docker push $IMAGE_NAME
+  echo -e "${GREEN}Image pushed to Docker Hub${NC}"
+fi
+
+# Save image to file if it's a production build
+if [[ "$BUILD_TYPE" == "prod" ]]; then
+  echo -e "${YELLOW}Saving image to file...${NC}"
+  docker save -o tylergilman-app.tar $IMAGE_NAME
+  echo -e "${GREEN}Image saved to tylergilman-app.tar${NC}"
+fi
+
+echo -e "${GREEN}Build completed successfully!${NC}"
+echo -e "${YELLOW}Run the application with: docker-compose -f docker-compose.dev.yml up${NC}"
+if [[ "$BUILD_TYPE" == "prod" ]]; then
+  echo -e "${YELLOW}For production: docker-compose -f docker-compose.prod.yml up -d${NC}"
+fi

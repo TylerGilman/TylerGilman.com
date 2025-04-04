@@ -38,7 +38,7 @@ entryPoints:
 certificatesResolvers:
   leresolver:
     acme:
-      email: "your-email@example.com"
+      email: "tylersgilman@gmail.com"
       storage: "/letsencrypt/acme.json"
       caServer: "https://acme-v02.api.letsencrypt.org/directory"
       httpChallenge:

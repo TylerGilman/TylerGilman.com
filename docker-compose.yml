@@ -9,6 +9,10 @@ networks:
 volumes:
   traefik-certificates:
     name: tylergilman_certs
+  prometheus_data:
+    name: tylergilman_prometheus_data
+  grafana_data:
+    name: tylergilman_grafana_data
 
 services:
   # Traefik reverse proxy
@@ -161,9 +165,3 @@ services:
       - WATCHTOWER_CLEANUP=true
       - WATCHTOWER_LABEL_ENABLE=true
       - TZ=America/Los_Angeles
-
-volumes:
-  prometheus_data:
-    name: tylergilman_prometheus_data
-  grafana_data:
-    name: tylergilman_grafana_data
