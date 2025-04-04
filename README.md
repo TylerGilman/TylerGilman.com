@@ -125,20 +125,32 @@ make run
 
 ## 🚀 Deployment
 
-### Quick Production Deployment
+### Automated Deployment with Watchtower
 
-For a quick production deployment, use the provided scripts:
+The production setup uses Watchtower for automatic deployment. This means any changes pushed to Docker Hub are automatically deployed:
 
-1. **Build the Docker image locally (recommended for development):**
+1. **Build and push the Docker image:**
 ```bash
-./scripts/build_docker.sh
-```
-This script will:
-- Generate Templ templates
-- Build the Docker image
-- Optionally push to Docker Hub
+# Build the image locally
+docker build -f Dockerfile.offline -t tylergilman/tylergilman:prod .
 
-2. **Deploy on your VPS:**
+# Push to Docker Hub
+docker push tylergilman/tylergilman:prod
+```
+
+Watchtower will detect the new image within 5 minutes and automatically update the container on your server.
+
+### Alternative Deployment Methods
+
+Several deployment scripts are provided for different scenarios:
+
+1. **Direct deployment to a server by IP:**
+```bash
+./scripts/deploy_to_ip.sh <server-ip> [ssh-user] [ssh-port]
+```
+This script builds, transfers, and deploys the app to a specified server.
+
+2. **Standard VPS deployment:**
 ```bash
 ./scripts/vps_deploy.sh
 ```
@@ -147,6 +159,15 @@ This script will:
 - Deploy the application with SSL
 - Configure automatic certificate renewal
 - Set up automatic updates
+
+3. **Build Docker image only:**
+```bash
+./scripts/build_docker.sh
+```
+This script will:
+- Generate Templ templates
+- Build the Docker image
+- Optionally push to Docker Hub
 
 ### DNS Configuration
 
@@ -160,6 +181,14 @@ If you encounter network issues during deployment:
 1. Try building the image locally and pushing to Docker Hub
 2. On your VPS, use option 2 in the deploy script to pull from Docker Hub
 3. Check the logs with `docker-compose -f docker-compose.prod.yml logs -f`
+
+### Deployment Architecture
+
+The production setup includes:
+- **Traefik**: Acts as a reverse proxy and handles SSL certificates
+- **Watchtower**: Monitors Docker Hub for new images and updates containers automatically
+- **Application Container**: Runs the website itself
+- **Monitoring**: Optional Prometheus and Grafana for monitoring
 
 ## 💻 Usage
 
