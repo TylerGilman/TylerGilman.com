@@ -7,76 +7,72 @@ import (
 
 templ EditPage(article Article) {
     @layouts.Base("admin", true) {
-        <div id="content" class="container mx-auto px-4 py-8">
-            <div class="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
-                <h1 class="text-2xl font-bold mb-6">Edit Article</h1>
-                
-                <form hx-put={fmt.Sprintf("/admin/blog/%d", article.ID)} class="space-y-6">
-                    <div>
-                        <label for="title" class="block text-sm font-medium text-gray-700">Title</label>
-                        <input type="text" 
-                            id="title" 
-                            name="title" 
-                            value={article.Title}
-                            required 
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
-                    </div>
+        <div class="form-container max-w-4xl mx-auto my-8 shadow-lg rounded-lg">
+            <h1 class="text-2xl font-bold mb-6">Edit Article</h1>
+            
+            <form hx-put={fmt.Sprintf("/admin/blog/%d", article.ID)} class="space-y-6">
+                <div class="form-group">
+                    <label for="title" class="form-label">Title</label>
+                    <input type="text" 
+                        id="title" 
+                        name="title" 
+                        value={article.Title}
+                        required 
+                        class="form-input"/>
+                </div>
 
-                    <div>
-                        <label for="author" class="block text-sm font-medium text-gray-700">Author</label>
-                        <input type="text" 
-                            id="author" 
-                            name="author" 
-                            value={article.Author}
-                            required 
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
-                    </div>
+                <div class="form-group">
+                    <label for="author" class="form-label">Author</label>
+                    <input type="text" 
+                        id="author" 
+                        name="author" 
+                        value={article.Author}
+                        required 
+                        class="form-input"/>
+                </div>
 
-                    <div>
-                        <label for="category" class="block text-sm font-medium text-gray-700">Categories</label>
-                        <input type="text" 
-                            id="category" 
-                            name="category" 
-                            value={article.Category}
-                            required 
-                            placeholder="Comma-separated categories (e.g. Programming, RL, NLP)"
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"/>
-                        <div class="text-sm text-gray-500 mt-1">
-                            Enter categories separated by commas. Suggested categories: Programming, RL, NLP, WEB, Life
-                        </div>
-                    </div>
+                <div class="form-group">
+                    <label for="category" class="form-label">Categories</label>
+                    <input type="text" 
+                        id="category" 
+                        name="category" 
+                        value={article.Category}
+                        required 
+                        placeholder="Programming, RL, NLP, WEB, Life"
+                        class="form-input"/>
+                    <p class="mt-1 text-sm">
+                        Enter categories separated by commas. Suggested: Programming, RL, NLP, WEB, Life
+                    </p>
+                </div>
 
-                    <div>
-                        <label for="summary" class="block text-sm font-medium text-gray-700">Summary</label>
+                <div class="form-group">
+                    <label for="summary" class="form-label">Summary</label>
+                    <textarea 
+                        id="summary" 
+                        name="summary" 
+                        required 
+                        rows="3"
+                        class="form-textarea">{article.Summary}</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="markdownEditor" class="form-label">Content (Markdown with Math Support)</label>
+                    <div class="markdown-container">
                         <textarea 
-                            id="summary" 
-                            name="summary" 
-                            required 
-                            rows="3"
-                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2">{article.Summary}</textarea>
-                    </div>
-
-                    <div>
-                        <label for="content" class="block text-sm font-medium text-gray-700">Content (Markdown)</label>
-                        <div class="mt-1 flex gap-4">
-                            <textarea 
-                                id="markdownEditor" 
-                                name="content" 
-                                rows="20" 
-                                required
-                                onInput="updateMarkdownPreview()"
-                                class="block w-1/2 border border-gray-300 rounded-md shadow-sm p-2 font-mono">{article.Content}</textarea>
-                            <div id="markdownPreview" 
-                                class="w-1/2 p-4 border border-gray-300 rounded-md prose prose-slate prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-a:text-blue-600 hover:prose-a:text-blue-500 max-w-none bg-white overflow-y-auto"
-                                style="height: 500px;">
-                                @templ.Raw(article.HTMLContent)
-                            </div>
+                            id="markdownEditor" 
+                            name="content" 
+                            required
+                            onInput="updateMarkdownPreview()"
+                            class="markdown-editor">{article.Content}</textarea>
+                        <div id="markdownPreview" class="markdown-preview">
+                            @templ.Raw(article.HTMLContent)
                         </div>
                     </div>
+                </div>
 
+                <div class="form-group">
                     <div class="flex justify-between">
-                        <button type="submit" 
-                            class="bg-red-400 text-white px-4 py-2 rounded-md hover:bg-red-500 transition-colors">
+                        <button type="submit" class="form-submit">
                             Update Article
                         </button>
                         <a href={templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID))}
@@ -84,16 +80,45 @@ templ EditPage(article Article) {
                             Cancel
                         </a>
                     </div>
-                </form>
-            </div>
+                </div>
+            </form>
         </div>
 
         <script>
+            // Set up marked.js with math support
+            marked.use({
+                renderer: {
+                    code(code, infostring) {
+                        const lang = (infostring || '').match(/\S*/)[0];
+                        if (lang && hljs.getLanguage(lang)) {
+                            try {
+                                const highlighted = hljs.highlight(code, { language: lang }).value;
+                                return `<pre><code class="hljs language-${lang}">${highlighted}</code></pre>`;
+                            } catch (__) {}
+                        }
+                        return `<pre><code class="hljs">${code}</code></pre>`;
+                    }
+                }
+            });
+
             function updateMarkdownPreview() {
                 const editor = document.getElementById('markdownEditor');
                 const preview = document.getElementById('markdownPreview');
                 if (editor && preview) {
+                    // Parse markdown
                     preview.innerHTML = marked.parse(editor.value);
+                    
+                    // Process math with KaTeX if available
+                    if (typeof renderMathInElement === 'function') {
+                        renderMathInElement(preview, {
+                            delimiters: [
+                                {left: "$$", right: "$$", display: true},
+                                {left: "$", right: "$", display: false}
+                            ],
+                            throwOnError: false
+                        });
+                    }
+                    
                     // Highlight code blocks
                     preview.querySelectorAll('pre code').forEach((block) => {
                         hljs.highlightElement(block);
