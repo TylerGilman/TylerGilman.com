@@ -11,16 +11,50 @@ templ Base(page_mode string, isAdmin bool) {
 			<title>Tyler Gilman | Software Engineer | Portfolio and Blog</title>
 			<meta charset="UTF-8"/>
 			<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-            <script src="https://unpkg.com/htmx.org@2.0.4"></script>
-            <script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/marked@5.1.0/marked.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
-            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+            <!-- Core JS libraries - load immediately with high priority -->
+            <script src="https://unpkg.com/htmx.org@2.0.4" fetchpriority="high"></script>
+            <script src="https://unpkg.com/htmx-ext-preload@2.1.0/preload.js" fetchpriority="high"></script>
+            
+            <!-- ThreeJS and aquarium - critical for visual experience -->
+            <script src="/public/js/libs/three.min.js" fetchpriority="high"></script>
+            <script src="/public/js/aquarium.js" fetchpriority="high"></script>
+            
+            <!-- Preload key pages -->
+            <link rel="prefetch" href="/projects">
+            <link rel="prefetch" href="/blog">
+            
+            <!-- Deferred loading for non-critical resources -->
+            <script src="https://cdn.jsdelivr.net/npm/marked@5.1.0/marked.min.js" defer></script>
+            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js" defer></script>
+            <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" defer></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js" defer></script>
+            
+            <!-- Stylesheet loading -->
             <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
-            <script src="https://tylergilman.com/public/js/libs/three.min.js"></script>
-            <script src="https://tylergilman.com/public/js/aquarium.js"></script>
+            
+            <!-- Style for HTMX transitions -->
+            <style>
+                /* Transition animations */
+                .htmx-added [hx-swap*="transition:"] {
+                    transition-property: opacity, transform;
+                    transition-duration: 150ms;
+                    transition-timing-function: ease-out;
+                }
+                
+                .htmx-swapping[hx-swap*="transition:fade:"] {
+                    opacity: 0;
+                }
+                
+                .htmx-settling[hx-swap*="transition:fade:"] {
+                    opacity: 0;
+                }
+                
+                .htmx-settle[hx-swap*="transition:fade:"] {
+                    opacity: 1;
+                }
+            </style>
+            
             <!-- Unified CSS for all pages -->
 			<style>
                 /* Global reset and base styles */
@@ -755,27 +789,33 @@ templ Base(page_mode string, isAdmin bool) {
 		</head>
         <body>
             <!-- Persistent fish tank background -->
-            <canvas id="aquarium-canvas"></canvas>
+            <canvas id="aquarium-canvas" aria-label="Interactive fish tank background" role="img"></canvas>
             
             <div class="content-wrapper">
                 @components.Navigation(page_mode, isAdmin)
-                <div id="modal-container"></div>
-                <div id="main-content">
+                <div id="modal-container" role="dialog" aria-modal="true"></div>
+                <main id="main-content" role="main" aria-label="Main content">
                     { children... }
-                </div>
+                </main>
             </div>
 
             <script>
                 // Initialize fish tank and setup event handlers
                 document.addEventListener('DOMContentLoaded', function() {
-                    // Initialize fish tank
-                    initializeAquarium();
-                    
-                    // Initialize navigation
+                    // Initialize critical components first
                     updateActiveLinks();
-                    
-                    // Setup HTMX events
                     setupHtmxEvents();
+                    
+                    // Initialize aquarium with a slight delay for better initial page load
+                    setTimeout(function() {
+                        initializeAquarium();
+                    }, 100);
+                    
+                    // Preload the Projects page content when on homepage
+                    if (window.location.pathname === '/' || window.location.pathname === '') {
+                        preloadPage('/projects');
+                        preloadPage('/blog');
+                    }
                 });
 
                 function initializeAquarium() {
@@ -840,6 +880,18 @@ templ Base(page_mode string, isAdmin bool) {
                     });
                 }
                 
+                function preloadPage(url) {
+                    if (typeof window.htmx !== 'undefined') {
+                        const xhr = new XMLHttpRequest();
+                        xhr.open('GET', url);
+                        xhr.onload = function() {
+                            // Cache the response in memory
+                            console.log("Preloaded:", url);
+                        };
+                        xhr.send();
+                    }
+                }
+
                 function setupHtmxEvents() {
                     // Make sure htmx is loaded and available
                     if (typeof window.htmx === 'undefined') {
@@ -848,6 +900,16 @@ templ Base(page_mode string, isAdmin bool) {
                     }
                     
                     try {
+                        // Configure HTMX for faster performance
+                        window.htmx.config.historyCacheSize = 10; // Increase history cache
+                        window.htmx.config.refreshOnHistoryMiss = false; // Don't refresh on cache miss
+                        window.htmx.config.defaultSwapStyle = "innerHTML"; // Default swap strategy
+                        window.htmx.config.allowScriptTags = true; // Auto-evaluate scripts
+                        window.htmx.config.includeIndicatorStyles = true; // Include indicator styles
+                        
+                        // Add transition support
+                        document.body.classList.add('htmx-added');
+                        
                         // Update navigation on HTMX navigation
                         document.body.addEventListener('htmx:afterSettle', function(event) {
                             updateActiveLinks();
@@ -883,13 +945,49 @@ templ Base(page_mode string, isAdmin bool) {
                         
                         // Initialize HTMX extensions
                         if (window.htmx.createExtension) {
-                            window.htmx.defineExtension && window.htmx.defineExtension('preload', function() {
-                                return {
-                                    onEvent: function(name, evt) {
-                                        // Simple preload extension if the main one fails
+                            try {
+                                // Check if preload extension is already registered
+                                if (!window.htmx.config.extensions.includes('preload')) {
+                                    console.log("Initializing HTMX preload extension");
+                                    
+                                    // Try to use the library version first
+                                    if (typeof htmxPreloadExtension !== 'undefined') {
+                                        window.htmx.defineExtension('preload', htmxPreloadExtension);
+                                        console.log("Using preload extension from library");
+                                    } else {
+                                        // Fallback to a simple implementation
+                                        window.htmx.defineExtension('preload', {
+                                            onEvent: function(name, evt) {
+                                                if (name === 'htmx:afterProcessNode') {
+                                                    let nodes = evt.detail.target.querySelectorAll('[preload]');
+                                                    nodes.forEach(function(node) {
+                                                        let trigger = node.getAttribute('preload');
+                                                        let hxTrigger = node.getAttribute('hx-trigger') || '';
+                                                        if (hxTrigger.length > 0) {
+                                                            hxTrigger = hxTrigger + ', ';
+                                                        }
+                                                        node.setAttribute('hx-trigger', hxTrigger + trigger);
+                                                        
+                                                        // Create empty settle event handler with a cache
+                                                        node.addEventListener(trigger, function(evt) {
+                                                            const target = node.getAttribute('hx-get');
+                                                            if (target) {
+                                                                const xhr = new XMLHttpRequest();
+                                                                xhr.open('GET', target);
+                                                                xhr.send();
+                                                                console.log("Preloaded:", target);
+                                                            }
+                                                        });
+                                                    });
+                                                }
+                                            }
+                                        });
+                                        console.log("Using custom preload implementation");
                                     }
-                                };
-                            });
+                                }
+                            } catch (err) {
+                                console.error("Error initializing preload extension:", err);
+                            }
                         }
                         
                         console.log("HTMX events initialized");

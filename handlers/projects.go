@@ -3,17 +3,17 @@ package handlers
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"log/slog"
 	"net/http"
+	"os"
 	"sort"
 	"strings"
 	"sync"
 	"time"
-  "os"
 
 	"github.com/TylerGilman/TylerGilman.com/authpkg"
 	"github.com/TylerGilman/TylerGilman.com/views/models"
@@ -32,14 +32,20 @@ func UpdateProjectsCache() {
 	slog.Info("Updating projects cache...")
 	startTime := time.Now()
 
+	// Use a timeout context for GitHub API calls
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Get contributions with fallback for errors
 	contributions, err := getGitHubContributions("TylerGilman")
 	if err != nil {
 		slog.Error("Error fetching GitHub contributions:", slog.String("Error", err.Error()))
-		return
+		// Use empty contributions but still render the page
+		contributions = []models.ContributionDay{}
 	}
 
+	// Set up buffers for both versions of the page
 	var fullBuf, partialBuf bytes.Buffer
-	ctx := context.Background()
 
 	// Pass false as isAdmin for cached version since we'll check auth at request time
 	err = projects.Projects(contributions, false).Render(ctx, &fullBuf)
@@ -60,7 +66,8 @@ func UpdateProjectsCache() {
 	cachedFullPage = fullBuf.Bytes()
 	cachedPartialPage = partialBuf.Bytes()
 
-	expirationTime := time.Now().Add(1 * time.Hour)
+	// Cache for 3 hours to reduce refresh frequency
+	expirationTime := time.Now().Add(3 * time.Hour)
 	fullPageExpiration = expirationTime
 	partialPageExpiration = expirationTime
 
@@ -68,20 +75,48 @@ func UpdateProjectsCache() {
 }
 
 func HandleProjects(w http.ResponseWriter, r *http.Request) error {
+	// Set performance headers
+	w.Header().Set("Cache-Control", "public, max-age=600") // 10 minute client cache
+	w.Header().Set("X-Content-Type-Options", "nosniff")
+	
 	isAdmin := authpkg.IsAuthenticated(r)
 
+	// Check if we need to update the cache
 	cacheMutex.RLock()
 	fullCacheEmpty := len(cachedFullPage) == 0
 	partialCacheEmpty := len(cachedPartialPage) == 0
 	fullCacheExpired := time.Now().After(fullPageExpiration)
 	partialCacheExpired := time.Now().After(partialPageExpiration)
+	
+	// If cache is valid, serve from cache immediately
+	if !fullCacheEmpty && !partialCacheEmpty && !fullCacheExpired && !partialCacheExpired {
+		// Fast path - serve from cache
+		if !isAdmin {
+			// For normal users, serve directly from cache
+			cacheMutex.RUnlock()
+			
+			// Handle HTMX requests for partial content
+			if r.Header.Get("HX-Request") == "true" {
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
+				w.Write(cachedPartialPage)
+				return nil
+			}
+			
+			// Full page request
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.Write(cachedFullPage)
+			return nil
+		}
+	}
 	cacheMutex.RUnlock()
 
+	// If we got here, we need to update or honor admin status
 	if fullCacheEmpty || partialCacheEmpty || fullCacheExpired || partialCacheExpired {
-		log.Println("Projects cache is empty or expired. Updating cache...")
-		UpdateProjectsCache()
+		slog.Info("Projects cache is empty or expired. Updating cache...")
+		go UpdateProjectsCache() // Update cache in background
 	}
-
+	
+	// For normal requests when cache is not available, or for admin users
 	contributions, err := getGitHubContributions("TylerGilman")
 	if err != nil {
 		slog.Error("Error fetching GitHub contributions", "error", err)
@@ -130,10 +165,16 @@ func fetchGitHubContributions(username string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-  token := os.Getenv("GITHUB_TOKEN")
-  req.Header.Set("Authorization", "Bearer "+token)
+	token := os.Getenv("GITHUB_TOKEN")
+	req.Header.Set("Authorization", "Bearer "+token)
 	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{}
+	
+	// Configure transport to skip TLS verification in production
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client := &http.Client{Transport: tr}
+	
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err

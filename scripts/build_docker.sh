@@ -31,7 +31,7 @@ while [[ $# -gt 0 ]]; do
       ;;
     *)
       echo -e "${RED}Unknown option: $1${NC}"
-      echo "Usage: $0 [--type dev|prod|build] [--tag TAG] [--push]"
+      echo "Usage: $0 [--type dev|prod] [--tag TAG] [--push]"
       exit 1
       ;;
   esac
@@ -58,6 +58,52 @@ case $BUILD_TYPE in
     ;;
 esac
 
+# Find Go path
+find_go_path() {
+  GO_PATH=$(which go 2>/dev/null || echo "/usr/local/go/bin/go")
+  if [ ! -x "$GO_PATH" ]; then
+    # Try common locations if which failed
+    for p in "/usr/bin/go" "/usr/local/bin/go" "$HOME/go/bin/go" "$HOME/.go/bin/go"; do
+      if [ -x "$p" ]; then
+        GO_PATH="$p"
+        break
+      fi
+    done
+  fi
+  
+  if [ ! -x "$GO_PATH" ]; then
+    echo -e "${RED}Error: Unable to find go executable. Please make sure Go is installed and in your PATH.${NC}"
+    exit 1
+  fi
+  
+  echo -e "${YELLOW}Using Go at: $GO_PATH${NC}"
+}
+
+# Find templ path
+find_templ_path() {
+  TEMPL_PATH=$(which templ 2>/dev/null)
+  if [ ! -x "$TEMPL_PATH" ]; then
+    # Try common locations
+    for p in "$HOME/go/bin/templ" "/usr/local/bin/templ" "/usr/bin/templ"; do
+      if [ -x "$p" ]; then
+        TEMPL_PATH="$p"
+        break
+      fi
+    done
+  fi
+  
+  if [ ! -x "$TEMPL_PATH" ] && [ "$BUILD_METHOD" == "standard" ]; then
+    echo -e "${YELLOW}Installing templ...${NC}"
+    find_go_path
+    $GO_PATH install github.com/a-h/templ/cmd/templ@latest
+    TEMPL_PATH="$HOME/go/bin/templ"
+  fi
+}
+
+# Find necessary paths
+find_go_path
+find_templ_path
+
 # Build approach based on method
 if [[ "$BUILD_METHOD" == "offline" ]]; then
   echo -e "${YELLOW}Building with offline approach (pre-built binary)${NC}"
@@ -65,9 +111,15 @@ if [[ "$BUILD_METHOD" == "offline" ]]; then
   # Ensure bin directory exists
   mkdir -p bin
   
-  # Build locally
+  # Generate templates if needed
+  if [ -x "$TEMPL_PATH" ]; then
+    echo -e "${YELLOW}Generating templates with: $TEMPL_PATH${NC}"
+    $TEMPL_PATH generate
+  fi
+  
+  # Build locally with full path to go
   echo -e "${YELLOW}Building Go binary...${NC}"
-  go build -o bin/app .
+  $GO_PATH build -o bin/app .
   
   # Build Docker image
   echo -e "${YELLOW}Building Docker image from pre-built binary...${NC}"
@@ -94,7 +146,3 @@ if [[ "$BUILD_TYPE" == "prod" ]]; then
 fi
 
 echo -e "${GREEN}Build completed successfully!${NC}"
-echo -e "${YELLOW}Run the application with: docker-compose -f docker-compose.dev.yml up${NC}"
-if [[ "$BUILD_TYPE" == "prod" ]]; then
-  echo -e "${YELLOW}For production: docker-compose -f docker-compose.prod.yml up -d${NC}"
-fi

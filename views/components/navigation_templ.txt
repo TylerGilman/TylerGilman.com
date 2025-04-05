@@ -1,0 +1,5 @@
+<nav class=\"nav-container\" aria-label=\"Main navigation\"><div class=\"nav-content\"><div class=\"nav-left\"><h1 class=\"nav-title\">Tyler Gilman</h1>
+</div><div class=\"nav-right\">
+<a href=\"/logout\" class=\"secondary-button\">Logout</a>
+</div></div></nav>
+<div class=\"nav-links\"><a href=\"/\" hx-get=\"/\" hx-target=\"#main-content\" hx-push-url=\"true\" hx-swap=\"innerHTML transition:fade:150ms\" hx-ext=\"preload\" preload=\"mouseover\" class=\"nav-link\">Home <span class=\"nav-underline\"></span></a> <a href=\"/projects\" hx-get=\"/projects\" hx-target=\"#main-content\" hx-push-url=\"true\" hx-swap=\"innerHTML transition:fade:150ms\" hx-ext=\"preload\" preload=\"mouseover touchstart\" class=\"nav-link\">Projects <span class=\"nav-underline\"></span></a> <a href=\"/blog\" hx-get=\"/blog\" hx-target=\"#main-content\" hx-push-url=\"true\" hx-swap=\"innerHTML transition:fade:150ms\" hx-ext=\"preload\" preload=\"mouseover touchstart\" class=\"nav-link\">Blog <span class=\"nav-underline\"></span></a></div>

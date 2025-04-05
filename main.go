@@ -108,8 +108,26 @@ router.Route("/admin", func(r chi.Router) {
 		r.Get("/projects", handlers.Make(handlers.HandleProjects))
 	})
 
-	// Static files
-  router.Handle("/public/*", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+	// Static files with proper caching
+    fileServer := http.FileServer(http.Dir("public"))
+    router.Handle("/public/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        // Add cache headers based on file type
+        path := r.URL.Path
+        if strings.HasSuffix(path, ".js") || strings.HasSuffix(path, ".css") {
+            w.Header().Set("Cache-Control", "public, max-age=86400") // 1 day
+        } else if strings.HasSuffix(path, ".jpg") || strings.HasSuffix(path, ".png") || 
+                  strings.HasSuffix(path, ".gif") || strings.HasSuffix(path, ".svg") ||
+                  strings.HasSuffix(path, ".ico") {
+            w.Header().Set("Cache-Control", "public, max-age=604800") // 1 week
+        }
+        http.StripPrefix("/public/", fileServer).ServeHTTP(w, r)
+    }))
+    
+    // Serve favicon.ico from root
+    router.Handle("/favicon.ico", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+        w.Header().Set("Cache-Control", "public, max-age=604800") // 1 week
+        http.ServeFile(w, r, "public/favicon.ico")
+    }))
 }
 
 func main() {

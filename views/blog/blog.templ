@@ -26,20 +26,28 @@ templ Partial(mainArticles []Article, recentArticles []Article, categories []str
             <form hx-boost="true" hx-target="#main-articles" hx-indicator="#search-indicator" action="/blog/search" method="get">
                 <div class="search-row">
                     <div class="search-input-group" style="flex: 2;">
-                        <input type="search" name="query" placeholder="Search titles, content..."
+                        <label for="search-query" class="block text-sm font-medium mb-1">Search</label>
+                        <input type="search" 
+                               id="search-query"
+                               name="query" 
+                               placeholder="Search titles, content..."
                                class="search-input"
                                hx-get="/blog/search"
                                hx-trigger="input changed delay:500ms, search"
                                hx-target="#main-content"
-                               hx-indicator="#search-indicator"/>
+                               hx-indicator="#search-indicator"
+                               aria-label="Search blog posts"/>
                     </div>
                     <div class="category-input-group" style="flex: 1;">
-                        <select name="category"
+                        <label for="category-select" class="block text-sm font-medium mb-1">Category</label>
+                        <select id="category-select"
+                                name="category"
                                 class="category-select"
                                 hx-get="/blog/search"
                                 hx-trigger="change"
                                 hx-target="#main-content"
-                                hx-indicator="#search-indicator">
+                                hx-indicator="#search-indicator"
+                                aria-label="Filter by category">
                             <option value="">All Categories</option>
                             for _, category := range categories {
                                 <option value={category}>{category}</option>
@@ -48,7 +56,7 @@ templ Partial(mainArticles []Article, recentArticles []Article, categories []str
                     </div>
                     <noscript>
                         <div class="search-button-group">
-                            <button type="submit" class="search-button">Search</button>
+                            <button type="submit" class="search-button" aria-label="Submit search">Search</button>
                         </div>
                     </noscript>
                 </div>
@@ -97,20 +105,28 @@ templ SearchResults(articles []Article, categories []string, selectedCategory st
             <form hx-boost="true" hx-target="#main-content" hx-indicator="#search-indicator" action="/blog/search" method="get">
                 <div class="search-row">
                     <div class="search-input-group" style="flex: 2;">
-                        <input type="search" name="query" placeholder="Search titles, content..."
+                        <label for="search-query-results" class="block text-sm font-medium mb-1">Search</label>
+                        <input type="search" 
+                               id="search-query-results"
+                               name="query" 
+                               placeholder="Search titles, content..."
                                class="search-input"
                                hx-get="/blog/search"
                                hx-trigger="input changed delay:500ms, search"
                                hx-target="#main-content"
-                               hx-indicator="#search-indicator"/>
+                               hx-indicator="#search-indicator"
+                               aria-label="Search blog posts"/>
                     </div>
                     <div class="category-input-group" style="flex: 1;">
-                        <select name="category"
+                        <label for="category-select-results" class="block text-sm font-medium mb-1">Category</label>
+                        <select id="category-select-results"
+                                name="category"
                                 class="category-select"
                                 hx-get="/blog/search"
                                 hx-trigger="change"
                                 hx-target="#main-content"
-                                hx-indicator="#search-indicator">
+                                hx-indicator="#search-indicator"
+                                aria-label="Filter by category">
                             <option value="">All Categories</option>
                             for _, category := range categories {
                                 if category == selectedCategory {
@@ -155,6 +171,8 @@ templ smallArticle(article Article) {
                hx-get={string(templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID)))} 
                hx-target="#main-content"
                hx-push-url="true"
+               hx-ext="preload"
+               preload="mouseover"
                class="sidebar-article-title-link">
                 <h3 class="sidebar-article-title">{article.Title}</h3>
             </a>
@@ -193,7 +211,9 @@ templ largeArticle(article Article) {
             <a href={templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID))} 
                hx-get={string(templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID)))} 
                hx-target="#main-content"
-               hx-push-url="true" 
+               hx-push-url="true"
+               hx-ext="preload"
+               preload="mouseover"
                class="read-more-link">Read More</a>
         </div>
     </article>
