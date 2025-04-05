@@ -1,0 +1,11 @@
+/* TEAM */
+Developer: Tyler Gilman
+Contact: tylersgilman@gmail.com
+GitHub: https://github.com/TylerGilman
+Location: United States
+
+/* SITE */
+Last update: 2025-04-05
+Standards: HTML5, CSS3, Go
+Components: HTMX, Go templates
+Software: Go, HTML, CSS, JavaScript

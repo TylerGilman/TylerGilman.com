@@ -19,9 +19,8 @@ templ Base(page_mode string, isAdmin bool) {
             <script src="/public/js/libs/three.min.js" fetchpriority="high"></script>
             <script src="/public/js/aquarium.js" fetchpriority="high"></script>
             
-            <!-- Preload key pages -->
-            <link rel="prefetch" href="/projects">
-            <link rel="prefetch" href="/blog">
+            <!-- We'll use htmx-preload extension on hover instead of prefetch -->
+            <!-- This improves initial load time by deferring page loads until needed -->
             
             <!-- Deferred loading for non-critical resources -->
             <script src="https://cdn.jsdelivr.net/npm/marked@5.1.0/marked.min.js" defer></script>
@@ -613,6 +612,23 @@ templ Base(page_mode string, isAdmin bool) {
                     background-color: #0ea5e9;
                 }
                 
+                /* Accessibility */
+                .sr-only {
+                    position: absolute;
+                    width: 1px;
+                    height: 1px;
+                    padding: 0;
+                    margin: -1px;
+                    overflow: hidden;
+                    clip: rect(0, 0, 0, 0);
+                    white-space: nowrap;
+                    border-width: 0;
+                }
+                
+                label.block {
+                    cursor: pointer;
+                }
+                
                 /* Utility classes */
                 .container {
                     max-width: 1200px;
@@ -811,11 +827,8 @@ templ Base(page_mode string, isAdmin bool) {
                         initializeAquarium();
                     }, 100);
                     
-                    // Preload the Projects page content when on homepage
-                    if (window.location.pathname === '/' || window.location.pathname === '') {
-                        preloadPage('/projects');
-                        preloadPage('/blog');
-                    }
+                    // We'll rely on the htmx-preload extension instead of eagerly preloading pages
+                    // This gives a better balance between performance and bandwidth usage
                 });
 
                 function initializeAquarium() {

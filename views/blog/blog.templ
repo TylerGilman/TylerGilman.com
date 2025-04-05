@@ -26,7 +26,10 @@ templ Partial(mainArticles []Article, recentArticles []Article, categories []str
             <form hx-boost="true" hx-target="#main-articles" hx-indicator="#search-indicator" action="/blog/search" method="get">
                 <div class="search-row">
                     <div class="search-input-group" style="flex: 2;">
-                        <label for="search-query" class="block text-sm font-medium mb-1">Search</label>
+                        <label for="search-query" class="block text-sm font-medium mb-1" onclick="document.getElementById('search-query').focus();">
+                            Search
+                            <span class="sr-only">(click to focus search box)</span>
+                        </label>
                         <input type="search" 
                                id="search-query"
                                name="query" 
@@ -35,19 +38,20 @@ templ Partial(mainArticles []Article, recentArticles []Article, categories []str
                                hx-get="/blog/search"
                                hx-trigger="input changed delay:500ms, search"
                                hx-target="#main-content"
-                               hx-indicator="#search-indicator"
-                               aria-label="Search blog posts"/>
+                               hx-indicator="#search-indicator"/>
                     </div>
                     <div class="category-input-group" style="flex: 1;">
-                        <label for="category-select" class="block text-sm font-medium mb-1">Category</label>
+                        <label for="category-select" class="block text-sm font-medium mb-1" onclick="document.getElementById('category-select').focus();">
+                            Category
+                            <span class="sr-only">(click to open dropdown)</span>
+                        </label>
                         <select id="category-select"
                                 name="category"
                                 class="category-select"
                                 hx-get="/blog/search"
                                 hx-trigger="change"
                                 hx-target="#main-content"
-                                hx-indicator="#search-indicator"
-                                aria-label="Filter by category">
+                                hx-indicator="#search-indicator">
                             <option value="">All Categories</option>
                             for _, category := range categories {
                                 <option value={category}>{category}</option>
@@ -56,7 +60,10 @@ templ Partial(mainArticles []Article, recentArticles []Article, categories []str
                     </div>
                     <noscript>
                         <div class="search-button-group">
-                            <button type="submit" class="search-button" aria-label="Submit search">Search</button>
+                            <button type="submit" class="search-button">
+                                <span>Search</span>
+                                <span class="sr-only">Submit search query</span>
+                            </button>
                         </div>
                     </noscript>
                 </div>
@@ -105,7 +112,10 @@ templ SearchResults(articles []Article, categories []string, selectedCategory st
             <form hx-boost="true" hx-target="#main-content" hx-indicator="#search-indicator" action="/blog/search" method="get">
                 <div class="search-row">
                     <div class="search-input-group" style="flex: 2;">
-                        <label for="search-query-results" class="block text-sm font-medium mb-1">Search</label>
+                        <label for="search-query-results" class="block text-sm font-medium mb-1" onclick="document.getElementById('search-query-results').focus();">
+                            Search
+                            <span class="sr-only">(click to focus search box)</span>
+                        </label>
                         <input type="search" 
                                id="search-query-results"
                                name="query" 
@@ -114,19 +124,20 @@ templ SearchResults(articles []Article, categories []string, selectedCategory st
                                hx-get="/blog/search"
                                hx-trigger="input changed delay:500ms, search"
                                hx-target="#main-content"
-                               hx-indicator="#search-indicator"
-                               aria-label="Search blog posts"/>
+                               hx-indicator="#search-indicator"/>
                     </div>
                     <div class="category-input-group" style="flex: 1;">
-                        <label for="category-select-results" class="block text-sm font-medium mb-1">Category</label>
+                        <label for="category-select-results" class="block text-sm font-medium mb-1" onclick="document.getElementById('category-select-results').focus();">
+                            Category
+                            <span class="sr-only">(click to open dropdown)</span>
+                        </label>
                         <select id="category-select-results"
                                 name="category"
                                 class="category-select"
                                 hx-get="/blog/search"
                                 hx-trigger="change"
                                 hx-target="#main-content"
-                                hx-indicator="#search-indicator"
-                                aria-label="Filter by category">
+                                hx-indicator="#search-indicator">
                             <option value="">All Categories</option>
                             for _, category := range categories {
                                 if category == selectedCategory {

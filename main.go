@@ -128,6 +128,10 @@ router.Route("/admin", func(r chi.Router) {
         w.Header().Set("Cache-Control", "public, max-age=604800") // 1 week
         http.ServeFile(w, r, "public/favicon.ico")
     }))
+    
+    // SEO routes
+    router.Get("/robots.txt", handlers.Make(handlers.HandleRobotsTxt))
+    router.Get("/sitemap.xml", handlers.Make(handlers.HandleSitemap))
 }
 
 func main() {

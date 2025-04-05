@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Allow all search engines to crawl and index the site
+Sitemap: https://tylergilman.com/sitemap.xml

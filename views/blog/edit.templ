@@ -72,8 +72,9 @@ templ EditPage(article Article) {
 
                 <div class="form-group">
                     <div class="flex justify-between">
-                        <button type="submit" class="form-submit" aria-label="Update article">
-                            Update Article
+                        <button type="submit" class="form-submit">
+                            <span>Update Article</span>
+                            <span class="sr-only">Save changes to this article</span>
                         </button>
                         <a href={templ.SafeURL(fmt.Sprintf("/blog/article/%d", article.ID))}
                            class="bg-gray-300 text-gray-700 px-4 py-2 rounded-md hover:bg-gray-400 transition-colors">
