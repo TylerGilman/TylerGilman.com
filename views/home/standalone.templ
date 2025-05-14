@@ -248,46 +248,6 @@ templ StandaloneFull(isAdmin bool) {
 		
 		<script src="/public/js/libs/three.min.js"></script>
 		<script src="/public/js/aquarium.js"></script>
-		<script>
-			document.addEventListener('DOMContentLoaded', function() {
-				// Initialize aquarium
-				const aquarium = new Aquarium('aquarium-canvas', {
-					fishCount: 5
-				});
-				
-				if (!aquarium.init()) {
-					console.error('Aquarium initialization failed');
-					document.body.innerHTML = document.querySelector('noscript').innerHTML;
-				}
-				
-				// Navigation active state handling
-				function updateActiveLinks() {
-					const currentPath = window.location.pathname;
-					const navLinks = document.querySelectorAll('.nav-link');
-					
-					navLinks.forEach(link => {
-						const linkPath = link.getAttribute('href');
-						const underline = link.querySelector('.nav-underline');
-						
-						if (currentPath === linkPath) {
-							link.classList.add('active');
-							if (underline) underline.style.transform = 'scaleX(1)';
-						} else {
-							link.classList.remove('active');
-							if (underline) underline.style.transform = 'scaleX(0)';
-						}
-					});
-				}
-				
-				// Initialize on page load
-				updateActiveLinks();
-				
-				// Add HTMX event listener for navigation
-				document.body.addEventListener('htmx:afterSettle', function(event) {
-					updateActiveLinks();
-				});
-			});
-		</script>
 	</body>
 	</html>
 }

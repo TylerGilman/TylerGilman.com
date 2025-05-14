@@ -156,28 +156,28 @@ templ Base(page_mode string, isAdmin bool) {
                     transform: translate(-50%, -50%);
                     text-align: center;
                     padding: 2rem;
-                    background-color: rgba(0, 8, 22, 0.5);
-                    backdrop-filter: blur(5px);
                     border-radius: 10px;
                 }
                 
                 .hero-name {
                     font-size: 3rem;
                     margin-bottom: 1rem;
-                    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+                    text-shadow: 0 0 2px #000, 0 0 5px #000, 0 0 10px rgba(0,0,0,0.8);
                 }
                 
                 .hero-title {
                     font-size: 1.5rem;
                     margin-bottom: 1.5rem;
                     color: rgba(255, 255, 255, 0.9);
-                    text-shadow: 0 0 10px rgba(0,0,0,0.5);
+                    text-shadow: 0 0 2px #000, 0 0 5px #000, 0 0 10px rgba(0,0,0,0.8);
                 }
                 
                 .about-text {
                     font-size: 1.2rem;
                     margin-bottom: 2rem;
-                    color: rgba(255, 255, 255, 0.8);
+                    color: rgba(255, 255, 255, 0.95);
+                    text-shadow: 0 0 3px #000, 0 0 7px #000, 0 0 12px rgba(0,0,0,0.9);
+                    font-weight: 500;
                 }
                 
                 /* Button styles */
@@ -795,9 +795,9 @@ templ Base(page_mode string, isAdmin bool) {
                             return;
                         }
 
-                        // Create the fish tank with 5 fish
+                        // Create the fish tank with appropriate number of small, fast fish
                         const aquarium = new Aquarium('aquarium-canvas', {
-                            fishCount: 5
+                            fishCount: 35
                         });
                         
                         if (aquarium.init()) {

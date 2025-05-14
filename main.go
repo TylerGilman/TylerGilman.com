@@ -15,9 +15,9 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/joho/godotenv"
+	"github.com/TylerGilman/TylerGilman.com/authpkg"
 	"github.com/TylerGilman/TylerGilman.com/handlers"
 	"github.com/TylerGilman/TylerGilman.com/views/blog"
-	"github.com/TylerGilman/TylerGilman.com/authpkg"
 )
 
 func init() {
@@ -57,30 +57,30 @@ func getLogLevel(levelStr string) slog.Level {
 
 func setupRoutes(router *chi.Mux) {
 	// Global middleware
-  router.Use(middleware.Logger)
-  router.Use(middleware.Recoverer)
-  router.Use(middleware.RequestID)
-  router.Use(middleware.RealIP)
-  router.Use(handlers.SessionMiddleware) 
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
+	router.Use(middleware.RequestID)
+	router.Use(middleware.RealIP)
+	router.Use(handlers.SessionMiddleware)
 
 	// Auth routes
 	router.Get("/login", handlers.Make(handlers.HandleLogin))
 	router.Post("/login", handlers.Make(handlers.HandleLogin))
 	router.Get("/logout", handlers.Make(handlers.HandleLogout))
 
-router.Route("/admin", func(r chi.Router) {
-    // Apply the admin middleware to all routes under /admin
-    r.Use(handlers.AdminAuthMiddleware)
-    
-    // Blog management
-    r.Route("/blog", func(r chi.Router) {
-        r.Get("/", handlers.Make(handlers.HandleAdminBlogPage))
-        r.Post("/", handlers.Make(handlers.HandleAdminBlogPost))
-        r.Get("/edit/{id}", handlers.Make(handlers.HandleEditArticle))
-        r.Put("/{id}", handlers.Make(handlers.HandleUpdateArticle))
-        r.Delete("/{id}", handlers.Make(handlers.HandleDeleteArticle))
-    })
-})
+	router.Route("/admin", func(r chi.Router) {
+		// Apply the admin middleware to all routes under /admin
+		r.Use(handlers.AdminAuthMiddleware)
+
+		// Blog management
+		r.Route("/blog", func(r chi.Router) {
+			r.Get("/", handlers.Make(handlers.HandleAdminBlogPage))
+			r.Post("/", handlers.Make(handlers.HandleAdminBlogPost))
+			r.Get("/edit/{id}", handlers.Make(handlers.HandleEditArticle))
+			r.Put("/{id}", handlers.Make(handlers.HandleUpdateArticle))
+			r.Delete("/{id}", handlers.Make(handlers.HandleDeleteArticle))
+		})
+	})
 
 	// Public routes
 	router.Route("/", func(r chi.Router) {
@@ -100,92 +100,96 @@ router.Route("/admin", func(r chi.Router) {
 		})
 
 		// Core pages
-    r.Get("/", handlers.Make(handlers.HandleHome)) // Static unscrollable landing page
-    r.Get("/standalone", handlers.Make(handlers.HandleHomeFull)) // Keep original version accessible
-    r.Get("/home", func(w http.ResponseWriter, r *http.Request) {
-        http.Redirect(w, r, "/", http.StatusMovedPermanently)
-    })
+		r.Get("/", handlers.Make(handlers.HandleHome)) // Static unscrollable landing page
+		r.Get("/standalone", handlers.Make(handlers.HandleHomeFull)) // Keep original version accessible
+		r.Get("/home", func(w http.ResponseWriter, r *http.Request) {
+			http.Redirect(w, r, "/", http.StatusMovedPermanently)
+		})
 		r.Get("/projects", handlers.Make(handlers.HandleProjects))
 	})
 
 	// Static files
-  router.Handle("/public/*", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
+	router.Handle("/public/*", http.StripPrefix("/public/", http.FileServer(http.Dir("public"))))
 }
 
 func main() {
-    // Load environment variables first
-    if err := godotenv.Load(); err != nil {
-        slog.Error("Error loading .env file", "error", err)
-    }
-    
-    // Initialize the session store after environment is loaded
-    authpkg.InitStore()
-    logLevelStr := os.Getenv("LOG_LEVEL")
-    if logLevelStr == "" {
-        log.Println("LOG_LEVEL not set, defaulting to INFO")
-        logLevelStr = "INFO"
-    }
-    logLevel := getLogLevel(logLevelStr)
+	// Load environment variables first
+	if err := godotenv.Load(); err != nil {
+		slog.Error("Error loading .env file", "error", err)
+	}
 
-    opts := &slog.HandlerOptions{
-        Level: logLevel,
-    }
-    handler := slog.NewJSONHandler(os.Stdout, opts)
-    logger := slog.New(handler)
-    slog.SetDefault(logger)
+	// Initialize the session store after environment is loaded
+	authpkg.InitStore()
 
-    if err := blog.InitDB(); err != nil {
-        log.Fatal("Error initializing database:", err)
-    }
-    defer blog.CloseDB()
+	// Set up logging
+	logLevelStr := os.Getenv("LOG_LEVEL")
+	if logLevelStr == "" {
+		log.Println("LOG_LEVEL not set, defaulting to INFO")
+		logLevelStr = "INFO"
+	}
+	logLevel := getLogLevel(logLevelStr)
+	opts := &slog.HandlerOptions{
+		Level: logLevel,
+	}
+	handler := slog.NewJSONHandler(os.Stdout, opts)
+	logger := slog.New(handler)
+	slog.SetDefault(logger)
 
-    // Initial projects cache update
-    handlers.UpdateProjectsCache()
+	// Initialize database
+	if err := blog.InitDB(); err != nil {
+		log.Fatal("Error initializing database:", err)
+	}
+	defer blog.CloseDB()
 
-    // Set up periodic cache update
-    go func() {
-        for {
-            time.Sleep(1 * time.Hour)
-            handlers.UpdateProjectsCache()
-        }
-    }()
+	// Initial projects cache update
+	handlers.UpdateProjectsCache()
 
-    router := chi.NewMux()
-    setupRoutes(router)
+	// Set up periodic cache update
+	go func() {
+		for {
+			time.Sleep(1 * time.Hour)
+			handlers.UpdateProjectsCache()
+		}
+	}()
 
-    // Graceful shutdown setup
-    quit := make(chan os.Signal, 1)
-    signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	// Set up router
+	router := chi.NewMux()
+	setupRoutes(router)
 
-    srv := &http.Server{
-        Handler:      router,
-        ReadTimeout:  15 * time.Second,
-        WriteTimeout: 15 * time.Second,
-        IdleTimeout:  60 * time.Second,
-    }
+	// Server configuration
+	srv := &http.Server{
+		Handler:      router,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
 
-    // Start server
-    go func() {
-        port := os.Getenv("DEV_PORT")
-        if port == "" {
-            port = "8002"
-        }
-        srv.Addr = ":" + port
-        slog.Info("Starting server", "port", port)
-        if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-            slog.Error("Error starting server:", slog.String("error", err.Error()))
-        }
-    }()
+	// Graceful shutdown setup
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
-    <-quit
-    slog.Info("Server is shutting down...")
+	// Start server
+	go func() {
+		port := os.Getenv("DEV_PORT")
+		if port == "" {
+			port = "80"
+		}
+		srv.Addr = ":" + port
+		slog.Info("Starting server", "port", port)
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			slog.Error("Error starting server", "error", err)
+		}
+	}()
 
-    ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-    defer cancel()
+	<-quit
+	slog.Info("Server is shutting down...")
 
-    if err := srv.Shutdown(ctx); err != nil {
-        slog.Error("Server forced to shutdown:", slog.String("error", err.Error()))
-    }
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
 
-    slog.Info("Server exited properly")
+	if err := srv.Shutdown(ctx); err != nil {
+		slog.Error("Server forced to shutdown", "error", err)
+	}
+
+	slog.Info("Server exited properly")
 }

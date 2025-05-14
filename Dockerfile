@@ -28,6 +28,9 @@ RUN go build -o main .
 # Run stage
 FROM alpine:latest
 
+# Install runtime dependencies
+RUN apk add --no-cache libc6-compat
+
 WORKDIR /app
 
 # Copy build artifacts
@@ -35,9 +38,16 @@ COPY --from=builder /app/main .
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/views ./views
 
-RUN adduser -D -u 1001 appuser && chown -R appuser:appuser /app && chmod -R 755 /app
+# Create data directory for SQLite
+RUN mkdir -p /app/data
+
+# Set up non-root user
+RUN adduser -D -u 1001 appuser && \
+    chown -R appuser:appuser /app && \
+    chmod -R 755 /app
 
 USER appuser
 
-EXPOSE 80
+EXPOSE 80 8002  # Expose both prod and dev ports
+
 CMD ["./main"]
